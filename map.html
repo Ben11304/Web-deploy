@@ -1,0 +1,4142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>US Map — Energy Infrastructure Risk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="./static/css/map.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; min-height: 100vh; display: flex; flex-direction: column; background: #fafafa; color: #1a1a1a; }
+        .main-header { background: #111; color: #fff; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #222; }
+        .header-left { display: flex; align-items: center; gap: 24px; }
+        .header-logo { height: 70px; width: auto; border-radius: 4px; }
+        .header-title { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
+        .header-subtitle { font-size: 12px; font-weight: 300; opacity: 0.6; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.1em; }
+        .main-content { flex: 1; padding: 0; }
+        .view-panel { /* panels shown/hidden by JS */ }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-left">
+            <img src="./static/images/kent-logo.png" alt="Kent State University" class="header-logo">
+            <div>
+                <div class="header-title">Energy Critical Infrastructure</div>
+                <div class="header-subtitle">Geographic Information System</div>
+            </div>
+        </div>
+    </header>
+    <main class="main-content">
+        <a href="index.html" class="back-button">&larr; Back to Home</a>
+        <button id="panel-toggle" class="panel-toggle-btn">
+            <span class="toggle-icon">&#9664;</span>
+            <span class="toggle-text">Hide Panel</span>
+        </button>
+
+        <div id="sector-panel">
+            <div class="division-info">
+                Division: <strong>State</strong> |
+                Mode: <strong id="display-mode">Select</strong>
+            </div>
+
+            <!-- View Type Toggle -->
+            <div class="view-toggle">
+                <button id="btn-heatmap" class="active">Heatmap</button>
+                <button id="btn-hazard">Hazard</button>
+                <button id="btn-impact">Impact</button>
+                <button id="btn-energy-vulnerability">Vuln</button>
+                <button id="btn-exposure">Expo</button>
+                <button id="btn-energy-detail">Energy</button>
+                <button id="btn-social-vulnerability">SVI</button>
+            </div>
+
+            <!-- Background Map Toggle -->
+            <div style="margin: 12px 0; padding: 10px; background: #f5f5f5; border-radius: 4px; border: 1px solid #e0e0e0;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                    <input type="checkbox" id="bg-toggle" checked style="width: 14px; height: 14px;">
+                    Background Map
+                </label>
+            </div>
+
+            <!-- ALL panels included, shown/hidden by JS -->
+            <div id="view-panel-heatmap" class="view-panel" style="display:block;">
+<!-- Heatmap Mode: Sector dropdown and controls -->
+{% include 'partials/loading_indicator.html' %}
+<h4>Heatmap Layer</h4>
+<select id="heatmap-select" style="width: 100%; padding: 8px; font-size: 14px;">
+    <option value="combined" >🌐 Combined (All Sectors)</option>
+    <option value="energy_county_scale" >⚡🗺️ Energy Sector (County Scale)</option>
+    {% for sector in heatmap_sectors %}
+        <option value="" ></option>
+    {% endfor %}
+</select>
+
+<!-- GeoTIFF Toggle -->
+<div style="margin-top: 10px; padding: 8px; background: #e8f4e8; border-radius: 4px; border: 1px solid #4CAF50;">
+    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+        <input type="checkbox" id="tiff-toggle"  style="width: 16px; height: 16px;">
+        🖼️ Use GeoTIFF (faster rendering)
+    </label>
+    <div style="font-size: 11px; color: #666; margin-top: 4px;">Raster format for better performance</div>
+</div>
+
+<!-- Heatmap LOD Control -->
+<div class="heatmap-lod-control" id="heatmap-lod-control">
+    <h5>🔍 Level of Detail (Threshold)</h5>
+    
+    <!-- Threshold Slider -->
+    <div id="lod-threshold-container">
+        <div class="lod-slider-container">
+            <input type="range" id="heatmap-threshold-slider" class="lod-slider" min="0" max="100" value="99" style="background: linear-gradient(to right, #ffcdd2, #c62828);">
+            <span class="lod-value-display" id="heatmap-threshold-value" style="color: #c62828;">0%</span>
+        </div>
+        <div class="lod-info">Show cells with score ≥ threshold</div>
+    </div>
+    
+    <div class="lod-stats" id="heatmap-lod-stats">Visible: -- / -- cells</div>
+    
+</div>
+</div>
+<div id="view-panel-hazard" class="view-panel" style="display:none;">
+<!-- Hazard Mode: Hazard type selection and controls -->
+{% include 'partials/loading_indicator.html' %}
+<h4> Hazard Layer</h4>
+<select id="hazard-select" style="width: 100%; padding: 8px; font-size: 14px;">
+    <option value="flood">Flood Hazard</option>
+<option value="wildfire">Wildfire Historical</option>
+<option value="drought">Drought Monitor</option>
+<option value="earthquake">Earthquake</option>
+
+</select>
+
+
+
+
+
+
+                   style="width: 16px; height: 16px; accent-color: ;">
+            <span style="width: 16px; height: 16px; background: ; border-radius: 50%; border: 2px solid #333; opacity: 0.8;"></span>
+            <span style="font-size: 12px; color: #880e4f;"></span>
+        </label>
+        {% endfor %}
+    </div>
+    
+    <!-- Quick select buttons -->
+    <div style="display: flex; gap: 8px; margin-top: 10px;">
+        <button type="button" id="eq-select-all" style="flex: 1; padding: 6px; font-size: 11px; background: #c2185b; color: white; border: none; border-radius: 4px; cursor: pointer;">All Rings</button>
+        <button type="button" id="eq-select-none" style="flex: 1; padding: 6px; font-size: 11px; background: #e91e63; color: white; border: none; border-radius: 4px; cursor: pointer;">Clear All</button>
+        <button type="button" id="eq-select-near" style="flex: 1; padding: 6px; font-size: 11px; background: #f50057; color: white; border: none; border-radius: 4px; cursor: pointer;">Near (&lt;50km)</button>
+    </div>
+    
+    <!-- Magnitude Threshold Filter -->
+    <div class="magnitude-filter" style="margin-top: 15px; padding: 10px; background: #fff; border-radius: 6px; border: 1px solid #f48fb1;">
+        <h6 style="color: #880e4f; margin: 0 0 8px 0; font-size: 12px;">📊 Magnitude Threshold</h6>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 11px; color: #ad1457;">Min:</span>
+            <input type="range" id="eq-mag-min" min="0" max="10" step="0.1" value="0" 
+                   style="flex: 1; accent-color: #c2185b;">
+            <span id="eq-mag-min-value" style="font-size: 12px; font-weight: bold; color: #880e4f; min-width: 30px;">0.0</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+            <span style="font-size: 11px; color: #ad1457;">Max:</span>
+            <input type="range" id="eq-mag-max" min="0" max="10" step="0.1" value="10" 
+                   style="flex: 1; accent-color: #c2185b;">
+            <span id="eq-mag-max-value" style="font-size: 12px; font-weight: bold; color: #880e4f; min-width: 30px;">10.0</span>
+        </div>
+        <!-- Quick magnitude presets -->
+        <div style="display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap;">
+            <button type="button" class="eq-mag-preset" data-min="0" data-max="10" style="padding: 4px 8px; font-size: 10px; background: #fce4ec; color: #880e4f; border: 1px solid #f48fb1; border-radius: 3px; cursor: pointer;">All</button>
+            <button type="button" class="eq-mag-preset" data-min="3" data-max="10" style="padding: 4px 8px; font-size: 10px; background: #fce4ec; color: #880e4f; border: 1px solid #f48fb1; border-radius: 3px; cursor: pointer;">≥3.0</button>
+            <button type="button" class="eq-mag-preset" data-min="4" data-max="10" style="padding: 4px 8px; font-size: 10px; background: #fce4ec; color: #880e4f; border: 1px solid #f48fb1; border-radius: 3px; cursor: pointer;">≥4.0</button>
+            <button type="button" class="eq-mag-preset" data-min="5" data-max="10" style="padding: 4px 8px; font-size: 10px; background: #fce4ec; color: #880e4f; border: 1px solid #f48fb1; border-radius: 3px; cursor: pointer;">≥5.0</button>
+            <button type="button" class="eq-mag-preset" data-min="6" data-max="10" style="padding: 4px 8px; font-size: 10px; background: #fce4ec; color: #880e4f; border: 1px solid #f48fb1; border-radius: 3px; cursor: pointer;">≥6.0 (Strong)</button>
+        </div>
+    </div>
+    
+    <div class="earthquake-stats" id="earthquake-stats" style="margin-top: 10px; font-size: 11px; color: #ad1457; text-align: center;">
+        Loading earthquake data...
+    </div>
+</div>
+{% endif %}
+</div>
+<div id="view-panel-impact" class="view-panel" style="display:none;">
+<!-- Impact Mode: Power Outage visualization controls -->
+<h4>📈 Impact Analysis</h4>
+
+<!-- Loading Indicator -->
+<div id="impact-loading" style="display: none; padding: 12px; background: linear-gradient(135deg, #fce4ec, #f8bbd9); border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #e91e63;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <div class="loading-spinner" style="width: 20px; height: 20px; border: 3px solid #e91e63; border-top: 3px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <span id="impact-loading-text" style="font-size: 13px; color: #880e4f;">Loading impact data...</span>
+    </div>
+    <div style="margin-top: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden;">
+        <div id="impact-loading-progress" style="width: 0%; height: 4px; background: #e91e63; transition: width 0.3s;"></div>
+    </div>
+</div>
+
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+
+<!-- Impact Type Selector -->
+<div style="margin-bottom: 12px;">
+    <label style="font-size: 12px; color: #555; display: block; margin-bottom: 4px;">📊 Impact Type</label>
+    <select id="impact-type-select" style="width: 100%; padding: 8px; font-size: 14px; border-radius: 4px; border: 1px solid #ddd;">
+        {% for imp in impact_types %}
+            <option value="" ></option>
+        {% endfor %}
+    </select>
+</div>
+
+<!-- Metric Selector -->
+<div style="margin-bottom: 12px;">
+    <label style="font-size: 12px; color: #555; display: block; margin-bottom: 4px;">📏 Metric</label>
+    <select id="impact-metric-select" style="width: 100%; padding: 8px; font-size: 14px; border-radius: 4px; border: 1px solid #ddd;">
+        <option value="total_customers" >Total Customers Affected</option>
+        <option value="event_count" >Number of Events</option>
+        <option value="avg_per_event" >Avg Customers per Event</option>
+    </select>
+</div>
+
+<p style="font-size: 11px; color: #666; margin-top: 8px;">
+    ⚡ Power outage data from EAGLE-I (2022) - County-level aggregation
+</p>
+
+<!-- Selected States Info -->
+
+    </div>
+</div>
+{% else %}
+<div style="margin-top: 10px; padding: 8px; background: #fff3e0; border-radius: 4px; border-left: 3px solid #ff9800;">
+    <strong style="font-size: 11px; color: #e65100;">🌎 Showing: Entire US</strong>
+</div>
+{% endif %}
+
+<!-- Statistics Summary -->
+<div id="impact-summary" style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #fce4ec, #f8bbd9); border-radius: 8px; border-left: 4px solid #e91e63;">
+    <h5 style="color: #880e4f; margin: 0 0 10px 0;">📊 Summary Statistics</h5>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;">
+        <div style="background: #fff; padding: 8px; border-radius: 4px; text-align: center;">
+            <div style="color: #666; font-size: 10px;">Counties</div>
+            <div id="impact-county-count" style="font-size: 16px; font-weight: bold; color: #c2185b;">--</div>
+        </div>
+        <div style="background: #fff; padding: 8px; border-radius: 4px; text-align: center;">
+            <div style="color: #666; font-size: 10px;">Total Events</div>
+            <div id="impact-total-events" style="font-size: 16px; font-weight: bold; color: #c2185b;">--</div>
+        </div>
+        <div style="background: #fff; padding: 8px; border-radius: 4px; text-align: center;">
+            <div style="color: #666; font-size: 10px;">Total Affected</div>
+            <div id="impact-total-customers" style="font-size: 16px; font-weight: bold; color: #c2185b;">--</div>
+        </div>
+        <div style="background: #fff; padding: 8px; border-radius: 4px; text-align: center;">
+            <div style="color: #666; font-size: 10px;">Avg per Event</div>
+            <div id="impact-avg-per-event" style="font-size: 16px; font-weight: bold; color: #c2185b;">--</div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Counties -->
+<div id="impact-top-counties" style="margin-top: 15px; padding: 12px; background: #fff; border-radius: 8px; border: 1px solid #f8bbd9;">
+    <h5 style="color: #880e4f; margin: 0 0 10px 0;">🏆 Top 10 Counties</h5>
+    <div id="impact-top-list" style="font-size: 11px; max-height: 200px; overflow-y: auto;">
+        <p style="color: #999;">Loading...</p>
+    </div>
+</div>
+
+<!-- Filter by Value Range -->
+<div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 8px; border-left: 4px solid #ff9800;">
+    <h5 style="color: #e65100; margin: 0 0 10px 0;">🔍 Filter by Value</h5>
+    
+    <div style="display: flex; gap: 8px; align-items: center;">
+        <div style="flex: 1;">
+            <label style="font-size: 10px; color: #666;">Min</label>
+            <input type="number" id="impact-filter-min" value="0" min="0" style="width: 100%; padding: 6px; font-size: 12px; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+        <div style="flex: 1;">
+            <label style="font-size: 10px; color: #666;">Max</label>
+            <input type="number" id="impact-filter-max" value="" placeholder="No limit" style="width: 100%; padding: 6px; font-size: 12px; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+    </div>
+    
+    <button id="impact-apply-filter" style="margin-top: 8px; width: 100%; padding: 8px; background: #ff9800; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
+        Apply Filter
+    </button>
+</div>
+
+<!-- Shown Stats -->
+<div style="margin-top: 12px; text-align: center; font-size: 11px; color: #666;">
+    <span id="impact-shown-stats">Showing: -- / -- counties</span>
+</div>
+
+</div>
+<div id="view-panel-energy_vulnerability" class="view-panel" style="display:none;">
+<!-- Energy Vulnerability Panel -->
+<div class="filter-section">
+    <h4 style="color: #f57f17;">⚡ Energy Vulnerability</h4>
+    <p style="font-size: 12px; color: #666; margin: 10px 0;">
+        Power grid vulnerability analysis showing critical infrastructure points.
+    </p>
+    
+    <!-- Threshold Slider -->
+    <div class="heatmap-lod-control" id="energy-vuln-lod-control" style="margin-top: 15px;">
+        <h5 style="color: #f57f17;">🔍 Vulnerability Threshold</h5>
+        <div id="energy-vuln-threshold-container">
+            <div class="lod-slider-container">
+                <input type="range" id="energy-vuln-threshold-slider" class="lod-slider" min="0" max="100" value="0" style="background: linear-gradient(to right, #fff9c4, #f57f17);">
+                <span class="lod-value-display" id="energy-vuln-threshold-value" style="color: #f57f17;">0%</span>
+            </div>
+            <div class="lod-info" style="font-size: 11px; color: #666;">Show cells with vulnerability ≥ threshold</div>
+        </div>
+        <div class="lod-stats" id="energy-vuln-lod-stats" style="font-size: 12px; color: #555; margin-top: 8px;">Visible: -- / -- cells</div>
+    </div>
+    
+    <!-- Criticality Filter -->
+    <div style="margin-top: 15px; padding: 10px; background: #fff8e1; border-radius: 4px;">
+        <h5 style="color: #f57f17; margin: 0 0 8px 0; font-size: 13px;">🎯 Filter by Criticality</h5>
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" id="filter-high" checked style="accent-color: #f57f17;"> 
+                <span style="color: #f57f17; font-weight: bold;">HIGH</span> (&gt;0.75)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" id="filter-medium" checked style="accent-color: #fbc02d;"> 
+                <span style="color: #fbc02d; font-weight: bold;">MEDIUM</span> (0.5-0.75)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" id="filter-low" checked style="accent-color: #c0ca33;"> 
+                <span style="color: #9e9d24; font-weight: bold;">LOW</span> (0.25-0.5)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" id="filter-minimal" checked style="accent-color: #fffde7;"> 
+                <span style="color: #827717; font-weight: bold;">MINIMAL</span> (&lt;0.25)
+            </label>
+        </div>
+    </div>
+    
+    <div style="background: #fff3e0; padding: 10px; border-radius: 4px; margin-top: 15px;">
+        <strong style="font-size: 12px; color: #f57f17;">Vulnerability Metrics:</strong>
+        <ul style="font-size: 11px; color: #555; margin: 5px 0 0 15px; padding: 0;">
+            <li>Betweenness Centrality</li>
+            <li>Voltage Levels (kV)</li>
+            <li>Power Output (MW)</li>
+            <li>Grid Connectivity</li>
+        </ul>
+    </div>
+</div>
+
+</div>
+<div id="view-panel-exposure" class="view-panel" style="display:none;">
+<!-- Exposure Mode: Asset risk score visualization controls -->
+<h4>🎯 Exposure Analysis</h4>
+
+<!-- Loading Indicator -->
+<div id="exposure-loading" style="display: none; padding: 12px; background: linear-gradient(135deg, #fce4ec, #f8bbd0); border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #e91e63;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <div class="loading-spinner" style="width: 20px; height: 20px; border: 3px solid #e91e63; border-top: 3px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <span id="exposure-loading-text" style="font-size: 13px; color: #880e4f;">Loading exposure data...</span>
+    </div>
+    <div style="margin-top: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden;">
+        <div id="exposure-loading-progress" style="width: 0%; height: 4px; background: #e91e63; transition: width 0.3s;"></div>
+    </div>
+</div>
+
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+
+<!-- Exposure Type Selector -->
+<div style="margin-bottom: 12px;">
+    <label style="font-size: 12px; color: #555; display: block; margin-bottom: 4px;">📊 Exposure Type</label>
+    <select id="exposure-type-select" style="width: 100%; padding: 8px; font-size: 14px; border-radius: 4px; border: 1px solid #ddd;">
+        <option value="flood">Flood Exposure</option>
+<option value="earthquake">Earthquake MMI</option>
+<option value="wildfire">Wildfire Exposure</option>
+
+    </select>
+</div>
+
+<!-- Asset Type Filter -->
+<div style="margin-bottom: 12px;">
+    <label style="font-size: 12px; color: #555; display: block; margin-bottom: 4px;">🏭 Asset Types</label>
+    <div id="exposure-asset-types" style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 8px; border-radius: 4px; background: white;">
+        <label style="display: block; margin: 3px 0; font-size: 12px; cursor: pointer;"><input type="checkbox" class="exposure-asset-checkbox" value="plant" checked style="margin-right: 6px;"> Plant</label>
+<label style="display: block; margin: 3px 0; font-size: 12px; cursor: pointer;"><input type="checkbox" class="exposure-asset-checkbox" value="substation" checked style="margin-right: 6px;"> Substation</label>
+<label style="display: block; margin: 3px 0; font-size: 12px; cursor: pointer;"><input type="checkbox" class="exposure-asset-checkbox" value="line" checked style="margin-right: 6px;"> Line</label>
+<label style="display: block; margin: 3px 0; font-size: 12px; cursor: pointer;"><input type="checkbox" class="exposure-asset-checkbox" value="tower"  style="margin-right: 6px;"> Tower</label>
+<label style="display: block; margin: 3px 0; font-size: 12px; cursor: pointer;"><input type="checkbox" class="exposure-asset-checkbox" value="generator" checked style="margin-right: 6px;"> Generator</label>
+<label style="display: block; margin: 3px 0; font-size: 12px; cursor: pointer;"><input type="checkbox" class="exposure-asset-checkbox" value="pipeline" checked style="margin-right: 6px;"> Pipeline</label>
+<label style="display: block; margin: 3px 0; font-size: 12px; cursor: pointer;"><input type="checkbox" class="exposure-asset-checkbox" value="fuel" checked style="margin-right: 6px;"> Fuel Station</label>
+<label style="display: block; margin: 3px 0; font-size: 12px; cursor: pointer;"><input type="checkbox" class="exposure-asset-checkbox" value="other" checked style="margin-right: 6px;"> Other</label>
+
+    </div>
+    <div style="margin-top: 6px;">
+        <button id="exposure-select-all" style="font-size: 10px; padding: 4px 8px; cursor: pointer; margin-right: 4px;">Select All</button>
+        <button id="exposure-select-none" style="font-size: 10px; padding: 4px 8px; cursor: pointer;">Clear All</button>
+    </div>
+</div>
+
+<p style="font-size: 11px; color: #666; margin-top: 8px;">
+    🎯 Asset exposure scores calculated by geographic overlap with hazard grids
+</p>
+
+<!-- Selected States Info -->
+
+    </div>
+</div>
+{% else %}
+<div style="margin-top: 10px; padding: 8px; background: #fff3e0; border-radius: 4px; border-left: 3px solid #ff9800;">
+    <strong style="font-size: 11px; color: #e65100;">⚠️ Please select at least one state</strong>
+</div>
+{% endif %}
+
+<!-- Statistics Summary -->
+<div id="exposure-summary" style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #fce4ec, #f8bbd0); border-radius: 8px; border-left: 4px solid #e91e63;">
+    <h5 style="color: #880e4f; margin: 0 0 10px 0;">📊 Summary Statistics</h5>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;">
+        <div style="background: #fff; padding: 8px; border-radius: 4px; text-align: center;">
+            <div style="color: #666; font-size: 10px;">Total Assets</div>
+            <div id="exposure-total-assets" style="font-size: 16px; font-weight: bold; color: #c2185b;">--</div>
+        </div>
+        <div style="background: #fff; padding: 8px; border-radius: 4px; text-align: center;">
+            <div style="color: #666; font-size: 10px;">Displayed</div>
+            <div id="exposure-displayed-assets" style="font-size: 16px; font-weight: bold; color: #c2185b;">--</div>
+        </div>
+        <div style="background: #fff; padding: 8px; border-radius: 4px; text-align: center;">
+            <div style="color: #666; font-size: 10px;">With Exposure</div>
+            <div id="exposure-assets-with-score" style="font-size: 16px; font-weight: bold; color: #c2185b;">--</div>
+        </div>
+        <div style="background: #fff; padding: 8px; border-radius: 4px; text-align: center;">
+            <div style="color: #666; font-size: 10px;">Avg Score</div>
+            <div id="exposure-avg-score" style="font-size: 16px; font-weight: bold; color: #c2185b;">--</div>
+        </div>
+    </div>
+</div>
+
+<!-- Score Range Filter -->
+<div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 8px; border-left: 4px solid #ff9800;">
+    <h5 style="color: #e65100; margin: 0 0 10px 0;">🔍 Filter by Score</h5>
+    
+    <div style="margin-bottom: 8px;">
+        <label style="font-size: 11px; color: #555;">Min Score: <span id="exposure-min-score-display">0</span></label>
+        <input type="range" id="exposure-min-score" min="0" max="1" step="0.01" value="0" 
+               style="width: 100%; margin-top: 4px;">
+    </div>
+    <div>
+        <label style="font-size: 11px; color: #555;">Max Score: <span id="exposure-max-score-display">1</span></label>
+        <input type="range" id="exposure-max-score" min="0" max="1" step="0.01" value="1" 
+               style="width: 100%; margin-top: 4px;">
+    </div>
+</div>
+
+<!-- Level of Detail (LOD) Slider -->
+<div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 8px; border-left: 4px solid #4caf50;">
+    <h5 style="color: #2e7d32; margin: 0 0 10px 0;">📐 Level of Detail</h5>
+
+    <!-- Zoom-based auto LOD toggle -->
+    <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+        <label style="font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            <input type="checkbox" id="exposure-zoom-lod-toggle" checked style="margin: 0;">
+            <span>Auto LOD (zoom-based)</span>
+        </label>
+        <span id="exposure-lod-effective" style="font-size: 12px; font-weight: bold; color: #2e7d32; margin-left: auto;">100%</span>
+    </div>
+
+    <div style="margin-bottom: 8px;">
+        <label style="font-size: 11px; color: #555;">Max LOD: <span id="exposure-lod-display">100</span>%</label>
+        <input type="range" id="exposure-lod-slider" min="1" max="100" step="1" value="100"
+               style="width: 100%; margin-top: 4px;">
+    </div>
+    <p style="font-size: 10px; color: #666; margin-top: 4px;">
+        💡 Auto LOD: zoom in to see more assets, zoom out to show only top-scoring. Slider sets max cap.
+    </p>
+</div>
+
+<!-- Top Assets by Score -->
+<div id="exposure-top-assets" style="margin-top: 15px; padding: 12px; background: #fff; border-radius: 8px; border: 1px solid #f8bbd0;">
+    <h5 style="color: #880e4f; margin: 0 0 10px 0;">🏆 Top 10 Assets (Highest Exposure)</h5>
+    <div id="exposure-top-list" style="font-size: 11px; max-height: 200px; overflow-y: auto;">
+        <p style="color: #999;">Loading...</p>
+    </div>
+</div>
+
+</div>
+<div id="view-panel-energy_detail" class="view-panel" style="display:none;">
+<!-- Energy Detail Mode: Energy Sector asset visualization controls -->
+<h4>⚡ Energy Sector Detail</h4>
+
+<!-- Loading Indicator -->
+<div id="energy-detail-loading" style="display: none; padding: 12px; background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #ff9800;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <div class="loading-spinner" style="width: 20px; height: 20px; border: 3px solid #ff9800; border-top: 3px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <span id="energy-detail-loading-text" style="font-size: 13px; color: #e65100;">Loading energy data...</span>
+    </div>
+    <div style="margin-top: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden;">
+        <div id="energy-detail-loading-progress" style="width: 0%; height: 4px; background: #ff9800; transition: width 0.3s;"></div>
+    </div>
+</div>
+
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+
+<!-- Asset Type Filter -->
+<div style="margin-bottom: 12px;">
+    <label style="font-size: 12px; color: #555; display: block; margin-bottom: 4px;">🏭 Asset Types</label>
+    <div id="energy-detail-asset-types" style="max-height: 180px; overflow-y: auto; border: 1px solid #ddd; padding: 8px; border-radius: 4px; background: white;">
+        <label style="display: flex; align-items: center; margin: 4px 0; font-size: 12px; cursor: pointer;"><input type="checkbox" class="energy-detail-asset-checkbox" value="plant" data-color="#FF5722" checked style="margin-right: 8px;"><span style="display: inline-block; width: 12px; height: 12px; background: #FF5722; border-radius: 2px; margin-right: 6px;"></span> Plant</label>
+<label style="display: flex; align-items: center; margin: 4px 0; font-size: 12px; cursor: pointer;"><input type="checkbox" class="energy-detail-asset-checkbox" value="substation" data-color="#9C27B0" checked style="margin-right: 8px;"><span style="display: inline-block; width: 12px; height: 12px; background: #9C27B0; border-radius: 2px; margin-right: 6px;"></span> Substation</label>
+<label style="display: flex; align-items: center; margin: 4px 0; font-size: 12px; cursor: pointer;"><input type="checkbox" class="energy-detail-asset-checkbox" value="line" data-color="#2196F3" checked style="margin-right: 8px;"><span style="display: inline-block; width: 12px; height: 12px; background: #2196F3; border-radius: 2px; margin-right: 6px;"></span> Line</label>
+<label style="display: flex; align-items: center; margin: 4px 0; font-size: 12px; cursor: pointer;"><input type="checkbox" class="energy-detail-asset-checkbox" value="tower" data-color="#607D8B" checked style="margin-right: 8px;"><span style="display: inline-block; width: 12px; height: 12px; background: #607D8B; border-radius: 2px; margin-right: 6px;"></span> Tower</label>
+<label style="display: flex; align-items: center; margin: 4px 0; font-size: 12px; cursor: pointer;"><input type="checkbox" class="energy-detail-asset-checkbox" value="generator" data-color="#4CAF50" checked style="margin-right: 8px;"><span style="display: inline-block; width: 12px; height: 12px; background: #4CAF50; border-radius: 2px; margin-right: 6px;"></span> Generator</label>
+<label style="display: flex; align-items: center; margin: 4px 0; font-size: 12px; cursor: pointer;"><input type="checkbox" class="energy-detail-asset-checkbox" value="pipeline" data-color="#795548" checked style="margin-right: 8px;"><span style="display: inline-block; width: 12px; height: 12px; background: #795548; border-radius: 2px; margin-right: 6px;"></span> Pipeline</label>
+<label style="display: flex; align-items: center; margin: 4px 0; font-size: 12px; cursor: pointer;"><input type="checkbox" class="energy-detail-asset-checkbox" value="fuel" data-color="#E91E63" checked style="margin-right: 8px;"><span style="display: inline-block; width: 12px; height: 12px; background: #E91E63; border-radius: 2px; margin-right: 6px;"></span> Fuel Station</label>
+<label style="display: flex; align-items: center; margin: 4px 0; font-size: 12px; cursor: pointer;"><input type="checkbox" class="energy-detail-asset-checkbox" value="other" data-color="#9E9E9E" checked style="margin-right: 8px;"><span style="display: inline-block; width: 12px; height: 12px; background: #9E9E9E; border-radius: 2px; margin-right: 6px;"></span> Other</label>
+
+    </div>
+    <div style="margin-top: 6px;">
+        <button id="energy-detail-select-all" style="font-size: 10px; padding: 4px 8px; cursor: pointer; margin-right: 4px;">Select All</button>
+        <button id="energy-detail-select-none" style="font-size: 10px; padding: 4px 8px; cursor: pointer;">Clear All</button>
+    </div>
+</div>
+
+<!-- LOD Slider -->
+<div style="margin-bottom: 12px; padding: 10px; background: #f5f5f5; border-radius: 6px;">
+    <label style="font-size: 12px; color: #555; display: block; margin-bottom: 6px;">
+        📊 Level of Detail (LOD): <span id="energy-detail-lod-display" style="font-weight: bold; color: #ff9800;">%</span>
+    </label>
+
+    <!-- Zoom-based auto LOD toggle -->
+    <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+        <label style="font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            <input type="checkbox" id="energy-detail-zoom-lod-toggle" checked style="margin: 0;">
+            <span>Auto LOD (zoom-based)</span>
+        </label>
+        <span id="energy-detail-lod-effective" style="font-size: 12px; font-weight: bold; color: #ff9800; margin-left: auto;">100%</span>
+    </div>
+
+    <input type="range" id="energy-detail-lod-slider" min="1" max="100" value=""
+           style="width: 100%; cursor: pointer;">
+    <div style="display: flex; justify-content: space-between; font-size: 10px; color: #999;">
+        <span>1% (fastest)</span>
+        <span>100% (all)</span>
+    </div>
+    <p style="font-size: 10px; color: #666; margin-top: 4px;">
+        ⚡ Auto LOD: zoom in to see more assets, zoom out to show only important ones. Slider sets max cap.
+    </p>
+</div>
+
+<p style="font-size: 11px; color: #666; margin-top: 8px;">
+    ⚡ Energy assets loaded from Energy_Sector.geojson
+</p>
+
+<!-- Selected States Info -->
+
+    </div>
+</div>
+{% else %}
+<div style="margin-top: 10px; padding: 8px; background: #ffebee; border-radius: 4px; border-left: 3px solid #f44336;">
+    <strong style="font-size: 11px; color: #c62828;">⚠️ Please select at least one state</strong>
+</div>
+{% endif %}
+
+<!-- Statistics Summary -->
+<div id="energy-detail-summary" style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 8px; border-left: 4px solid #ff9800;">
+    <h5 style="color: #e65100; margin: 0 0 10px 0;">📊 Asset Statistics</h5>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;">
+        <div style="background: #fff; padding: 8px; border-radius: 4px; text-align: center;">
+            <div style="color: #666; font-size: 10px;">Total Assets</div>
+            <div id="energy-detail-total-assets" style="font-size: 16px; font-weight: bold; color: #ff9800;">--</div>
+        </div>
+        <div style="background: #fff; padding: 8px; border-radius: 4px; text-align: center;">
+            <div style="color: #666; font-size: 10px;">Displayed</div>
+            <div id="energy-detail-displayed-assets" style="font-size: 16px; font-weight: bold; color: #ff9800;">--</div>
+        </div>
+    </div>
+    
+    <!-- Asset type breakdown -->
+    <div style="margin-top: 10px; padding: 8px; background: #fff; border-radius: 4px;">
+        <div style="font-size: 11px; color: #666; margin-bottom: 5px;">Asset Breakdown:</div>
+        <div id="energy-detail-breakdown" style="font-size: 11px;">
+            <!-- Will be populated by JS -->
+        </div>
+    </div>
+</div>
+
+</div>
+<div id="view-panel-social_vulnerability" class="view-panel" style="display:none;">
+<!-- Social Vulnerability Panel -->
+<div class="filter-section">
+    <h4 style="color: #6a1b9a;">🏘️ Social Vulnerability (CDC SVI)</h4>
+    <p style="font-size: 12px; color: #666; margin: 10px 0;">
+        CDC Social Vulnerability Index by county — United States (2022)
+    </p>
+    
+    <!-- Metric Selection -->
+    <div style="margin-top: 15px; padding: 10px; background: #f3e5f5; border-radius: 4px;">
+        <h5 style="color: #6a1b9a; margin: 0 0 8px 0; font-size: 13px;">📊 SVI Theme</h5>
+        <select id="svi-map-metric" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ce93d8; font-size: 12px;">
+            {% for m in svi_metrics %}
+            <option value="" ></option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <!-- Vulnerability Level Filter -->
+    <div style="margin-top: 15px; padding: 10px; background: #f3e5f5; border-radius: 4px;">
+        <h5 style="color: #6a1b9a; margin: 0 0 8px 0; font-size: 13px;">🎯 Filter by Level</h5>
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" id="svi-filter-veryhigh" checked style="accent-color: #b71c1c;"> 
+                <span style="color: #b71c1c; font-weight: bold;">Very High</span> (0.75 – 1.0)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" id="svi-filter-high" checked style="accent-color: #e65100;"> 
+                <span style="color: #e65100; font-weight: bold;">High</span> (0.50 – 0.75)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" id="svi-filter-moderate" checked style="accent-color: #f9a825;"> 
+                <span style="color: #f9a825; font-weight: bold;">Moderate</span> (0.25 – 0.50)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" id="svi-filter-low" checked style="accent-color: #1b5e20;"> 
+                <span style="color: #1b5e20; font-weight: bold;">Low</span> (0.00 – 0.25)
+            </label>
+        </div>
+    </div>
+    
+    <!-- Threshold Slider -->
+    <div style="margin-top: 15px; padding: 10px; background: #f3e5f5; border-radius: 4px;">
+        <h5 style="color: #6a1b9a; margin: 0 0 8px 0; font-size: 13px;">📏 Minimum SVI Threshold</h5>
+        <input type="range" id="svi-threshold-slider" min="0" max="100" value="0" 
+               style="width: 100%; accent-color: #6a1b9a;">
+        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #888;">
+            <span>0%</span>
+            <span id="svi-threshold-value">0%</span>
+            <span>100%</span>
+        </div>
+    </div>
+    
+    <!-- Stats -->
+    <div class="lod-stats" id="svi-stats" style="font-size: 12px; color: #555; margin-top: 12px; padding: 8px; background: #fce4ec; border-radius: 4px;">
+        Loading SVI data...
+    </div>
+    
+    <div style="background: #f3e5f5; padding: 10px; border-radius: 4px; margin-top: 15px;">
+        <strong style="font-size: 12px; color: #6a1b9a;">SVI Themes:</strong>
+        <ul style="font-size: 11px; color: #555; margin: 5px 0 0 15px; padding: 0;">
+            <li><strong>Overall:</strong> Composite of all themes</li>
+            <li><strong>Theme 1:</strong> Socioeconomic Status</li>
+            <li><strong>Theme 2:</strong> Household Characteristics</li>
+            <li><strong>Theme 3:</strong> Racial & Ethnic Minority</li>
+            <li><strong>Theme 4:</strong> Housing Type & Transport</li>
+        </ul>
+    </div>
+</div>
+
+</div>
+
+        </div>
+
+        <div id="map"></div>
+
+        <!-- Legends (shown/hidden by JS) -->
+        <div id="heatmap-legend" style="display:none;">
+            <strong id="legend-title">Score Intensity</strong>
+            <div id="legend-content">
+                <div class="legend-gradient"></div>
+                <div class="legend-labels"><span>Low (0)</span><span>High (1)</span></div>
+            </div>
+        </div>
+
+        <div id="coords">
+            <span id="coords-text">Lat: --, Lng: --</span>
+            <div class="lod-compact" id="lod-compact-heatmap" style="display:none;">
+                <span class="lod-compact-label">LOD:</span>
+                <div class="lod-compact-bar"><div class="lod-compact-fill" id="heatmap-lod-bar" style="width:100%;"></div></div>
+                <span class="lod-compact-text" id="heatmap-lod-bar-text">100%</span>
+            </div>
+            <div class="lod-compact" id="lod-compact-hazard" style="display:none;">
+                <span class="lod-compact-label">LOD:</span>
+                <div class="lod-compact-bar"><div class="lod-compact-fill" id="hazard-lod-bar" style="width:100%;"></div></div>
+                <span class="lod-compact-text" id="hazard-lod-bar-text">100%</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- Config: data source URL -->
+    <script src="./static/js/site-config.js"></script>
+
+    <!-- App JS (copied from Flask app) -->
+    <script src="./static/js/map-utils.js"></script>
+    <script src="./static/js/lod-systems.js"></script>
+    <script src="./static/js/map-controls.js"></script>
+
+    <script>
+        // ===== Parse URL params (replaces Flask server-side config) =====
+        var params = new URLSearchParams(window.location.search);
+
+        var MAP_CONFIG = {
+            viewType:        params.get('view_type') || 'heatmap',
+            divisionType:    'state',
+            mode:            params.get('mode') || 'select',
+            geojsonBasePath: 'states',
+            selectedRegions: params.getAll('region'),
+            selectedSectors: params.getAll('sector'),
+            heatmapSector:   params.get('heatmap_sector') || 'combined',
+            hazardType:      params.get('hazard_type') || 'flood',
+            impactType:      params.get('impact_type') || 'poweroutage_2022',
+            impactMetric:    params.get('impact_metric') || 'total_customers',
+            energyVulnerabilityType: params.get('energy_vulnerability_type') || 'energy_vulnerability',
+            exposureType:    params.get('exposure_type') || 'flood',
+            exposureAssets:  params.getAll('exposure_asset').length > 0
+                             ? params.getAll('exposure_asset')
+                             : ['plant','substation','line','generator','pipeline','fuel','other'],
+            energyDetailAssets: params.getAll('energy_detail_asset').length > 0
+                             ? params.getAll('energy_detail_asset')
+                             : ['plant','substation','line','generator','pipeline','fuel','other'],
+            energyDetailLod: params.get('energy_detail_lod') || '100',
+            showBackground:  params.get('show_background') !== 'false',
+            useGeoTiff:      params.get('use_geotiff') === 'true',
+            sviMetric:       params.get('svi_metric') || 'RPL_THEMES'
+        };
+
+        // If mode=entire, select all states
+        if (MAP_CONFIG.mode === 'entire') {
+            MAP_CONFIG.selectedRegions = ["alabama", "alaska", "arizona", "arkansas", "california", "colorado", "connecticut", "delaware", "florida", "georgia", "hawaii", "idaho", "illinois", "indiana", "iowa", "kansas", "kentucky", "louisiana", "maine", "maryland", "massachusetts", "michigan", "minnesota", "mississippi", "missouri", "montana", "nebraska", "nevada", "new_hampshire", "new_jersey", "new_mexico", "new_york", "north_carolina", "north_dakota", "ohio", "oklahoma", "oregon", "pennsylvania", "rhode_island", "south_carolina", "south_dakota", "tennessee", "texas", "utah", "vermont", "virginia", "washington", "west_virginia", "wisconsin", "wyoming"];
+        }
+
+        // Wildfire config
+        var WILDFIRE_STATES = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New_Jersey", "New_Mexico", "New_York", "North_Carolina", "North_Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Puerto_Rico", "South_Carolina", "South_Dakota", "Tennessee", "Texas", "Utah", "Virginia", "Washington", "West_Virginia", "Wisconsin", "Wyoming"];
+        var WILDFIRE_YEAR_RANGE = { min: 1984, max: 2024 };
+
+        // Update UI to match current view
+        document.getElementById('display-mode').textContent = MAP_CONFIG.mode === 'entire' ? 'Entire US' : 'Select';
+
+        // Show correct panel
+        document.querySelectorAll('.view-panel').forEach(function(el) { el.style.display = 'none'; });
+        var activePanel = document.getElementById('view-panel-' + MAP_CONFIG.viewType);
+        if (activePanel) activePanel.style.display = 'block';
+
+        // Show correct LOD compact bar
+        if (MAP_CONFIG.viewType === 'heatmap') document.getElementById('lod-compact-heatmap').style.display = '';
+        if (MAP_CONFIG.viewType === 'hazard') document.getElementById('lod-compact-hazard').style.display = '';
+
+        // Highlight active view button
+        document.querySelectorAll('.view-toggle button').forEach(function(btn) { btn.classList.remove('active'); });
+        var activeBtn = document.getElementById('btn-' + MAP_CONFIG.viewType.replace('_', '-'));
+        if (activeBtn) activeBtn.classList.add('active');
+
+        // Show legend
+        var legend = document.getElementById('heatmap-legend');
+        if (legend && ['heatmap','hazard','impact','energy_vulnerability','exposure','energy_detail','social_vulnerability'].includes(MAP_CONFIG.viewType)) {
+            legend.style.display = '';
+        }
+
+        // ===== Sector config =====
+        var sectorColors = {
+            'chemical_sector': '#00ff00', 'commercial_facilities_sector': '#ff0000',
+            'communications_sector': '#0000ff', 'critical_manufacturing_sector': '#ffff00',
+            'dams_sector': '#00ffff', 'defense_industrial_base_sector': '#ff00ff',
+            'emergency_services_sector': '#ff8000', 'energy_sector': '#8000ff',
+            'financial_services_sector': '#0080ff', 'food_and_agriculture_sector': '#80ff00',
+            'government_facilities_sector': '#ff0080', 'healthcare_and_public_health_sector': '#00ff80',
+            'information_technology_sector': '#8080ff', 'nuclear_reactors,_materials,_and_waste_sector': '#ff8080',
+            'transportation_systems_sector': '#80ff80', 'water_and_wastewater_systems_sector': '#ffff80'
+        };
+        var sectorIcons = {};
+        Object.keys(sectorColors).forEach(function(k) {
+            var shortName = k.replace('_sector','').split('_')[0];
+            sectorIcons[k] = './static/CI_icon/' + shortName + '.png';
+        });
+
+        // ===== Initialize Map =====
+        var map = L.map('map').setView([37.8, -96], 4);
+
+        var LOD = createDetailLOD(map);
+        var HeatmapLOD = createHeatmapLOD(map);
+        var HazardLOD = createHazardLOD(map, MAP_CONFIG.hazardType || 'flood');
+        LOD.init();
+
+        // ===== Load base boundary =====
+        var geojsonUrl = window.DATA_BASE_URL + '/us-states.geojson';
+        fetch(geojsonUrl)
+            .then(function(r) { if (!r.ok) throw new Error('Failed'); return r.json(); })
+            .then(function(geojsonData) {
+                var filteredData = geojsonData;
+                if (MAP_CONFIG.mode === 'select' && MAP_CONFIG.selectedRegions.length > 0) {
+                    filteredData = {
+                        type: "FeatureCollection",
+                        features: geojsonData.features.filter(function(f) {
+                            return MAP_CONFIG.selectedRegions.some(function(region) {
+                                return f.properties.shapeName === region ||
+                                       f.properties.name === region ||
+                                       (f.properties.shapeName && f.properties.shapeName.toLowerCase().replace(/\s+/g, '_') === region.toLowerCase()) ||
+                                       (f.properties.name && f.properties.name.toLowerCase().replace(/\s+/g, '_') === region.toLowerCase());
+                            });
+                        })
+                    };
+                    if (filteredData.features.length === 0) filteredData = geojsonData;
+                }
+
+                var geoLayer = L.geoJSON(filteredData, {
+                    style: { color: "#888", weight: 1, opacity: 0.8, dashArray: "5, 5", fillColor: "#f0f8ff", fillOpacity: 0.1 },
+                    onEachFeature: function(feature, layer) {
+                        layer.bindPopup(feature.properties.shapeName || feature.properties.name || 'Border');
+                    }
+                }).addTo(map);
+                map.fitBounds(geoLayer.getBounds());
+
+                // ===== Load view-specific data =====
+                
+// ===== heatmap loader =====
+// ========== Heatmap View Data Loader ==========
+// GeoTIFF rendering function
+var useGeoTiff = ;
+var divisionType = "";
+var heatmapSector = "";
+var isEnergyCountyScale = heatmapSector === 'energy_county_scale';
+
+// Get initial threshold value from slider (apply immediately during render)
+function getInitialThreshold() {
+    var slider = document.getElementById('heatmap-threshold-slider');
+    return slider ? parseInt(slider.value) / 100 : 0;
+}
+
+// Render Energy Sector County Scale layer (different format)
+function renderEnergyCountyLayer(countyData, regionName) {
+    var threshold = getInitialThreshold();
+    var allFeatures = countyData.features || [];
+    
+    // Filter features by threshold using normalized_score (0-100 scale)
+    // threshold is 0-1, normalized_score is 0-100, so multiply threshold by 100
+    var thresholdPercent = threshold * 100;
+    var filteredFeatures = allFeatures.filter(function(feature) {
+        var score = feature.properties.normalized_score || 0;
+        return score >= thresholdPercent;
+    });
+    
+    console.log('Rendering Energy County for ' + regionName + ': ' + filteredFeatures.length + '/' + allFeatures.length + ' counties (threshold: ' + thresholdPercent.toFixed(0) + '%)');
+    
+    var filteredData = {
+        type: 'FeatureCollection',
+        features: filteredFeatures
+    };
+    
+    var countyLayer = L.geoJSON(filteredData, {
+        style: function(feature) {
+            // Use normalized_score for coloring (0-100 scale, convert to 0-1 for getHeatmapColor)
+            var score = (feature.properties.normalized_score || 0) / 100;
+            return {
+                color: '#333',
+                weight: 1,
+                opacity: 0.5,
+                fillColor: getHeatmapColor(score),
+                fillOpacity: 0.7
+            };
+        },
+        onEachFeature: function(feature, layer) {
+            var props = feature.properties;
+            var normalizedScore = props.normalized_score || 0;
+            
+            // Build popup with original values
+            var popup = '<strong>⚡ ' + (props.county_name || 'Unknown') + ' County</strong><br>';
+            popup += '<strong>State: ' + (props.state_name || regionName) + '</strong><br>';
+            popup += '<hr style="margin: 5px 0;">';
+            popup += '<b>Energy Infrastructure:</b><br>';
+            popup += '• Normalized Score: <b>' + normalizedScore.toFixed(1) + '%</b><br>';
+            popup += '• Total Score: ' + (props.total_score || 0).toFixed(2) + '<br>';
+            popup += '• Energy Density: ' + (props.energy_density || 0).toFixed(4) + '<br>';
+            popup += '• Grid Cells: ' + (props.grid_count || 0);
+            
+            layer.bindPopup(popup);
+        }
+    }).addTo(map);
+    
+    // Register features for LOD system (use normalized_score as the score property)
+    // LOD system expects 0-1 scale, normalized_score is 0-100, so divide by 100
+    var featuresForLOD = allFeatures.map(function(f) {
+        // Map normalized_score to score_normalized for LOD system compatibility
+        return {
+            ...f,
+            properties: {
+                ...f.properties,
+                score_normalized: (f.properties.normalized_score || 0) / 100
+            }
+        };
+    });
+    HeatmapLOD.registerLayer(countyLayer, featuresForLOD);
+    return countyLayer;
+}
+
+function renderHeatmapLayer(heatmapData, regionName) {
+    // Get current threshold and filter features before rendering
+    var threshold = getInitialThreshold();
+    var allFeatures = heatmapData.features || [];
+    
+    // Filter features by threshold
+    var filteredFeatures = allFeatures.filter(function(feature) {
+        var score = feature.properties.total_normalized || feature.properties.score_normalized || 0;
+        return score >= threshold;
+    });
+    
+    console.log('Rendering ' + regionName + ': ' + filteredFeatures.length + '/' + allFeatures.length + ' cells (threshold: ' + (threshold * 100) + '%)');
+    
+    // Create filtered data for rendering
+    var filteredData = {
+        type: 'FeatureCollection',
+        features: filteredFeatures
+    };
+    
+    var heatmapLayer = L.geoJSON(filteredData, {
+        style: function(feature) {
+            var score = feature.properties.total_normalized || feature.properties.score_normalized || 0;
+            return {
+                color: 'transparent',
+                weight: 0,
+                opacity: 0,
+                fillColor: getHeatmapColor(score),
+                fillOpacity: 0.7
+            };
+        },
+        onEachFeature: function(feature, layer) {
+            var props = feature.properties;
+            var score = props.total_normalized || props.score_normalized || 0;
+            var rawScore = props.total_all_sectors || props.score || 0;
+            
+            var centroidLat = 0, centroidLng = 0;
+            try {
+                if (feature.geometry.type === 'Polygon') {
+                    var coords = feature.geometry.coordinates[0];
+                    var sumLat = 0, sumLng = 0;
+                    for (var i = 0; i < coords.length; i++) {
+                        sumLng += coords[i][0];
+                        sumLat += coords[i][1];
+                    }
+                    centroidLng = sumLng / coords.length;
+                    centroidLat = sumLat / coords.length;
+                } else if (feature.geometry.type === 'MultiPolygon') {
+                    var coords = feature.geometry.coordinates[0][0];
+                    var sumLat = 0, sumLng = 0;
+                    for (var i = 0; i < coords.length; i++) {
+                        sumLng += coords[i][0];
+                        sumLat += coords[i][1];
+                    }
+                    centroidLng = sumLng / coords.length;
+                    centroidLat = sumLat / coords.length;
+                }
+            } catch (e) {
+                console.error('Error calculating centroid:', e);
+            }
+            
+            var popup = '<strong>Grid ID: ' + props.grid_id + '</strong><br>';
+            popup += '<strong>Region: ' + regionName + '</strong><br>';
+            popup += 'Lat: ' + centroidLat.toFixed(6) + ', Lng: ' + centroidLng.toFixed(6) + '<br>';
+            popup += 'Score: ' + rawScore.toFixed(4) + '<br>';
+            popup += 'Normalized: ' + (score * 100).toFixed(1) + '%';
+            
+            for (var key in props) {
+                if (key.startsWith('score_') && key !== 'score_normalized') {
+                    var sectorName = key.replace('score_', '').replace(/_/g, ' ');
+                    popup += '<br>' + sectorName + ': ' + props[key].toFixed(4);
+                }
+            }
+            layer.bindPopup(popup);
+        }
+    }).addTo(map);
+    
+    // Register ALL features (not filtered) so LOD system can re-filter later
+    HeatmapLOD.registerLayer(heatmapLayer, allFeatures);
+    return heatmapLayer;
+}
+
+function renderGeoTiffLayer(tiffUrl, regionName) {
+    console.log('Loading GeoTIFF:', tiffUrl);
+    
+    fetch(tiffUrl)
+        .then(response => {
+            if (!response.ok) throw new Error('GeoTIFF not found');
+            console.log('Downloading GeoTIFF...');
+            return response.arrayBuffer();
+        })
+        .then(arrayBuffer => {
+            console.log('GeoTIFF downloaded, parsing... Size:', (arrayBuffer.byteLength / 1024 / 1024).toFixed(1), 'MB');
+            parseGeoraster(arrayBuffer).then(georaster => {
+                console.log('GeoTIFF parsed for', regionName, 'Resolution:', georaster.width, 'x', georaster.height);
+                
+                var loadingDiv = document.getElementById('loading-indicator');
+                if (loadingDiv) loadingDiv.remove();
+                
+                var colors = ['#fff5f0', '#fee0d2', '#fcbba1', '#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d', '#a50f15', '#67000d'];
+                
+                var layer = new GeoRasterLayer({
+                    georaster: georaster,
+                    opacity: 0.7,
+                    pixelValuesToColorFn: function(values) {
+                        var value = values[0];
+                        if (value === null || value === undefined || value === -9999 || value < 0) {
+                            return null;
+                        }
+                        value = Math.max(0, Math.min(1, value));
+                        var index = Math.floor(value * (colors.length - 1));
+                        index = Math.max(0, Math.min(colors.length - 1, index));
+                        return colors[index];
+                    },
+                    resolution: 256
+                });
+                
+                layer.addTo(map);
+                console.log('GeoTIFF layer added for', regionName);
+            }).catch(parseError => {
+                console.error('Error parsing GeoTIFF:', parseError);
+                var loadingDiv = document.getElementById('loading-indicator');
+                if (loadingDiv) loadingDiv.remove();
+                loadGeoJSONHeatmap(regionName);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading GeoTIFF for', regionName, ':', error);
+            console.log('Falling back to GeoJSON...');
+            var loadingDiv = document.getElementById('loading-indicator');
+            if (loadingDiv) loadingDiv.remove();
+            loadGeoJSONHeatmap(regionName);
+        });
+}
+
+// Global loading state
+var heatmapLoadTotal = ;
+var heatmapLoadCount = 0;
+
+function loadIndividualStateHeatmaps() {
+    heatmapLoadCount = 0; // Reset counter
+    showGlobalLoading('Loading heatmap data...', heatmapLoadTotal);
+    
+    
+    (function() {
+        var regionName = "";
+        var heatmapSectorLocal = "";
+        var regionFolders = findRegionFolder(regionName);
+        
+        updateGlobalLoading('Loading heatmap for ' + regionName + '...', false);
+        
+        // Special case: Energy County Scale - load from counties_by_state_energy
+        if (heatmapSectorLocal === 'energy_county_scale') {
+            loadEnergyCountyScale(regionName);
+            return;
+        }
+        
+        if (useGeoTiff && heatmapSectorLocal === 'combined') {
+            var gridSizeVariants = ['5.0km', '5km'];
+            var tiffUrls = [];
+            regionFolders.forEach(folder => {
+                gridSizeVariants.forEach(gridSize => {
+                    tiffUrls.push(window.DATA_BASE_URL + '/' + MAP_CONFIG.geojsonBasePath + '/' + folder + '/heatmap/combined_heatmap_' + gridSize + '.tiff');
+                });
+            });
+            
+            function tryLoadTiffFallback(urls) {
+                if (urls.length === 0) {
+                    console.log('No state TIFF found for', regionName, ', falling back to GeoJSON');
+                    loadGeoJSONHeatmap(regionName);
+                    return;
+                }
+                var url = urls.shift();
+                fetch(url, { method: 'HEAD' })
+                    .then(response => {
+                        if (response.ok) {
+                            renderGeoTiffLayer(url, regionName);
+                        } else {
+                            tryLoadTiffFallback(urls);
+                        }
+                    })
+                    .catch(() => tryLoadTiffFallback(urls));
+            }
+            tryLoadTiffFallback(tiffUrls);
+        } else {
+            loadGeoJSONHeatmap(regionName);
+        }
+    })();
+    
+}
+
+// Load Energy Sector County Scale data
+function loadEnergyCountyScale(regionName) {
+    // Convert region name to match filename (e.g., "arkansas" or "new_york")
+    var countyUrl = window.DATA_BASE_URL + '/counties_by_state_energy/' + regionName.toLowerCase().replace(/ /g, '_') + '.geojson';
+    
+    console.log('=== Loading Energy County Scale ===');
+    console.log('Region:', regionName);
+    console.log('URL:', countyUrl);
+    
+    fetch(countyUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('County data not found: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(countyData => {
+            console.log('✓ Loaded county data for', regionName, '- Counties:', countyData.features ? countyData.features.length : 0);
+            renderEnergyCountyLayer(countyData, regionName);
+            heatmapLoadCount++;
+            updateGlobalLoading('Loaded ' + regionName + ' (' + heatmapLoadCount + '/' + heatmapLoadTotal + ')', false);
+            if (heatmapLoadCount >= heatmapLoadTotal) {
+                hideGlobalLoading(500);
+                setTimeout(applyInitialThreshold, 100);
+            }
+        })
+        .catch(error => {
+            console.error('✗ Error loading county data for', regionName, ':', error.message);
+            heatmapLoadCount++;
+            if (heatmapLoadCount >= heatmapLoadTotal) {
+                hideGlobalLoading(500);
+                setTimeout(applyInitialThreshold, 100);
+            }
+        });
+}
+
+function loadGeoJSONHeatmap(regionName) {
+    var heatmapSectorLocal = "";
+    var regionFolders = findRegionFolder(regionName);
+    
+    console.log('=== Loading GeoJSON Heatmap ===');
+    console.log('Region:', regionName);
+    console.log('Sector:', heatmapSectorLocal);
+    console.log('Region folders:', regionFolders);
+    console.log('GeoJSON base path:', MAP_CONFIG.geojsonBasePath);
+    
+    // Use first folder only - no _0 suffix variants
+    var folder = regionFolders[0];
+    var heatmapUrl;
+    var gridUrl = window.DATA_BASE_URL + '/' + MAP_CONFIG.geojsonBasePath + '/' + folder + '/heatmap/grid_5.0km.geojson';
+    
+    if (heatmapSectorLocal === 'combined') {
+        heatmapUrl = window.DATA_BASE_URL + '/' + MAP_CONFIG.geojsonBasePath + '/' + folder + '/heatmap/combined_heatmap_5.0km.geojson';
+    } else {
+        heatmapUrl = window.DATA_BASE_URL + '/' + MAP_CONFIG.geojsonBasePath + '/' + folder + '/heatmap/sectors/' + heatmapSectorLocal + '.geojson';
+    }
+    
+    console.log('Loading heatmap from:', heatmapUrl);
+    
+    // Flag to track if we've already loaded successfully
+    var loaded = false;
+    
+    // Try heatmap first, fallback to grid ONLY if 404
+    fetch(heatmapUrl)
+        .then(response => {
+            console.log('Heatmap response for', regionName, '- status:', response.status, 'ok:', response.ok);
+            if (response.status === 404) {
+                // File not found - will fallback to grid
+                throw new Error('NOT_FOUND');
+            }
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+            return response.json();
+        })
+        .then(heatmapData => {
+            if (loaded) return; // Already loaded, skip
+            loaded = true;
+            
+            // SUCCESS - render and stop
+            console.log('✓ Loaded heatmap from:', heatmapUrl);
+            console.log('Features count:', heatmapData.features ? heatmapData.features.length : 0);
+            renderHeatmapLayer(heatmapData, regionName);
+            heatmapLoadCount++;
+            updateGlobalLoading('Loaded ' + regionName + ' (' + heatmapLoadCount + '/' + heatmapLoadTotal + ')', false);
+            if (heatmapLoadCount >= heatmapLoadTotal) {
+                hideGlobalLoading(500);
+                setTimeout(applyInitialThreshold, 100);
+            }
+        })
+        .catch(error => {
+            if (loaded) return; // Already loaded, skip
+            
+            // Only fallback to grid if heatmap was NOT_FOUND (404)
+            if (error.message !== 'NOT_FOUND') {
+                console.error('✗ Error loading heatmap for', regionName, ':', error.message);
+                heatmapLoadCount++;
+                if (heatmapLoadCount >= heatmapLoadTotal) {
+                    hideGlobalLoading(500);
+                    setTimeout(applyInitialThreshold, 100);
+                }
+                return;
+            }
+            
+            console.warn('✗ Heatmap not found for', regionName, '- trying grid fallback...');
+            
+            fetch(gridUrl)
+                .then(response => {
+                    console.log('Grid response for', regionName, '- status:', response.status, 'ok:', response.ok);
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(gridData => {
+                    if (loaded) return;
+                    loaded = true;
+                    
+                    // Grid found - create empty heatmap from it
+                    console.log('✓ Loaded grid fallback from:', gridUrl);
+                    var emptyHeatmapData = {
+                        type: "FeatureCollection",
+                        features: createEmptyHeatmapFromGrid(gridData, heatmapSectorLocal)
+                    };
+                    renderHeatmapLayer(emptyHeatmapData, regionName);
+                    heatmapLoadCount++;
+                    if (heatmapLoadCount >= heatmapLoadTotal) {
+                        hideGlobalLoading(500);
+                        setTimeout(applyInitialThreshold, 100);
+                    }
+                })
+                .catch(gridError => {
+                    // No heatmap or grid found
+                    console.error('✗ No heatmap or grid data for', regionName);
+                    heatmapLoadCount++;
+                    if (heatmapLoadCount >= heatmapLoadTotal) {
+                        hideGlobalLoading(500);
+                        setTimeout(applyInitialThreshold, 100);
+                    }
+                });
+        });
+}
+
+function createEmptyHeatmapFromGrid(gridData, sector) {
+    return gridData.features.map(function(f) {
+        var props = { grid_id: f.properties.grid_id || 'unknown', score_normalized: 0, score: 0 };
+        props['score_' + sector] = 0;
+        return { type: 'Feature', geometry: f.geometry, properties: props };
+    });
+}
+
+// Apply initial threshold after all data is loaded
+function applyInitialThreshold() {
+    var slider = document.getElementById('heatmap-threshold-slider');
+    if (slider) {
+        var initialValue = parseInt(slider.value);
+        console.log('Applying initial heatmap threshold:', initialValue + '%');
+        console.log('HeatmapLOD.allFeatures.length:', HeatmapLOD.allFeatures.length);
+        if (typeof HeatmapLOD !== 'undefined' && HeatmapLOD.updateByThreshold) {
+            HeatmapLOD.updateByThreshold(initialValue);
+        }
+    }
+}
+
+// Start loading heatmaps
+loadIndividualStateHeatmaps();
+
+// ===== hazard loader =====
+// ========== Hazard View Data Loader ==========
+var hazardType = "";
+
+
+// ========== Drought-specific rendering ==========
+var droughtLayer = null;
+var droughtData = null;
+
+var dmColors = {
+    0: '#2ecc71',  // Green - No Drought
+    1: '#f39c12',  // Orange - D0 Abnormally Dry
+    2: '#e74c3c',  // Red - D1 Moderate Drought
+    3: '#c0392b',  // Dark Red - D2 Severe Drought
+    4: '#8b0000',  // Very Dark Red - D3 Extreme Drought
+    5: '#4a0000'   // Darkest - D4 Exceptional Drought
+};
+
+var dmLabels = {
+    0: 'None - No Drought',
+    1: 'D0 - Abnormally Dry',
+    2: 'D1 - Moderate Drought',
+    3: 'D2 - Severe Drought',
+    4: 'D3 - Extreme Drought',
+    5: 'D4 - Exceptional Drought'
+};
+
+function getSelectedDroughtLevels() {
+    var levels = [];
+    for (var i = 0; i <= 5; i++) {
+        var checkbox = document.getElementById('dm-' + i);
+        if (checkbox && checkbox.checked) {
+            levels.push(i);
+        }
+    }
+    return levels;
+}
+
+function updateDroughtStats() {
+    var selected = getSelectedDroughtLevels();
+    var statsEl = document.getElementById('drought-stats');
+    if (statsEl) {
+        statsEl.textContent = 'Showing: ' + selected.length + '/6 categories';
+    }
+}
+
+function renderDroughtLayer(data, selectedLevels) {
+    // Remove existing layer
+    if (droughtLayer) {
+        map.removeLayer(droughtLayer);
+    }
+    
+    // Filter features by selected DM levels
+    var filteredFeatures = data.features.filter(function(f) {
+        var dm = f.properties.DM;
+        return selectedLevels.includes(dm);
+    });
+    
+    var filteredData = {
+        type: 'FeatureCollection',
+        features: filteredFeatures
+    };
+    
+    droughtLayer = L.geoJSON(filteredData, {
+        style: function(feature) {
+            var dmValue = feature.properties.DM || 0;
+            var color = dmColors[dmValue] || '#cccccc';
+            return {
+                color: '#333333',
+                weight: 1.5,
+                opacity: 0.8,
+                fillColor: color,
+                fillOpacity: 0.75
+            };
+        },
+        onEachFeature: function(feature, layer) {
+            var props = feature.properties;
+            var dmValue = props.DM || 0;
+            var dmLabel = dmLabels[dmValue] || 'Unknown';
+            
+            var popup = '<div style="min-width: 180px;">';
+            popup += '<strong style="font-size: 14px;">🏜️ Drought Monitor</strong><br><hr style="margin: 5px 0;">';
+            popup += '<strong>Category:</strong> ' + dmLabel + '<br>';
+            popup += '<strong>DM Value:</strong> ' + dmValue + '<br>';
+            if (props.Shape_Area) {
+                popup += '<strong>Area:</strong> ' + parseFloat(props.Shape_Area).toFixed(2) + '<br>';
+            }
+            popup += '</div>';
+            
+            layer.bindPopup(popup);
+        }
+    }).addTo(map);
+    
+    console.log('✓ Drought layer rendered with', filteredFeatures.length, '/', data.features.length, 'features');
+    updateDroughtStats();
+    return droughtLayer;
+}
+
+function initDroughtFilters() {
+    // Checkbox change handlers
+    for (var i = 0; i <= 5; i++) {
+        (function(level) {
+            var checkbox = document.getElementById('dm-' + level);
+            if (checkbox) {
+                checkbox.addEventListener('change', function() {
+                    if (droughtData) {
+                        renderDroughtLayer(droughtData, getSelectedDroughtLevels());
+                    }
+                });
+            }
+        })(i);
+    }
+    
+    // Select All button
+    var selectAllBtn = document.getElementById('dm-select-all');
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', function() {
+            for (var i = 0; i <= 5; i++) {
+                var cb = document.getElementById('dm-' + i);
+                if (cb) cb.checked = true;
+            }
+            if (droughtData) {
+                renderDroughtLayer(droughtData, getSelectedDroughtLevels());
+            }
+        });
+    }
+    
+    // Clear All button
+    var selectNoneBtn = document.getElementById('dm-select-none');
+    if (selectNoneBtn) {
+        selectNoneBtn.addEventListener('click', function() {
+            for (var i = 0; i <= 5; i++) {
+                var cb = document.getElementById('dm-' + i);
+                if (cb) cb.checked = false;
+            }
+            if (droughtData) {
+                renderDroughtLayer(droughtData, getSelectedDroughtLevels());
+            }
+        });
+    }
+    
+    // Severe+ button (D2, D3, D4 only)
+    var selectSevereBtn = document.getElementById('dm-select-severe');
+    if (selectSevereBtn) {
+        selectSevereBtn.addEventListener('click', function() {
+            for (var i = 0; i <= 5; i++) {
+                var cb = document.getElementById('dm-' + i);
+                if (cb) cb.checked = (i >= 3); // D2 (3), D3 (4), D4 (5)
+            }
+            if (droughtData) {
+                renderDroughtLayer(droughtData, getSelectedDroughtLevels());
+            }
+        });
+    }
+}
+
+function loadDroughtData() {
+    var droughtUrl = window.DATA_BASE_URL + '/drought/usdm_20260127.json';
+    
+    console.log('Loading drought data from:', droughtUrl);
+    showGlobalLoading('Loading Drought Monitor data...', 1);
+    
+    fetch(droughtUrl)
+        .then(response => {
+            if (!response.ok) throw new Error('Drought data not found');
+            updateGlobalLoading('Parsing drought data...', false);
+            return response.json();
+        })
+        .then(data => {
+            console.log('✓ Loaded drought data:', data.features ? data.features.length : 0, 'features');
+            droughtData = data;  // Store for filtering
+            
+            updateGlobalLoading('Rendering drought layer...', false);
+            
+            // Initialize filter controls
+            initDroughtFilters();
+            
+            // Render with all levels selected
+            renderDroughtLayer(data, getSelectedDroughtLevels());
+            
+            // Fit map to bounds
+            if (droughtLayer) {
+                try {
+                    map.fitBounds(droughtLayer.getBounds(), { padding: [20, 20] });
+                } catch (e) {
+                    console.warn('Could not fit bounds for drought layer');
+                }
+            }
+            
+            hideGlobalLoading(500);
+        })
+        .catch(error => {
+            console.error('Error loading drought data:', error);
+            setGlobalLoadingError('Could not load drought data');
+        });
+}
+
+// Load drought data
+loadDroughtData();
+
+
+// ========== Earthquake-specific rendering with distance rings ==========
+var earthquakeData = {};  // Keyed by distance value
+var earthquakeLayers = {}; // Layers for each distance
+var earthquakeMarkers = L.layerGroup().addTo(map);  // Group for epicenter markers
+
+// Ring configuration from server
+var earthquakeRings = ;
+
+// Color configuration by distance
+var ringColors = {};
+earthquakeRings.forEach(function(ring) {
+    ringColors[ring.value] = ring.color;
+});
+
+// Selected states from server config
+var selectedStates = MAP_CONFIG.selectedRegions || [];
+console.log('🌋 Earthquake: Selected states:', selectedStates);
+
+// State abbreviation to full name mapping
+var stateAbbrevToName = {
+    'AL': 'alabama', 'AK': 'alaska', 'AZ': 'arizona', 'AR': 'arkansas', 'CA': 'california',
+    'CO': 'colorado', 'CT': 'connecticut', 'DE': 'delaware', 'FL': 'florida', 'GA': 'georgia',
+    'HI': 'hawaii', 'ID': 'idaho', 'IL': 'illinois', 'IN': 'indiana', 'IA': 'iowa',
+    'KS': 'kansas', 'KY': 'kentucky', 'LA': 'louisiana', 'ME': 'maine', 'MD': 'maryland',
+    'MA': 'massachusetts', 'MI': 'michigan', 'MN': 'minnesota', 'MS': 'mississippi', 'MO': 'missouri',
+    'MT': 'montana', 'NE': 'nebraska', 'NV': 'nevada', 'NH': 'new_hampshire', 'NJ': 'new_jersey',
+    'NM': 'new_mexico', 'NY': 'new_york', 'NC': 'north_carolina', 'ND': 'north_dakota', 'OH': 'ohio',
+    'OK': 'oklahoma', 'OR': 'oregon', 'PA': 'pennsylvania', 'RI': 'rhode_island', 'SC': 'south_carolina',
+    'SD': 'south_dakota', 'TN': 'tennessee', 'TX': 'texas', 'UT': 'utah', 'VT': 'vermont',
+    'VA': 'virginia', 'WA': 'washington', 'WV': 'west_virginia', 'WI': 'wisconsin', 'WY': 'wyoming',
+    'DC': 'district_of_columbia', 'PR': 'puerto_rico'
+};
+
+// Full state names (for matching "Oklahoma" in place field)
+var stateNameToNormalized = {
+    'alabama': 'alabama', 'alaska': 'alaska', 'arizona': 'arizona', 'arkansas': 'arkansas',
+    'california': 'california', 'colorado': 'colorado', 'connecticut': 'connecticut',
+    'delaware': 'delaware', 'florida': 'florida', 'georgia': 'georgia', 'hawaii': 'hawaii',
+    'idaho': 'idaho', 'illinois': 'illinois', 'indiana': 'indiana', 'iowa': 'iowa',
+    'kansas': 'kansas', 'kentucky': 'kentucky', 'louisiana': 'louisiana', 'maine': 'maine',
+    'maryland': 'maryland', 'massachusetts': 'massachusetts', 'michigan': 'michigan',
+    'minnesota': 'minnesota', 'mississippi': 'mississippi', 'missouri': 'missouri',
+    'montana': 'montana', 'nebraska': 'nebraska', 'nevada': 'nevada', 'new hampshire': 'new_hampshire',
+    'new jersey': 'new_jersey', 'new mexico': 'new_mexico', 'new york': 'new_york',
+    'north carolina': 'north_carolina', 'north dakota': 'north_dakota', 'ohio': 'ohio',
+    'oklahoma': 'oklahoma', 'oregon': 'oregon', 'pennsylvania': 'pennsylvania',
+    'rhode island': 'rhode_island', 'south carolina': 'south_carolina', 'south dakota': 'south_dakota',
+    'tennessee': 'tennessee', 'texas': 'texas', 'utah': 'utah', 'vermont': 'vermont',
+    'virginia': 'virginia', 'washington': 'washington', 'west virginia': 'west_virginia',
+    'wisconsin': 'wisconsin', 'wyoming': 'wyoming'
+};
+
+// Extract state from earthquake place field (e.g., "21 km NNE of Indio, CA" -> "california")
+function extractStateFromPlace(place) {
+    if (!place) return null;
+    
+    // Try to extract state abbreviation (last 2 characters after comma)
+    var abbrevMatch = place.match(/,\s*([A-Z]{2})$/);
+    if (abbrevMatch) {
+        var abbrev = abbrevMatch[1];
+        if (stateAbbrevToName[abbrev]) {
+            return stateAbbrevToName[abbrev];
+        }
+    }
+    
+    // Try to find full state name in place string
+    var placeLower = place.toLowerCase();
+    for (var stateName in stateNameToNormalized) {
+        if (placeLower.includes(stateName)) {
+            return stateNameToNormalized[stateName];
+        }
+    }
+    
+    return null;
+}
+
+// Check if earthquake should be displayed based on selected states
+function shouldShowEarthquake(feature) {
+    // If no states selected, show all earthquakes
+    if (!selectedStates || selectedStates.length === 0) {
+        return true;
+    }
+    
+    var place = feature.properties.place || '';
+    var state = extractStateFromPlace(place);
+    
+    if (!state) {
+        // Could not determine state - check region as fallback
+        var region = feature.properties.region || '';
+        // If region is "California" and california is selected, show it
+        var regionLower = region.toLowerCase().replace(/_/g, ' ');
+        if (stateNameToNormalized[regionLower]) {
+            state = stateNameToNormalized[regionLower];
+        }
+    }
+    
+    if (!state) return false;  // Can't determine state, don't show
+    
+    // Check if state is in selected states
+    return selectedStates.some(function(selected) {
+        var selectedNorm = selected.toLowerCase().replace(/ /g, '_');
+        return state === selectedNorm;
+    });
+}
+
+// Magnitude filter range
+var magMin = 0;
+var magMax = 10;
+
+function getMagnitudeRange() {
+    var minSlider = document.getElementById('eq-mag-min');
+    var maxSlider = document.getElementById('eq-mag-max');
+    return {
+        min: minSlider ? parseFloat(minSlider.value) : 0,
+        max: maxSlider ? parseFloat(maxSlider.value) : 10
+    };
+}
+
+function getSelectedEarthquakeRings() {
+    var rings = [];
+    document.querySelectorAll('.eq-ring-checkbox:checked').forEach(function(cb) {
+        rings.push({
+            value: parseInt(cb.dataset.distance),
+            inner: parseFloat(cb.dataset.inner),
+            outer: parseFloat(cb.dataset.outer)
+        });
+    });
+    return rings;
+}
+
+function updateEarthquakeStats() {
+    var selected = getSelectedEarthquakeRings();
+    var magRange = getMagnitudeRange();
+    var statsEl = document.getElementById('earthquake-stats');
+    if (statsEl) {
+        var totalEq = 0;
+        var filteredEq = 0;
+        selected.forEach(function(ring) {
+            if (earthquakeData[ring.value]) {
+                // Count filtered earthquakes (by magnitude AND state)
+                earthquakeData[ring.value].features.forEach(function(f) {
+                    totalEq++;
+                    var mag = f.properties.mag || 0;
+                    if (mag >= magRange.min && mag <= magRange.max && shouldShowEarthquake(f)) {
+                        filteredEq++;
+                    }
+                });
+            }
+        });
+        var stateInfo = selectedStates.length > 0 ? ' in ' + selectedStates.length + ' state(s)' : '';
+        statsEl.textContent = 'Showing ' + filteredEq + '/' + totalEq + ' earthquakes' + stateInfo + ' (Mag ' + magRange.min.toFixed(1) + '-' + magRange.max.toFixed(1) + ')';
+    }
+}
+
+function clearAllEarthquakeLayers() {
+    Object.values(earthquakeLayers).forEach(function(layer) {
+        if (layer && map.hasLayer(layer)) {
+            map.removeLayer(layer);
+        }
+    });
+    earthquakeLayers = {};
+    earthquakeMarkers.clearLayers();
+}
+
+function renderEarthquakeRings() {
+    clearAllEarthquakeLayers();
+    
+    var selectedRings = getSelectedEarthquakeRings();
+    var magRange = getMagnitudeRange();
+    
+    if (selectedRings.length === 0) {
+        updateEarthquakeStats();
+        return;
+    }
+    
+    console.log('🌋 Rendering earthquakes, filtering by states:', selectedStates);
+    
+    // Sort rings by outer radius descending so larger rings are behind
+    selectedRings.sort(function(a, b) { return b.outer - a.outer; });
+    
+    // Track processed earthquake ids to avoid duplicate epicenter markers
+    var processedIds = new Set();
+    var filteredCount = 0;
+    var totalCount = 0;
+    
+    selectedRings.forEach(function(ring) {
+        var data = earthquakeData[ring.value];
+        if (!data || !data.features) return;
+        
+        var layerGroup = L.layerGroup();
+        
+        data.features.forEach(function(feature) {
+            totalCount++;
+            var props = feature.properties;
+            var mag = props.mag || 0;
+            
+            // Filter by magnitude
+            if (mag < magRange.min || mag > magRange.max) {
+                return; // Skip this earthquake
+            }
+            
+            // Filter by selected states
+            if (!shouldShowEarthquake(feature)) {
+                return; // Skip earthquakes not in selected states
+            }
+            
+            filteredCount++;
+            var coords = feature.geometry.coordinates;
+            var lng = coords[0];
+            var lat = coords[1];
+            
+            // Draw the annular ring (donut shape)
+            var outerRadiusMeters = ring.outer * 1000;
+            var innerRadiusMeters = ring.inner * 1000;
+            
+            // Create outer circle
+            var outerCircle = L.circle([lat, lng], {
+                radius: outerRadiusMeters,
+                color: ringColors[ring.value],
+                weight: 1.5,
+                opacity: 0.8,
+                fillColor: ringColors[ring.value],
+                fillOpacity: 0.25,
+                interactive: true
+            });
+            
+            // Popup with MMI info
+            var mmiKey = 'mmi_at_' + ring.value + 'km';
+            var mmi = props[mmiKey];
+            var mmiDisplay = mmi !== null && mmi !== undefined ? mmi.toFixed(2) : 'N/A';
+            
+            var popup = '<div style="min-width: 200px;">';
+            popup += '<strong style="font-size: 14px;">🌋 Earthquake Impact</strong><br><hr style="margin: 5px 0;">';
+            popup += '<strong>Location:</strong> ' + (props.place || 'Unknown') + '<br>';
+            popup += '<strong>Magnitude:</strong> ' + (props.mag || 'N/A') + '<br>';
+            popup += '<strong>Depth:</strong> ' + (props.depth || 'N/A') + ' km<br>';
+            popup += '<strong>Region:</strong> ' + (props.region || 'N/A') + '<br>';
+            popup += '<strong>Distance Band:</strong> ' + ring.inner + '-' + ring.outer + ' km<br>';
+            popup += '<strong>MMI at ' + ring.value + 'km:</strong> ' + mmiDisplay + '<br>';
+            if (props.time) {
+                var date = new Date(props.time);
+                popup += '<strong>Date:</strong> ' + date.toLocaleDateString() + '<br>';
+            }
+            popup += '</div>';
+            
+            outerCircle.bindPopup(popup);
+            layerGroup.addLayer(outerCircle);
+            
+            // If inner radius > 0, we need to create inner hole visually
+            // Using a white/transparent inner circle to cut out
+            if (innerRadiusMeters > 0) {
+                var innerCircle = L.circle([lat, lng], {
+                    radius: innerRadiusMeters,
+                    color: 'transparent',
+                    weight: 0,
+                    fillColor: '#ffffff',
+                    fillOpacity: 0.8,  // Semi-opaque to "cut out" the center
+                    interactive: false
+                });
+                layerGroup.addLayer(innerCircle);
+            }
+            
+            // Add epicenter marker only once per earthquake
+            if (!processedIds.has(props.id)) {
+                processedIds.add(props.id);
+                
+                var marker = L.circleMarker([lat, lng], {
+                    radius: Math.max(3, props.mag || 3),
+                    color: '#000',
+                    weight: 2,
+                    fillColor: '#ff0000',
+                    fillOpacity: 1,
+                    interactive: true
+                });
+                
+                var markerPopup = '<div style="min-width: 180px;">';
+                markerPopup += '<strong style="font-size: 14px;">📍 Epicenter</strong><br><hr style="margin: 5px 0;">';
+                markerPopup += '<strong>Location:</strong> ' + (props.place || 'Unknown') + '<br>';
+                markerPopup += '<strong>Magnitude:</strong> ' + (props.mag || 'N/A') + '<br>';
+                markerPopup += '<strong>Depth:</strong> ' + (props.depth || 'N/A') + ' km<br>';
+                markerPopup += '<strong>Region:</strong> ' + (props.region || 'N/A') + '<br>';
+                if (props.time) {
+                    var date = new Date(props.time);
+                    markerPopup += '<strong>Date:</strong> ' + date.toLocaleDateString() + '<br>';
+                }
+                markerPopup += '</div>';
+                
+                marker.bindPopup(markerPopup);
+                earthquakeMarkers.addLayer(marker);
+            }
+        });
+        
+        layerGroup.addTo(map);
+        earthquakeLayers[ring.value] = layerGroup;
+    });
+    
+    updateEarthquakeStats();
+    console.log('✓ Earthquake rings rendered:', selectedRings.map(r => r.value).join(', ') + ' km, states:', selectedStates.length > 0 ? selectedStates.join(', ') : 'ALL');
+}
+
+function initEarthquakeFilters() {
+    // Checkbox change handlers
+    document.querySelectorAll('.eq-ring-checkbox').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            // Load data for this ring if not loaded
+            var distance = parseInt(this.dataset.distance);
+            if (this.checked && !earthquakeData[distance]) {
+                loadEarthquakeRingData(distance, renderEarthquakeRings);
+            } else {
+                renderEarthquakeRings();
+            }
+        });
+    });
+    
+    // Magnitude slider handlers
+    var magMinSlider = document.getElementById('eq-mag-min');
+    var magMaxSlider = document.getElementById('eq-mag-max');
+    var magMinValue = document.getElementById('eq-mag-min-value');
+    var magMaxValue = document.getElementById('eq-mag-max-value');
+    
+    if (magMinSlider) {
+        magMinSlider.addEventListener('input', function() {
+            var val = parseFloat(this.value);
+            if (magMinValue) magMinValue.textContent = val.toFixed(1);
+            // Ensure min doesn't exceed max
+            if (magMaxSlider && val > parseFloat(magMaxSlider.value)) {
+                magMaxSlider.value = val;
+                if (magMaxValue) magMaxValue.textContent = val.toFixed(1);
+            }
+        });
+        magMinSlider.addEventListener('change', function() {
+            renderEarthquakeRings();
+        });
+    }
+    
+    if (magMaxSlider) {
+        magMaxSlider.addEventListener('input', function() {
+            var val = parseFloat(this.value);
+            if (magMaxValue) magMaxValue.textContent = val.toFixed(1);
+            // Ensure max doesn't go below min
+            if (magMinSlider && val < parseFloat(magMinSlider.value)) {
+                magMinSlider.value = val;
+                if (magMinValue) magMinValue.textContent = val.toFixed(1);
+            }
+        });
+        magMaxSlider.addEventListener('change', function() {
+            renderEarthquakeRings();
+        });
+    }
+    
+    // Magnitude preset buttons
+    document.querySelectorAll('.eq-mag-preset').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var min = parseFloat(this.dataset.min);
+            var max = parseFloat(this.dataset.max);
+            if (magMinSlider) {
+                magMinSlider.value = min;
+                if (magMinValue) magMinValue.textContent = min.toFixed(1);
+            }
+            if (magMaxSlider) {
+                magMaxSlider.value = max;
+                if (magMaxValue) magMaxValue.textContent = max.toFixed(1);
+            }
+            renderEarthquakeRings();
+        });
+    });
+    
+    // Select All button
+    var selectAllBtn = document.getElementById('eq-select-all');
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', function() {
+            document.querySelectorAll('.eq-ring-checkbox').forEach(function(cb) {
+                cb.checked = true;
+            });
+            loadAllEarthquakeData();
+        });
+    }
+    
+    // Clear All button
+    var selectNoneBtn = document.getElementById('eq-select-none');
+    if (selectNoneBtn) {
+        selectNoneBtn.addEventListener('click', function() {
+            document.querySelectorAll('.eq-ring-checkbox').forEach(function(cb) {
+                cb.checked = false;
+            });
+            renderEarthquakeRings();
+        });
+    }
+    
+    // Near Only button (< 50km)
+    var selectNearBtn = document.getElementById('eq-select-near');
+    if (selectNearBtn) {
+        selectNearBtn.addEventListener('click', function() {
+            document.querySelectorAll('.eq-ring-checkbox').forEach(function(cb) {
+                var dist = parseInt(cb.dataset.distance);
+                cb.checked = (dist <= 50);
+            });
+            loadSelectedEarthquakeData();
+        });
+    }
+}
+
+function loadEarthquakeRingData(distance, callback) {
+    var url = window.DATA_BASE_URL + '/Hazard/earthquake/us_earthquakes_mmi_d' + distance + 'km.geojson';
+    
+    console.log('Loading earthquake data for', distance, 'km from:', url);
+    
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error('Earthquake data not found for ' + distance + 'km');
+            return response.json();
+        })
+        .then(data => {
+            console.log('✓ Loaded earthquake data for', distance, 'km:', data.features ? data.features.length : 0, 'features');
+            earthquakeData[distance] = data;
+            if (callback) callback();
+        })
+        .catch(error => {
+            console.error('Error loading earthquake data for', distance, 'km:', error);
+        });
+}
+
+function loadSelectedEarthquakeData() {
+    var selected = getSelectedEarthquakeRings();
+    var toLoad = selected.filter(function(ring) {
+        return !earthquakeData[ring.value];
+    });
+    
+    if (toLoad.length === 0) {
+        renderEarthquakeRings();
+        return;
+    }
+    
+    var loadCount = 0;
+    toLoad.forEach(function(ring) {
+        loadEarthquakeRingData(ring.value, function() {
+            loadCount++;
+            if (loadCount >= toLoad.length) {
+                renderEarthquakeRings();
+            }
+        });
+    });
+}
+
+function loadAllEarthquakeData() {
+    var distances = earthquakeRings.map(r => r.value);
+    var toLoad = distances.filter(d => !earthquakeData[d]);
+    
+    if (toLoad.length === 0) {
+        renderEarthquakeRings();
+        return;
+    }
+    
+    showGlobalLoading('Loading earthquake data...', toLoad.length);
+    var loadCount = 0;
+    
+    toLoad.forEach(function(distance) {
+        loadEarthquakeRingData(distance, function() {
+            loadCount++;
+            updateGlobalLoading('Loaded ' + distance + 'km data (' + loadCount + '/' + toLoad.length + ')', false);
+            if (loadCount >= toLoad.length) {
+                hideGlobalLoading(500);
+                renderEarthquakeRings();
+            }
+        });
+    });
+}
+
+function loadInitialEarthquakeData() {
+    // Load data for initially selected rings
+    var selectedRings = getSelectedEarthquakeRings();
+    
+    if (selectedRings.length === 0) {
+        // Default: load first ring (5km)
+        var firstCheckbox = document.querySelector('.eq-ring-checkbox');
+        if (firstCheckbox) {
+            firstCheckbox.checked = true;
+            selectedRings = [{ value: parseInt(firstCheckbox.dataset.distance) }];
+        }
+    }
+    
+    if (selectedRings.length > 0) {
+        showGlobalLoading('Loading earthquake data...', selectedRings.length);
+        loadSelectedEarthquakeData();
+        hideGlobalLoading(1500);
+    }
+    
+    updateEarthquakeStats();
+}
+
+// Initialize earthquake filters
+initEarthquakeFilters();
+
+// Load initial data
+loadInitialEarthquakeData();
+
+
+// ========== Wildfire Historical rendering ==========
+var wildfireLayers = [];
+var wildfireAllData = {};  // Store raw data per state for filtering
+
+function getWildfireColor(acres) {
+    if (acres > 100000) return '#4A0000';
+    if (acres > 50000) return '#B71C1C';
+    if (acres > 10000) return '#F44336';
+    if (acres > 1000) return '#FF9800';
+    return '#FFEB3B';
+}
+
+function getWildfireOpacity(acres) {
+    if (acres > 50000) return 0.85;
+    if (acres > 10000) return 0.75;
+    if (acres > 1000) return 0.65;
+    return 0.55;
+}
+
+function clearWildfireLayers() {
+    wildfireLayers.forEach(function(layer) {
+        map.removeLayer(layer);
+    });
+    wildfireLayers = [];
+}
+
+function renderWildfireData(stateData, yearStart, yearEnd) {
+    clearWildfireLayers();
+    
+    var totalFires = 0;
+    var totalAcres = 0;
+    var stateNames = Object.keys(stateData);
+    
+    stateNames.forEach(function(stateName) {
+        var data = stateData[stateName];
+        if (!data || !data.features) return;
+        
+        // Filter by year
+        var filteredFeatures = data.features.filter(function(f) {
+            var igDate = f.properties.Ig_Date || '';
+            if (igDate.length >= 4) {
+                var year = parseInt(igDate.substring(0, 4));
+                return year >= yearStart && year <= yearEnd;
+            }
+            return false;
+        });
+        
+        if (filteredFeatures.length === 0) return;
+        
+        var filteredData = {
+            type: 'FeatureCollection',
+            features: filteredFeatures
+        };
+        
+        var layer = L.geoJSON(filteredData, {
+            style: function(feature) {
+                var acres = feature.properties.BurnBndAc || 0;
+                return {
+                    color: '#333',
+                    weight: 0.5,
+                    opacity: 0.6,
+                    fillColor: getWildfireColor(acres),
+                    fillOpacity: getWildfireOpacity(acres)
+                };
+            },
+            onEachFeature: function(feature, layer) {
+                var props = feature.properties;
+                var acres = props.BurnBndAc || 0;
+                
+                var popup = '<div style="min-width: 220px;">';
+                popup += '<strong style="font-size: 14px;">🔥 ' + (props.Incid_Name || 'Unknown Fire') + '</strong><br>';
+                popup += '<hr style="margin: 5px 0;">';
+                popup += '<strong>Date:</strong> ' + (props.Ig_Date || 'N/A') + '<br>';
+                popup += '<strong>Type:</strong> ' + (props.Incid_Type || 'N/A') + '<br>';
+                popup += '<strong>Burned Area:</strong> ' + acres.toLocaleString() + ' acres<br>';
+                popup += '<strong>Location:</strong> ' + (props.BurnBndLat || 'N/A') + ', ' + (props.BurnBndLon || 'N/A') + '<br>';
+                popup += '<strong>Event ID:</strong> ' + (props.Event_ID || 'N/A');
+                popup += '</div>';
+                
+                layer.bindPopup(popup);
+            }
+        }).addTo(map);
+        
+        wildfireLayers.push(layer);
+        totalFires += filteredFeatures.length;
+        filteredFeatures.forEach(function(f) {
+            totalAcres += (f.properties.BurnBndAc || 0);
+        });
+    });
+    
+    // Update stats
+    var statsEl = document.getElementById('wildfire-stats');
+    if (statsEl) {
+        statsEl.innerHTML = '🔥 ' + totalFires.toLocaleString() + ' fires | ' + totalAcres.toLocaleString() + ' acres<br>' +
+                           '<span style="font-size:10px;">(' + yearStart + ' - ' + yearEnd + ')</span>';
+    }
+    
+    // Update legend
+    var legendYearsEl = document.getElementById('wildfire-legend-years');
+    if (legendYearsEl) {
+        legendYearsEl.textContent = 'Showing: ' + yearStart + ' - ' + yearEnd + ' (' + totalFires.toLocaleString() + ' fires)';
+    }
+    
+    console.log('✓ Rendered', totalFires, 'wildfires across', stateNames.length, 'states for years', yearStart, '-', yearEnd);
+}
+
+function getWildfireYearRange() {
+    var startEl = document.getElementById('wildfire-year-start');
+    var endEl = document.getElementById('wildfire-year-end');
+    var yearStart = startEl ? parseInt(startEl.value) : ;
+    var yearEnd = endEl ? parseInt(endEl.value) : ;
+    return { start: yearStart, end: yearEnd };
+}
+
+function initWildfireFilters() {
+    var startInput = document.getElementById('wildfire-year-start');
+    var endInput = document.getElementById('wildfire-year-end');
+    var startSlider = document.getElementById('wildfire-year-slider-start');
+    var endSlider = document.getElementById('wildfire-year-slider-end');
+    
+    // Sync sliders with inputs
+    if (startSlider && startInput) {
+        startSlider.addEventListener('input', function() {
+            startInput.value = this.value;
+        });
+        startInput.addEventListener('change', function() {
+            startSlider.value = this.value;
+        });
+    }
+    if (endSlider && endInput) {
+        endSlider.addEventListener('input', function() {
+            endInput.value = this.value;
+        });
+        endInput.addEventListener('change', function() {
+            endSlider.value = this.value;
+        });
+    }
+    
+    // Year preset buttons
+    document.querySelectorAll('.wf-year-preset').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var s = parseInt(this.getAttribute('data-start'));
+            var e = parseInt(this.getAttribute('data-end'));
+            if (startInput) startInput.value = s;
+            if (endInput) endInput.value = e;
+            if (startSlider) startSlider.value = s;
+            if (endSlider) endSlider.value = e;
+        });
+    });
+    
+    // Apply filter button
+    var applyBtn = document.getElementById('wildfire-apply-filter');
+    if (applyBtn) {
+        applyBtn.addEventListener('click', function() {
+            var range = getWildfireYearRange();
+            showGlobalLoading('Filtering wildfires (' + range.start + '-' + range.end + ')...', 1);
+            setTimeout(function() {
+                renderWildfireData(wildfireAllData, range.start, range.end);
+                hideGlobalLoading(300);
+            }, 50);
+        });
+    }
+}
+
+function loadWildfireData() {
+    console.log('=== Starting wildfire data loading ===');
+    console.log('Selected regions:', MAP_CONFIG.selectedRegions);
+    
+    var regions = MAP_CONFIG.selectedRegions;
+    var loadTotal = regions.length;
+    var loadCount = 0;
+    
+    showGlobalLoading('Loading Wildfire Historical data...', loadTotal);
+    
+    regions.forEach(function(regionName) {
+        // Convert region name to file name format (e.g., 'new_york' -> 'New_York')
+        var fileName = regionName.split('_').map(function(word) {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        }).join('_');
+        
+        var url = window.DATA_BASE_URL + '/Hazard/wildfire/' + fileName + '.geojson';
+        
+        console.log('Loading wildfire data for', regionName, 'from', url);
+        
+        fetch(url)
+            .then(function(response) {
+                if (!response.ok) throw new Error('Not found: ' + url);
+                return response.json();
+            })
+            .then(function(data) {
+                console.log('✓ Loaded wildfire data for', regionName, ':', data.features ? data.features.length : 0, 'features');
+                wildfireAllData[regionName] = data;
+                loadCount++;
+                updateGlobalLoading('Loaded ' + fileName + ' (' + loadCount + '/' + loadTotal + ')', false);
+                
+                if (loadCount >= loadTotal) {
+                    // All states loaded, render with current year filter
+                    var range = getWildfireYearRange();
+                    renderWildfireData(wildfireAllData, range.start, range.end);
+                    
+                    // Fit bounds
+                    if (wildfireLayers.length > 0) {
+                        try {
+                            var allBounds = L.featureGroup(wildfireLayers).getBounds();
+                            map.fitBounds(allBounds, { padding: [20, 20] });
+                        } catch(e) {
+                            console.warn('Could not fit bounds for wildfire layers');
+                        }
+                    }
+                    hideGlobalLoading(500);
+                }
+            })
+            .catch(function(error) {
+                console.warn('✗ No wildfire data for', regionName, ':', error.message);
+                loadCount++;
+                if (loadCount >= loadTotal) {
+                    var range = getWildfireYearRange();
+                    renderWildfireData(wildfireAllData, range.start, range.end);
+                    hideGlobalLoading(500);
+                }
+            });
+    });
+}
+
+// Initialize filters and load data
+initWildfireFilters();
+loadWildfireData();
+
+
+// ========== Regular hazard rendering (flood, etc.) ==========
+function renderHazardLayer(hazardData, regionName, hazardTypeParam) {
+    var scoreProperty = hazardTypeParam + '_score_normalized';
+    var hazardLabel = hazardTypeParam.charAt(0).toUpperCase() + hazardTypeParam.slice(1);
+    
+    var hazardLayer = L.geoJSON(hazardData, {
+        style: function(feature) {
+            var score = feature.properties[scoreProperty] || 0;
+            return {
+                color: 'transparent',
+                weight: 0,
+                opacity: 0,
+                fillColor: getHazardColor(score, hazardTypeParam),
+                fillOpacity: 0.7
+            };
+        },
+        onEachFeature: function(feature, layer) {
+            var props = feature.properties;
+            var score = props[scoreProperty] || 0;
+            
+            var popup = '<strong>Region: ' + regionName + '</strong><br>';
+            popup += '<strong>Grid ID: ' + (props.grid_id || 'N/A') + '</strong><br>';
+            popup += hazardLabel + ' Risk: ' + (score * 100).toFixed(1) + '%';
+            
+            layer.bindPopup(popup);
+        }
+    }).addTo(map);
+    
+    HazardLOD.registerLayer(hazardLayer, hazardData.features || []);
+    return hazardLayer;
+}
+
+function loadHazardHeatmaps() {
+    console.log('=== Starting hazard heatmap loading ===');
+    console.log('Hazard type:', hazardType);
+    console.log('Selected regions:', MAP_CONFIG.selectedRegions);
+    
+    var hazardLoadTotal = ;
+    var hazardLoadCount = 0;
+    var hazardNames = {'flood': 'Flood', 'drought': 'Drought'};
+    showGlobalLoading('Loading ' + (hazardNames[hazardType] || hazardType) + ' data...', hazardLoadTotal);
+    
+    
+    (function() {
+        var regionName = "";
+        var regionFolders = findRegionFolder(regionName);
+        var gridSizeVariants = ['5.0km', '5km'];
+        
+        var hazardUrls = [];
+        regionFolders.forEach(folder => {
+            gridSizeVariants.forEach(gridSize => {
+                // Use _lite folder for faster loading
+                hazardUrls.push(window.DATA_BASE_URL + '/heatmap_' + hazardType + '_lite/' + folder + '/' + hazardType + '_heatmap_' + gridSize + '.geojson');
+                // Fallback to original folder
+                hazardUrls.push(window.DATA_BASE_URL + '/heatmap_' + hazardType + '/' + folder + '/' + hazardType + '_heatmap_' + gridSize + '.geojson');
+            });
+        });
+        
+        console.log('Loading hazard heatmap for', regionName);
+        console.log('Region folders:', regionFolders);
+        console.log('Hazard URLs to try:', hazardUrls);
+        
+        tryLoadGeoJSON(hazardUrls.slice(), function(hazardData, loadedUrl) {
+            console.log('✓ Loaded hazard heatmap from:', loadedUrl);
+            console.log('Features count:', hazardData.features ? hazardData.features.length : 0);
+            renderHazardLayer(hazardData, regionName, hazardType);
+            hazardLoadCount++;
+            updateGlobalLoading('Loaded ' + regionName + ' (' + hazardLoadCount + '/' + hazardLoadTotal + ')', false);
+            if (hazardLoadCount >= hazardLoadTotal) hideGlobalLoading(500);
+        }, function(error) {
+            console.error('✗ No hazard heatmap data for', regionName, '- tried URLs:', hazardUrls);
+            hazardLoadCount++;
+            if (hazardLoadCount >= hazardLoadTotal) hideGlobalLoading(500);
+        });
+    })();
+    
+}
+
+// Start loading hazard heatmaps
+loadHazardHeatmaps();
+
+
+// ===== impact loader =====
+// ========== Impact View Data Loader ==========
+var impactType = MAP_CONFIG.impactType || "poweroutage_2022";
+var impactMetric = MAP_CONFIG.impactMetric || "total_customers";
+var impactLayer = null;
+var impactData = null;
+var impactIsLoading = false;
+
+// Get selected states from MAP_CONFIG
+var selectedStates = MAP_CONFIG.selectedRegions || [];
+// Normalize state names for comparison (lowercase)
+var selectedStatesLower = selectedStates.map(function(s) {
+    return s.toLowerCase().replace(/_/g, ' ');
+});
+console.log('📈 Selected states:', selectedStatesLower);
+
+// Color scale for impact visualization (matplotlib Reds colormap)
+var impactColorScale = [
+    '#fff5f0',  // Very light - lowest (Reds 0.0)
+    '#fee0d2',  // Light (Reds 0.1)
+    '#fcbba1',  // (Reds 0.2)
+    '#fc9272',  // (Reds 0.3)
+    '#fb6a4a',  // (Reds 0.4)
+    '#ef3b2c',  // (Reds 0.5)
+    '#cb181d',  // (Reds 0.6)
+    '#a50f15',  // (Reds 0.7)
+    '#67000d',  // Very dark red - highest (Reds 0.9)
+];
+
+// Loading indicator functions
+function showImpactLoading(message) {
+    impactIsLoading = true;
+    var loadingDiv = document.getElementById('impact-loading');
+    var loadingText = document.getElementById('impact-loading-text');
+    var progressBar = document.getElementById('impact-loading-progress');
+    var typeSelect = document.getElementById('impact-type-select');
+    var metricSelect = document.getElementById('impact-metric-select');
+    
+    if (loadingDiv) {
+        loadingDiv.style.display = 'block';
+        if (loadingText) loadingText.textContent = message || 'Loading impact data...';
+        if (progressBar) progressBar.style.width = '10%';
+    }
+    if (typeSelect) typeSelect.disabled = true;
+    if (metricSelect) metricSelect.disabled = true;
+}
+
+function updateImpactLoadingProgress(percent, message) {
+    var progressBar = document.getElementById('impact-loading-progress');
+    var loadingText = document.getElementById('impact-loading-text');
+    
+    if (progressBar) progressBar.style.width = percent + '%';
+    if (loadingText && message) loadingText.textContent = message;
+}
+
+function hideImpactLoading() {
+    impactIsLoading = false;
+    var loadingDiv = document.getElementById('impact-loading');
+    var typeSelect = document.getElementById('impact-type-select');
+    var metricSelect = document.getElementById('impact-metric-select');
+    
+    if (loadingDiv) loadingDiv.style.display = 'none';
+    if (typeSelect) typeSelect.disabled = false;
+    if (metricSelect) metricSelect.disabled = false;
+}
+
+// Get color based on normalized value (0-100 scale)
+function getImpactColor(normalizedValue) {
+    if (normalizedValue === null || normalizedValue === undefined || isNaN(normalizedValue)) {
+        return '#CCCCCC';  // Gray for no data
+    }
+    
+    // Normalized values are already 0-100, so just map directly
+    var ratio = normalizedValue / 100;
+    ratio = Math.max(0, Math.min(1, ratio));  // Clamp to 0-1
+    
+    var index = Math.floor(ratio * (impactColorScale.length - 1));
+    return impactColorScale[index];
+}
+
+// Format large numbers
+function formatNumber(num) {
+    if (num === null || num === undefined) return '--';
+    if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + 'M';
+    } else if (num >= 1000) {
+        return (num / 1000).toFixed(1) + 'K';
+    }
+    return num.toLocaleString();
+}
+
+// Get metric display name
+function getMetricDisplayName(metric) {
+    var names = {
+        'total_customers': 'Total Customers Affected',
+        'event_count': 'Number of Events',
+        'avg_per_event': 'Avg Customers per Event'
+    };
+    return names[metric] || metric;
+}
+
+// Get normalized field name for a metric
+function getNormalizedFieldName(metric) {
+    var normalizedNames = {
+        'total_customers': 'normalized_total_customers',
+        'event_count': 'normalized_event_count',
+        'avg_per_event': 'normalized_avg_per_event'
+    };
+    return normalizedNames[metric] || 'normalized_total_customers';
+}
+
+// Update summary statistics
+function updateImpactSummary(data) {
+    if (!data || !data.features) return;
+    
+    var features = data.features;
+    var totalEvents = 0;
+    var totalCustomers = 0;
+    var countyCount = features.length;
+    
+    features.forEach(function(f) {
+        var props = f.properties;
+        totalEvents += props.event_count || 0;
+        totalCustomers += props.total_customers || 0;
+    });
+    
+    var avgPerEvent = totalEvents > 0 ? Math.round(totalCustomers / totalEvents) : 0;
+    
+    // Only update DOM elements if they exist (not in embed mode)
+    var countyEl = document.getElementById('impact-county-count');
+    var eventsEl = document.getElementById('impact-total-events');
+    var customersEl = document.getElementById('impact-total-customers');
+    var avgEl = document.getElementById('impact-avg-per-event');
+    
+    if (countyEl) countyEl.textContent = formatNumber(countyCount);
+    if (eventsEl) eventsEl.textContent = formatNumber(totalEvents);
+    if (customersEl) customersEl.textContent = formatNumber(totalCustomers);
+    if (avgEl) avgEl.textContent = formatNumber(avgPerEvent);
+}
+
+// Update top counties list
+function updateTopCounties(data, metric) {
+    // Skip in embed mode where elements don't exist
+    var listEl = document.getElementById('impact-top-list');
+    if (!listEl || !data || !data.features) return;
+    
+    var features = data.features.slice();  // Copy array
+    
+    // Sort by selected metric
+    features.sort(function(a, b) {
+        var valA = a.properties[metric] || 0;
+        var valB = b.properties[metric] || 0;
+        return valB - valA;
+    });
+    
+    var top10 = features.slice(0, 10);
+    
+    var html = '<ol style="margin: 0; padding-left: 20px;">';
+    top10.forEach(function(f, idx) {
+        var props = f.properties;
+        var name = props.county_name || props.name || 'Unknown';
+        var state = props.state_name || '';
+        var value = props[metric] || 0;
+        
+        html += '<li style="margin-bottom: 4px; padding: 4px; background: ' + (idx % 2 === 0 ? '#fce4ec' : '#fff') + '; border-radius: 3px;">';
+        html += '<strong>' + name + '</strong>';
+        if (state) html += ', ' + state;
+        html += '<br><span style="color: #c2185b;">' + formatNumber(value) + '</span>';
+        html += '</li>';
+    });
+    html += '</ol>';
+    
+    listEl.innerHTML = html;
+}
+
+// Update legend for normalized scale (0-100)
+function updateImpactLegend(min, max) {
+    var minEl = document.getElementById('impact-min');
+    var maxEl = document.getElementById('impact-max');
+    var labelEl = document.getElementById('impact-metric-label');
+    
+    // Legend shows normalized scale 0-100
+    if (minEl) minEl.textContent = '0';
+    if (maxEl) maxEl.textContent = '100';
+    if (labelEl) labelEl.textContent = getMetricDisplayName(impactMetric) + ' (Normalized)';
+}
+
+// Render impact layer
+function renderImpactLayer(data, metric, filterMin, filterMax) {
+    console.log('📈 renderImpactLayer called');
+    console.log('📈 data features:', data.features.length);
+    console.log('📈 metric:', metric);
+    
+    // Get the normalized field name for coloring
+    var normalizedField = getNormalizedFieldName(metric);
+    console.log('📈 using normalized field for colors:', normalizedField);
+    
+    // Clear existing layer
+    if (impactLayer) {
+        map.removeLayer(impactLayer);
+        impactLayer = null;
+    }
+    
+    // Filter by selected states first (if not "entire US" mode)
+    var stateFilteredFeatures = data.features;
+    if (selectedStatesLower.length > 0) {
+        stateFilteredFeatures = data.features.filter(function(f) {
+            var stateName = (f.properties.state_name || '').toLowerCase();
+            return selectedStatesLower.indexOf(stateName) !== -1;
+        });
+        console.log('📈 After state filter:', stateFilteredFeatures.length, 'features');
+    }
+    
+    // Calculate min/max for color scale (from state-filtered data)
+    var values = stateFilteredFeatures.map(function(f) {
+        return f.properties[metric] || 0;
+    }).filter(function(v) { return v > 0; });
+    
+    var minVal = values.length > 0 ? Math.min.apply(null, values) : 0;
+    var maxVal = values.length > 0 ? Math.max.apply(null, values) : 1;
+    
+    console.log('📈 Value range:', minVal, '-', maxVal);
+    
+    // Apply value filters
+    var filteredFeatures = stateFilteredFeatures.filter(function(f) {
+        var val = f.properties[metric] || 0;
+        if (filterMin !== null && filterMin !== undefined && val < filterMin) return false;
+        if (filterMax !== null && filterMax !== undefined && filterMax > 0 && val > filterMax) return false;
+        return true;
+    });
+    
+    console.log('📈 Filtered features:', filteredFeatures.length);
+    
+    // Update shown stats
+    var statsEl = document.getElementById('impact-shown-stats');
+    if (statsEl) {
+        var stateInfo = selectedStatesLower.length > 0 ? ' (' + selectedStatesLower.length + ' states)' : ' (All US)';
+        statsEl.textContent = 'Showing: ' + filteredFeatures.length + ' / ' + stateFilteredFeatures.length + ' counties' + stateInfo;
+    }
+    
+    // Create filtered data object
+    var filteredData = {
+        type: 'FeatureCollection',
+        features: filteredFeatures
+    };
+    
+    // Update legend
+    updateImpactLegend(minVal, maxVal);
+    
+    // Create layer - use normalized values for coloring, original values for popup
+    impactLayer = L.geoJSON(filteredData, {
+        style: function(feature) {
+            // Use normalized value for color (0-100 scale)
+            var normalizedValue = feature.properties[normalizedField] || 0;
+            var color = getImpactColor(normalizedValue);
+            
+            return {
+                fillColor: color,
+                weight: 1,
+                opacity: 0.8,
+                color: '#67000d',
+                fillOpacity: 0.7
+            };
+        },
+        onEachFeature: function(feature, layer) {
+            var props = feature.properties;
+            var name = props.county_name || props.name || 'Unknown';
+            var state = props.state_name || '';
+            
+            var popup = '<div style="min-width: 240px;">';
+            popup += '<h4 style="margin: 0 0 8px 0; color: #cb181d; border-bottom: 2px solid #ef3b2c; padding-bottom: 5px;">📍 ' + name;
+            if (state) popup += ', ' + state;
+            popup += '</h4>';
+            
+            // Original values table
+            popup += '<table style="width: 100%; font-size: 12px;">';
+            popup += '<tr><td style="padding: 3px 0;"><strong>Total Customers Affected:</strong></td><td style="text-align: right; color: #cb181d;">' + formatNumber(props.total_customers) + '</td></tr>';
+            popup += '<tr><td style="padding: 3px 0;"><strong>Number of Events:</strong></td><td style="text-align: right; color: #cb181d;">' + formatNumber(props.event_count) + '</td></tr>';
+            popup += '<tr><td style="padding: 3px 0;"><strong>Avg per Event:</strong></td><td style="text-align: right; color: #cb181d;">' + formatNumber(props.avg_per_event) + '</td></tr>';
+            popup += '</table>';
+            
+            // Normalized scores section
+            popup += '<div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ef3b2c;">';
+            popup += '<strong style="font-size: 11px; color: #666;">📊 Normalized Scores (0-100):</strong>';
+            popup += '<table style="width: 100%; font-size: 11px; margin-top: 4px;">';
+            popup += '<tr><td>Customers:</td><td style="text-align: right; color: #a50f15;">' + (props.normalized_total_customers || 0).toFixed(1) + '</td></tr>';
+            popup += '<tr><td>Events:</td><td style="text-align: right; color: #a50f15;">' + (props.normalized_event_count || 0).toFixed(1) + '</td></tr>';
+            popup += '<tr><td>Avg/Event:</td><td style="text-align: right; color: #a50f15;">' + (props.normalized_avg_per_event || 0).toFixed(1) + '</td></tr>';
+            popup += '</table>';
+            popup += '</div>';
+            
+            if (props.fips_code) {
+                popup += '<div style="margin-top: 8px; font-size: 10px; color: #666;">FIPS: ' + props.fips_code + '</div>';
+            }
+            
+            popup += '</div>';
+            
+            layer.bindPopup(popup);
+            
+            // Hover effects
+            layer.on('mouseover', function() {
+                this.setStyle({
+                    weight: 3,
+                    color: '#67000d',
+                    fillOpacity: 0.9
+                });
+                this.bringToFront();
+            });
+            
+            layer.on('mouseout', function() {
+                impactLayer.resetStyle(this);
+            });
+        }
+    }).addTo(map);
+    
+    // Update summary and top counties
+    updateImpactSummary(filteredData);
+    updateTopCounties(filteredData, metric);
+    
+    console.log('📈 Impact layer rendered');
+}
+
+// Load impact data
+function loadImpactData(type) {
+    showImpactLoading('Loading impact data...');
+    updateImpactLoadingProgress(20, 'Fetching GeoJSON...');
+    
+    var url = window.DATA_BASE_URL + '/impact/' + type + '.geojson';
+    console.log('📈 Loading impact data from:', url);
+    
+    fetch(url)
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('HTTP error! status: ' + response.status);
+            }
+            updateImpactLoadingProgress(50, 'Parsing data...');
+            return response.json();
+        })
+        .then(function(data) {
+            updateImpactLoadingProgress(80, 'Rendering map...');
+            console.log('📈 Impact data loaded:', data.features.length, 'features');
+            
+            impactData = data;
+            
+            // Get filter values (handle embed mode where elements don't exist)
+            var filterMinEl = document.getElementById('impact-filter-min');
+            var filterMin = filterMinEl ? (parseFloat(filterMinEl.value) || 0) : 0;
+            var filterMaxEl = document.getElementById('impact-filter-max');
+            var filterMax = filterMaxEl && filterMaxEl.value ? parseFloat(filterMaxEl.value) : null;
+            
+            renderImpactLayer(data, impactMetric, filterMin, filterMax);
+            
+            updateImpactLoadingProgress(100, 'Complete!');
+            setTimeout(hideImpactLoading, 500);
+        })
+        .catch(function(error) {
+            console.error('📈 Error loading impact data:', error);
+            hideImpactLoading();
+            alert('Error loading impact data: ' + error.message);
+        });
+}
+
+// Initialize impact controls
+function initImpactControls() {
+    console.log('📈 Initializing impact controls');
+    
+    // Type selector
+    var typeSelect = document.getElementById('impact-type-select');
+    if (typeSelect) {
+        typeSelect.addEventListener('change', function() {
+            var newType = this.value;
+            // Navigate to new URL with updated type
+            window.location.href = updateQueryString('impact_type', newType);
+        });
+    }
+    
+    // Metric selector
+    var metricSelect = document.getElementById('impact-metric-select');
+    if (metricSelect) {
+        metricSelect.addEventListener('change', function() {
+            impactMetric = this.value;
+            
+            // Re-render with new metric
+            if (impactData) {
+                var filterMinEl = document.getElementById('impact-filter-min');
+                var filterMin = filterMinEl ? (parseFloat(filterMinEl.value) || 0) : 0;
+                var filterMaxEl = document.getElementById('impact-filter-max');
+                var filterMax = filterMaxEl && filterMaxEl.value ? parseFloat(filterMaxEl.value) : null;
+                
+                renderImpactLayer(impactData, impactMetric, filterMin, filterMax);
+            }
+            
+            // Update legend label
+            var labelEl = document.getElementById('impact-metric-label');
+            if (labelEl) labelEl.textContent = getMetricDisplayName(impactMetric);
+        });
+    }
+    
+    // Filter button
+    var filterBtn = document.getElementById('impact-apply-filter');
+    if (filterBtn) {
+        filterBtn.addEventListener('click', function() {
+            if (impactData) {
+                var filterMinEl = document.getElementById('impact-filter-min');
+                var filterMin = filterMinEl ? (parseFloat(filterMinEl.value) || 0) : 0;
+                var filterMaxEl = document.getElementById('impact-filter-max');
+                var filterMax = filterMaxEl && filterMaxEl.value ? parseFloat(filterMaxEl.value) : null;
+                
+                renderImpactLayer(impactData, impactMetric, filterMin, filterMax);
+            }
+        });
+    }
+}
+
+// Helper function to update URL query string
+function updateQueryString(key, value) {
+    var url = new URL(window.location.href);
+    url.searchParams.set(key, value);
+    return url.toString();
+}
+
+// Initialize controls immediately (before data loads)
+initImpactControls();
+
+// Load data on init
+loadImpactData(impactType);
+
+
+// ===== energy_vulnerability loader =====
+<!-- Energy Vulnerability Loader -->
+// Load Energy Vulnerability Heatmap
+const energyVulnLayers = [];
+let energyVulnDataLoaded = 0;
+const energyVulnTotal = MAP_CONFIG.selectedRegions.length;
+let allEnergyVulnData = [];  // Store all data for filtering
+let totalCellsWithData = 0;
+
+console.log(`Loading energy vulnerability for ${energyVulnTotal} regions...`);
+
+// Color scale for vulnerability (yellow to deep orange)
+function getVulnerabilityColor(score) {
+    if (score === null || score === undefined) return '#f5f5f5';  // No data
+    
+    // Normalize score 0-1 to color
+    const colors = [
+        [255, 253, 231],  // 0.0 - #fffde7 (minimal)
+        [255, 249, 196],  // 0.1 - #fff9c4
+        [255, 245, 157],  // 0.2 - #fff59d
+        [255, 241, 118],  // 0.3 - #fff176
+        [255, 238, 88],   // 0.4 - #ffee58
+        [255, 235, 59],   // 0.5 - #ffeb3b
+        [253, 216, 53],   // 0.6 - #fdd835
+        [251, 192, 45],   // 0.7 - #fbc02d (medium)
+        [249, 168, 37],   // 0.8 - #f9a825
+        [245, 127, 23]    // 1.0 - #f57f17 (high)
+    ];
+    
+    const idx = Math.min(Math.floor(score * 10), 9);
+    const [r, g, b] = colors[idx];
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
+function getCriticalityStyle(criticality) {
+    const styles = {
+        'HIGH': { color: '#f57f17', weight: 2, fillOpacity: 0.8 },
+        'MEDIUM': { color: '#fbc02d', weight: 1.5, fillOpacity: 0.7 },
+        'LOW': { color: '#fff176', weight: 1, fillOpacity: 0.6 },
+        'MINIMAL': { color: '#fffde7', weight: 0.5, fillOpacity: 0.4 },
+        'NONE': { color: '#f5f5f5', weight: 0.3, fillOpacity: 0.1 }
+    };
+    return styles[criticality] || styles['NONE'];
+}
+
+// Get current filter settings
+function getFilterSettings() {
+    const thresholdSlider = document.getElementById('energy-vuln-threshold-slider');
+    const threshold = thresholdSlider ? (100 - parseInt(thresholdSlider.value)) / 100 : 0;
+    
+    return {
+        threshold: threshold,
+        showHigh: document.getElementById('filter-high')?.checked ?? true,
+        showMedium: document.getElementById('filter-medium')?.checked ?? true,
+        showLow: document.getElementById('filter-low')?.checked ?? true,
+        showMinimal: document.getElementById('filter-minimal')?.checked ?? true
+    };
+}
+
+// Check if feature passes filter
+function passesFilter(feature, filters) {
+    const props = feature.properties;
+    const score = props.normalized_score || 0;
+    const criticality = props.criticality || 'NONE';
+    
+    // Check threshold
+    if (score < filters.threshold) return false;
+    
+    // Check criticality filter
+    if (criticality === 'HIGH' && !filters.showHigh) return false;
+    if (criticality === 'MEDIUM' && !filters.showMedium) return false;
+    if (criticality === 'LOW' && !filters.showLow) return false;
+    if (criticality === 'MINIMAL' && !filters.showMinimal) return false;
+    
+    return true;
+}
+
+// Update map with current filters
+function updateEnergyVulnDisplay() {
+    const filters = getFilterSettings();
+    
+    // Remove existing layers
+    energyVulnLayers.forEach(layer => map.removeLayer(layer));
+    energyVulnLayers.length = 0;
+    
+    let visibleCells = 0;
+    
+    allEnergyVulnData.forEach(data => {
+        if (!data || !data.features) return;
+        
+        const filteredFeatures = data.features.filter(f => {
+            if (f.properties.total_features === 0) return false;
+            return passesFilter(f, filters);
+        });
+        
+        visibleCells += filteredFeatures.length;
+        
+        if (filteredFeatures.length > 0) {
+            const layer = L.geoJSON({
+                type: 'FeatureCollection',
+                features: filteredFeatures
+            }, {
+                style: function(feature) {
+                    const props = feature.properties;
+                    const score = props.normalized_score || 0;
+                    const criticality = props.criticality || 'NONE';
+                    const critStyle = getCriticalityStyle(criticality);
+                    
+                    return {
+                        fillColor: getVulnerabilityColor(score),
+                        weight: critStyle.weight,
+                        opacity: 1,
+                        color: critStyle.color,
+                        fillOpacity: critStyle.fillOpacity
+                    };
+                },
+                onEachFeature: function(feature, layer) {
+                    const props = feature.properties;
+                    const popup = `
+                        <div style="min-width: 200px;">
+                            <strong style="color: #f57f17;">⚡ Grid Cell: ${props.grid_id}</strong>
+                            <hr style="margin: 5px 0;">
+                            <table style="font-size: 11px; width: 100%;">
+                                <tr><td><strong>Criticality:</strong></td><td style="color: ${getCriticalityStyle(props.criticality).color}; font-weight: bold;">${props.criticality}</td></tr>
+                                <tr><td><strong>Vulnerability Score:</strong></td><td>${props.combined_vulnerability?.toFixed(6) || 'N/A'}</td></tr>
+                                <tr><td><strong>Normalized Score:</strong></td><td>${(props.normalized_score * 100)?.toFixed(2) || 0}%</td></tr>
+                                <tr><td colspan="2"><hr style="margin: 3px 0;"></td></tr>
+                                <tr><td><strong>Nodes:</strong></td><td>${props.node_count || 0}</td></tr>
+                                <tr><td><strong>Edges:</strong></td><td>${props.edge_count || 0}</td></tr>
+                                <tr><td><strong>Total Features:</strong></td><td>${props.total_features || 0}</td></tr>
+                                <tr><td colspan="2"><hr style="margin: 3px 0;"></td></tr>
+                                <tr><td><strong>High Crit. Nodes:</strong></td><td style="color: #d32f2f;">${props.high_criticality_nodes || 0}</td></tr>
+                                <tr><td><strong>Medium Crit. Nodes:</strong></td><td style="color: #f57c00;">${props.medium_criticality_nodes || 0}</td></tr>
+                                <tr><td><strong>Avg Voltage (kV):</strong></td><td>${props.node_voltage_avg_kv?.toFixed(1) || 'N/A'}</td></tr>
+                            </table>
+                        </div>
+                    `;
+                    layer.bindPopup(popup);
+                }
+            }).addTo(map);
+            
+            energyVulnLayers.push(layer);
+        }
+    });
+    
+    // Update stats display
+    const statsEl = document.getElementById('energy-vuln-lod-stats');
+    if (statsEl) {
+        statsEl.textContent = `Visible: ${visibleCells} / ${totalCellsWithData} cells`;
+    }
+}
+
+// Initialize filter event listeners
+function initEnergyVulnFilters() {
+    // Threshold slider
+    const thresholdSlider = document.getElementById('energy-vuln-threshold-slider');
+    const thresholdValue = document.getElementById('energy-vuln-threshold-value');
+    
+    if (thresholdSlider) {
+        thresholdSlider.addEventListener('input', function() {
+            const displayValue = 100 - parseInt(this.value);
+            if (thresholdValue) thresholdValue.textContent = displayValue + '%';
+            updateEnergyVulnDisplay();
+        });
+    }
+    
+    // Criticality checkboxes
+    ['filter-high', 'filter-medium', 'filter-low', 'filter-minimal'].forEach(id => {
+        const checkbox = document.getElementById(id);
+        if (checkbox) {
+            checkbox.addEventListener('change', updateEnergyVulnDisplay);
+        }
+    });
+}
+
+// Load data for all regions
+MAP_CONFIG.selectedRegions.forEach(region => {
+    const vulnUrl = `${window.DATA_BASE_URL}/states/${region}/heatmap/energy_vulnerability_heatmap.geojson`;
+    
+    fetch(vulnUrl)
+        .then(response => {
+            if (!response.ok) {
+                console.warn(`Energy vulnerability not found for ${region}`);
+                return null;
+            }
+            return response.json();
+        })
+        .then(data => {
+            energyVulnDataLoaded++;
+            
+            if (data && data.features && data.features.length > 0) {
+                allEnergyVulnData.push(data);
+                
+                // Count cells with data
+                const cellsWithData = data.features.filter(f => f.properties.total_features > 0).length;
+                totalCellsWithData += cellsWithData;
+                
+                console.log(`Loaded energy vulnerability for ${region}: ${cellsWithData} cells with data`);
+            }
+            
+            // Update progress
+            const progress = Math.round((energyVulnDataLoaded / energyVulnTotal) * 100);
+            console.log(`Energy vulnerability loading: ${progress}%`);
+            
+            // When all loaded, render and fit bounds
+            if (energyVulnDataLoaded === energyVulnTotal) {
+                initEnergyVulnFilters();
+                updateEnergyVulnDisplay();
+                
+                if (energyVulnLayers.length > 0) {
+                    const allBounds = L.featureGroup(energyVulnLayers).getBounds();
+                    if (allBounds.isValid()) {
+                        map.fitBounds(allBounds, { padding: [20, 20] });
+                    }
+                }
+            }
+        })
+        .catch(error => {
+            console.error(`Error loading energy vulnerability for ${region}:`, error);
+            energyVulnDataLoaded++;
+        });
+});
+
+
+// ===== exposure loader =====
+// ========== Exposure View Data Loader ==========
+var exposureType = MAP_CONFIG.exposureType || "flood";
+var exposureAssets = MAP_CONFIG.exposureAssets || [];
+var exposureLayer = null;
+var exposureData = {};  // {state: data}
+var exposureAllResults = [];  // Combined results from all states
+var exposureIsLoading = false;
+var exposureLodPercent = 100;       // Manual slider value (user override)
+var exposureZoomLodEnabled = true;  // Auto-LOD based on zoom
+var exposureMinScore = 0;
+var exposureMaxScore = 1;
+
+// Exposure type configuration
+var exposureConfig = {
+    'flood': {
+        scoreField: 'flood_score',
+        normalizedField: 'flood_score_normalized',
+        detailField: 'matching_grids',
+        fileSuffix: '_flood_results.json',
+        subDir: 'flood',
+        maxScoreDefault: 1
+    },
+    'earthquake': {
+        scoreField: 'mmi_earthquake_exposure',
+        normalizedField: 'mmi_earthquake_exposure',
+        detailField: 'contributing_earthquakes',
+        fileSuffix: '_mmi_results.json',
+        subDir: 'earthquake_simplified',
+        maxScoreDefault: 10  // MMI scale is 0-10
+    },
+    'wildfire': {
+        scoreField: 'wildfire_exposure_raw',
+        normalizedField: 'wildfire_exposure_normalized',
+        detailField: 'contributing_fires',
+        fileSuffix: '_wildfire_results.json',
+        subDir: 'wildfire',
+        maxScoreDefault: 1  // Normalized 0-1
+    }
+};
+
+// Get current exposure config
+function getCurrentExposureConfig() {
+    return exposureConfig[exposureType] || exposureConfig['flood'];
+}
+
+// Get score from result based on exposure type
+function getExposureScore(result) {
+    var config = getCurrentExposureConfig();
+    return result[config.scoreField] || 0;
+}
+
+// Get normalized score (for color mapping)
+function getNormalizedExposureScore(result) {
+    var config = getCurrentExposureConfig();
+    var score = result[config.scoreField] || 0;
+    // Normalize based on max score
+    if (exposureType === 'earthquake') {
+        return Math.min(score / 10, 1);  // MMI 0-10 → 0-1
+    }
+    if (exposureType === 'wildfire') {
+        return Math.min(result[config.normalizedField] || 0, 1);  // Already normalized 0-1
+    }
+    return Math.min(score, 1);  // Flood already 0-1
+}
+
+// Get selected states from MAP_CONFIG
+var selectedStates = MAP_CONFIG.selectedRegions || [];
+console.log('🎯 Exposure: Selected states:', selectedStates);
+console.log('🎯 Exposure: Type:', exposureType);
+console.log('🎯 Exposure: Selected asset types:', exposureAssets);
+
+// Color scale for exposure visualization (Reds)
+var exposureColorScale = [
+    '#fff5f0',  // Very light - lowest
+    '#fee0d2',
+    '#fcbba1',
+    '#fc9272',
+    '#fb6a4a',
+    '#ef3b2c',
+    '#cb181d',
+    '#a50f15',
+    '#67000d',  // Very dark - highest
+];
+
+// Loading indicator functions
+function showExposureLoading(message) {
+    exposureIsLoading = true;
+    var loadingDiv = document.getElementById('exposure-loading');
+    var loadingText = document.getElementById('exposure-loading-text');
+    var progressBar = document.getElementById('exposure-loading-progress');
+    var typeSelect = document.getElementById('exposure-type-select');
+    
+    if (loadingDiv) {
+        loadingDiv.style.display = 'block';
+        if (loadingText) loadingText.textContent = message || 'Loading exposure data...';
+        if (progressBar) progressBar.style.width = '10%';
+    }
+    if (typeSelect) typeSelect.disabled = true;
+    
+    // Disable checkboxes during loading
+    document.querySelectorAll('.exposure-asset-checkbox').forEach(function(cb) {
+        cb.disabled = true;
+    });
+}
+
+function updateExposureLoadingProgress(percent, message) {
+    var progressBar = document.getElementById('exposure-loading-progress');
+    var loadingText = document.getElementById('exposure-loading-text');
+    
+    if (progressBar) progressBar.style.width = percent + '%';
+    if (loadingText && message) loadingText.textContent = message;
+}
+
+function hideExposureLoading() {
+    exposureIsLoading = false;
+    var loadingDiv = document.getElementById('exposure-loading');
+    var typeSelect = document.getElementById('exposure-type-select');
+    
+    if (loadingDiv) loadingDiv.style.display = 'none';
+    if (typeSelect) typeSelect.disabled = false;
+    
+    // Re-enable checkboxes
+    document.querySelectorAll('.exposure-asset-checkbox').forEach(function(cb) {
+        cb.disabled = false;
+    });
+}
+
+// Get color based on normalized score (0-1 scale)
+function getExposureColor(score) {
+    if (score === null || score === undefined || isNaN(score) || score === 0) {
+        return '#CCCCCC';  // Gray for no exposure
+    }
+    
+    // Score is 0-1, map to color scale
+    var ratio = Math.max(0, Math.min(1, score));
+    var index = Math.floor(ratio * (exposureColorScale.length - 1));
+    return exposureColorScale[index];
+}
+
+// Get radius for point based on score
+function getExposureRadius(score) {
+    if (score === null || score === undefined || isNaN(score) || score === 0) {
+        return 3;
+    }
+    // Scale radius from 3 to 10 based on score
+    return 3 + (score * 7);
+}
+
+// Format score for display
+function formatScore(score) {
+    if (score === null || score === undefined) return '--';
+    if (score === 0) return '0.000';
+    return score.toFixed(4);
+}
+
+// Format large numbers
+function formatNumber(num) {
+    if (num === null || num === undefined) return '--';
+    if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + 'M';
+    } else if (num >= 1000) {
+        return (num / 1000).toFixed(1) + 'K';
+    }
+    return num.toLocaleString();
+}
+
+// Load exposure data for all selected states
+async function loadExposureData() {
+    if (selectedStates.length === 0) {
+        console.warn('🎯 No states selected for exposure view');
+        updateExposureSummary([], 0);
+        hideExposureLoading();
+        return;
+    }
+    
+    showExposureLoading('Loading exposure data...');
+    exposureData = {};
+    exposureAllResults = [];
+    
+    var loadedCount = 0;
+    var totalStates = selectedStates.length;
+    var config = getCurrentExposureConfig();
+    
+    for (var i = 0; i < selectedStates.length; i++) {
+        var state = selectedStates[i];
+        var stateCode = state.toLowerCase().replace(/ /g, '_');
+        var url = window.DATA_BASE_URL + '/Exposure/' + config.subDir + '/' + stateCode + config.fileSuffix;
+        
+        updateExposureLoadingProgress(
+            10 + (loadedCount / totalStates) * 70,
+            'Loading ' + state + ' (' + (loadedCount + 1) + '/' + totalStates + ')...'
+        );
+        
+        try {
+            var response = await fetch(url);
+            if (response.ok) {
+                var data = await response.json();
+                exposureData[stateCode] = data;
+                
+                // Add state info to each result
+                if (data.results) {
+                    data.results.forEach(function(result) {
+                        result._state = stateCode;
+                        exposureAllResults.push(result);
+                    });
+                }
+                console.log('🎯 Loaded ' + state + ': ' + (data.results ? data.results.length : 0) + ' assets');
+            } else {
+                console.warn('🎯 No data for ' + state + ': ' + response.status);
+            }
+        } catch (error) {
+            console.error('🎯 Error loading ' + state + ':', error);
+        }
+        
+        loadedCount++;
+    }
+    
+    updateExposureLoadingProgress(85, 'Processing ' + exposureAllResults.length + ' assets...');
+    
+    // Sort by score descending for LOD
+    exposureAllResults.sort(function(a, b) {
+        return getExposureScore(b) - getExposureScore(a);
+    });
+    
+    updateExposureLoadingProgress(90, 'Rendering map...');
+    
+    // Render with current filters
+    renderExposureLayer();
+    
+    updateExposureLoadingProgress(100, 'Done!');
+    hideExposureLoading();
+}
+
+// Filter results based on asset types, score range, and LOD
+function getFilteredResults() {
+    var filtered = exposureAllResults.filter(function(result) {
+        // Determine asset type from properties
+        var assetType = getAssetType(result.properties);
+        
+        // Filter by asset type (if none selected, show nothing)
+        if (exposureAssets.length === 0 || !exposureAssets.includes(assetType)) {
+            return false;
+        }
+        
+        // Filter by score range (use normalized for comparison)
+        var score = getNormalizedExposureScore(result);
+        if (score < exposureMinScore || score > exposureMaxScore) {
+            return false;
+        }
+        
+        return true;
+    });
+    
+    // Apply LOD — combine zoom-based ratio with manual slider
+    var effectivePercent = exposureLodPercent;
+    if (exposureZoomLodEnabled && typeof map !== 'undefined') {
+        var zoomRatio = getZoomLodRatio(map.getZoom());
+        // Effective = min(slider%, zoom%) — most restrictive wins
+        effectivePercent = Math.min(exposureLodPercent, Math.round(zoomRatio * 100));
+    }
+    if (effectivePercent < 100) {
+        var count = Math.max(1, Math.ceil(filtered.length * (effectivePercent / 100)));
+        filtered = filtered.slice(0, count);
+    }
+
+    // Update LOD display to show effective %
+    var lodEffectiveEl = document.getElementById('exposure-lod-effective');
+    if (lodEffectiveEl) {
+        lodEffectiveEl.textContent = effectivePercent + '%';
+    }
+
+    return filtered;
+}
+
+// Determine asset type from properties based on OSM tags
+function getAssetType(props) {
+    if (!props) return 'other';
+    
+    // Check power=* tag first (most common for energy assets)
+    if (props.power) {
+        var powerType = props.power.toLowerCase();
+        // Map common power types
+        var powerMapping = {
+            'tower': 'tower',
+            'pole': 'pole',
+            'line': 'line',
+            'cable': 'cable',
+            'substation': 'substation',
+            'sub_station': 'substation',
+            'plant': 'plant',
+            'generator': 'generator',
+            'transformer': 'transformer',
+            'switch': 'switch',
+            'switchgear': 'switch',
+            'compensator': 'other',
+            'converter': 'other',
+            'portal': 'other',
+            'catenary_mast': 'pole',
+            'minor_line': 'line'
+        };
+        return powerMapping[powerType] || 'other';
+    }
+    
+    // Check amenity=fuel (gas stations)
+    if (props.amenity === 'fuel') {
+        return 'fuel';
+    }
+    
+    // Check man_made=pipeline
+    if (props.man_made === 'pipeline') {
+        return 'pipeline';
+    }
+    
+    // Check for pipeline substance
+    if (props.substance === 'gas' || props.substance === 'oil') {
+        return 'pipeline';
+    }
+    
+    return 'other';
+}
+
+// Render exposure layer on map
+function renderExposureLayer() {
+    // Remove existing layer
+    if (exposureLayer) {
+        map.removeLayer(exposureLayer);
+        exposureLayer = null;
+    }
+    
+    var filteredResults = getFilteredResults();
+    var config = getCurrentExposureConfig();
+    console.log('🎯 Rendering ' + filteredResults.length + ' assets for ' + exposureType);
+    
+    // Create GeoJSON features
+    var features = filteredResults.map(function(result) {
+        var assetType = getAssetType(result.properties);
+        var score = getExposureScore(result);
+        var normalizedScore = getNormalizedExposureScore(result);
+        var detailCount = result[config.detailField] ? 
+            (Array.isArray(result[config.detailField]) ? result[config.detailField].length : result[config.detailField]) : 0;
+        
+        return {
+            type: 'Feature',
+            geometry: result.geometry,
+            properties: {
+                ...result.properties,
+                _asset_type: assetType,
+                _exposure_score: score,
+                _exposure_normalized: normalizedScore,
+                _calculation_method: result.calculation_method,
+                _detail_count: detailCount,
+                _state: result._state,
+                _asset_index: result.asset_index
+            }
+        };
+    });
+    
+    var geojson = {
+        type: 'FeatureCollection',
+        features: features
+    };
+    
+    // Create layer with styling
+    exposureLayer = L.geoJSON(geojson, {
+        pointToLayer: function(feature, latlng) {
+            var normalizedScore = feature.properties._exposure_normalized || 0;
+            return L.circleMarker(latlng, {
+                radius: getExposureRadius(normalizedScore),
+                fillColor: getExposureColor(normalizedScore),
+                color: '#333',
+                weight: 1,
+                opacity: 0.8,
+                fillOpacity: 0.7
+            });
+        },
+        style: function(feature) {
+            var normalizedScore = feature.properties._exposure_normalized || 0;
+            return {
+                color: getExposureColor(normalizedScore),
+                weight: feature.geometry.type === 'LineString' ? 3 : 2,
+                opacity: 0.8,
+                fillColor: getExposureColor(normalizedScore),
+                fillOpacity: 0.5
+            };
+        },
+        onEachFeature: function(feature, layer) {
+            var props = feature.properties;
+            var assetType = props._asset_type || 'Unknown';
+            var scoreLabels = {'earthquake': 'MMI Score', 'flood': 'Flood Score', 'wildfire': 'Wildfire Score'};
+            var detailLabels = {'earthquake': 'Earthquakes', 'flood': 'Grids', 'wildfire': 'Fires'};
+            var scoreLabel = scoreLabels[exposureType] || 'Score';
+            var detailLabel = detailLabels[exposureType] || 'Details';
+            
+            var popup = '<div style="min-width: 200px;">';
+            popup += '<h4 style="margin: 0 0 8px 0; color: #880e4f;">🎯 ' + exposureType.charAt(0).toUpperCase() + exposureType.slice(1) + ' Exposure</h4>';
+            popup += '<table style="font-size: 12px; width: 100%;">';
+            popup += '<tr><td><strong>Type:</strong></td><td>' + assetType + '</td></tr>';
+            popup += '<tr><td><strong>' + scoreLabel + ':</strong></td><td>' + formatScore(props._exposure_score) + '</td></tr>';
+            popup += '<tr><td><strong>Normalized:</strong></td><td>' + formatScore(props._exposure_normalized) + '</td></tr>';
+            popup += '<tr><td><strong>Method:</strong></td><td>' + (props._calculation_method || '--') + '</td></tr>';
+            popup += '<tr><td><strong>' + detailLabel + ':</strong></td><td>' + (props._detail_count || 0) + '</td></tr>';
+            popup += '<tr><td><strong>State:</strong></td><td>' + (props._state || '--') + '</td></tr>';
+            popup += '</table></div>';
+            layer.bindPopup(popup);
+        }
+    });
+    
+    exposureLayer.addTo(map);
+    
+    // Update summary
+    updateExposureSummary(filteredResults, exposureAllResults.length);
+    
+    // Update top assets list
+    updateTopAssetsList(filteredResults);
+}
+
+// Update summary statistics
+function updateExposureSummary(filteredResults, totalAssets) {
+    document.getElementById('exposure-total-assets').textContent = formatNumber(totalAssets);
+    document.getElementById('exposure-displayed-assets').textContent = formatNumber(filteredResults.length);
+    
+    var assetsWithScore = filteredResults.filter(function(r) { return getExposureScore(r) > 0; }).length;
+    document.getElementById('exposure-assets-with-score').textContent = formatNumber(assetsWithScore);
+    
+    // Calculate average score
+    var totalScore = 0;
+    var scoreCount = 0;
+    filteredResults.forEach(function(r) {
+        var score = getExposureScore(r);
+        if (score > 0) {
+            totalScore += score;
+            scoreCount++;
+        }
+    });
+    var avgScore = scoreCount > 0 ? (totalScore / scoreCount) : 0;
+    document.getElementById('exposure-avg-score').textContent = formatScore(avgScore);
+}
+
+// Update top assets list
+function updateTopAssetsList(filteredResults) {
+    var topList = document.getElementById('exposure-top-list');
+    if (!topList) return;
+    
+    // Get top 10 by score
+    var top10 = filteredResults.slice(0, 10);
+    
+    if (top10.length === 0) {
+        topList.innerHTML = '<p style="color: #999;">No assets to display</p>';
+        return;
+    }
+    
+    var html = '<ol style="margin: 0; padding-left: 20px;">';
+    top10.forEach(function(result, i) {
+        var type = getAssetType(result.properties);
+        var state = result._state ? result._state.replace(/_/g, ' ') : '';
+        var score = getExposureScore(result);
+        var normalizedScore = getNormalizedExposureScore(result);
+        var color = getExposureColor(normalizedScore);
+        
+        html += '<li style="margin: 4px 0; padding: 4px; border-left: 3px solid ' + color + '; background: #f5f5f5;">';
+        html += '<strong style="color: ' + color + ';">' + formatScore(score) + '</strong> ';
+        html += '<span style="color: #666;">' + type + '</span>';
+        html += '<span style="color: #999; font-size: 10px;"> (' + state + ')</span>';
+        html += '</li>';
+    });
+    html += '</ol>';
+    
+    topList.innerHTML = html;
+}
+
+// Update asset type filter
+function updateExposureAssetFilter() {
+    exposureAssets = [];
+    document.querySelectorAll('.exposure-asset-checkbox:checked').forEach(function(cb) {
+        exposureAssets.push(cb.value);
+    });
+    console.log('🎯 Asset filter updated:', exposureAssets);
+    renderExposureLayer();
+}
+
+// Initialize event listeners for exposure controls
+function initExposureControls() {
+    // Asset type checkboxes
+    document.querySelectorAll('.exposure-asset-checkbox').forEach(function(cb) {
+        cb.addEventListener('change', updateExposureAssetFilter);
+    });
+    
+    // Select all / clear all buttons
+    var selectAllBtn = document.getElementById('exposure-select-all');
+    var selectNoneBtn = document.getElementById('exposure-select-none');
+    
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', function() {
+            document.querySelectorAll('.exposure-asset-checkbox').forEach(function(cb) {
+                cb.checked = true;
+            });
+            updateExposureAssetFilter();
+        });
+    }
+    
+    if (selectNoneBtn) {
+        selectNoneBtn.addEventListener('click', function() {
+            document.querySelectorAll('.exposure-asset-checkbox').forEach(function(cb) {
+                cb.checked = false;
+            });
+            updateExposureAssetFilter();
+        });
+    }
+    
+    // Score range sliders
+    var minScoreSlider = document.getElementById('exposure-min-score');
+    var maxScoreSlider = document.getElementById('exposure-max-score');
+    var minScoreDisplay = document.getElementById('exposure-min-score-display');
+    var maxScoreDisplay = document.getElementById('exposure-max-score-display');
+    
+    if (minScoreSlider) {
+        minScoreSlider.addEventListener('input', function() {
+            exposureMinScore = parseFloat(this.value);
+            if (minScoreDisplay) minScoreDisplay.textContent = this.value;
+        });
+        minScoreSlider.addEventListener('change', function() {
+            renderExposureLayer();
+        });
+    }
+    
+    if (maxScoreSlider) {
+        maxScoreSlider.addEventListener('input', function() {
+            exposureMaxScore = parseFloat(this.value);
+            if (maxScoreDisplay) maxScoreDisplay.textContent = this.value;
+        });
+        maxScoreSlider.addEventListener('change', function() {
+            renderExposureLayer();
+        });
+    }
+    
+    // LOD slider
+    var lodSlider = document.getElementById('exposure-lod-slider');
+    var lodDisplay = document.getElementById('exposure-lod-display');
+    
+    if (lodSlider) {
+        lodSlider.addEventListener('input', function() {
+            exposureLodPercent = parseInt(this.value);
+            if (lodDisplay) lodDisplay.textContent = this.value;
+        });
+        lodSlider.addEventListener('change', function() {
+            renderExposureLayer();
+        });
+    }
+    
+    // Exposure type selector
+    var typeSelect = document.getElementById('exposure-type-select');
+    if (typeSelect) {
+        typeSelect.addEventListener('change', function() {
+            exposureType = this.value;
+            loadExposureData();
+        });
+    }
+
+    // Zoom-based auto LOD toggle
+    var zoomLodToggle = document.getElementById('exposure-zoom-lod-toggle');
+    if (zoomLodToggle) {
+        zoomLodToggle.addEventListener('change', function() {
+            exposureZoomLodEnabled = this.checked;
+            renderExposureLayer();
+        });
+    }
+
+    // Listen to zoom changes → re-render with new LOD ratio
+    if (typeof map !== 'undefined') {
+        map.on('zoomend', function() {
+            if (exposureZoomLodEnabled && exposureAllResults.length > 0 && !exposureIsLoading) {
+                renderExposureLayer();
+            }
+        });
+    }
+}
+
+// Initialize exposure view
+if (MAP_CONFIG.viewType === 'exposure') {
+    console.log('🎯 Initializing Exposure view...');
+    
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+        initExposureControls();
+        loadExposureData();
+    });
+    
+    // If DOM already loaded, initialize now
+    if (document.readyState !== 'loading') {
+        initExposureControls();
+        loadExposureData();
+    }
+}
+
+
+// ===== energy_detail loader =====
+// ========== Energy Detail View Data Loader ==========
+var energyDetailAssets = MAP_CONFIG.energyDetailAssets || [];
+var energyDetailLodPercent = parseInt(MAP_CONFIG.energyDetailLod) || 100;
+var energyDetailZoomLodEnabled = true;  // Auto-LOD based on zoom
+var energyDetailLayer = null;
+var energyDetailData = {};  // {state: geojsonData}
+var energyDetailAllFeatures = [];  // Combined features from all states
+var energyDetailIsLoading = false;
+
+// Asset type colors (matching panel config)
+var energyDetailColors = {
+    'plant': '#FF5722',
+    'substation': '#9C27B0',
+    'line': '#2196F3',
+    'tower': '#607D8B',
+    'generator': '#4CAF50',
+    'pipeline': '#795548',
+    'fuel': '#E91E63',
+    'other': '#9E9E9E'
+};
+
+// Get selected states from MAP_CONFIG
+var selectedStates = MAP_CONFIG.selectedRegions || [];
+console.log('⚡ Energy Detail: Selected states:', selectedStates);
+console.log('⚡ Energy Detail: Selected asset types:', energyDetailAssets);
+console.log('⚡ Energy Detail: LOD percent:', energyDetailLodPercent);
+
+// Loading indicator functions
+function showEnergyDetailLoading(message) {
+    energyDetailIsLoading = true;
+    var loadingDiv = document.getElementById('energy-detail-loading');
+    var loadingText = document.getElementById('energy-detail-loading-text');
+    var progressBar = document.getElementById('energy-detail-loading-progress');
+    
+    if (loadingDiv) {
+        loadingDiv.style.display = 'block';
+        if (loadingText) loadingText.textContent = message || 'Loading energy data...';
+        if (progressBar) progressBar.style.width = '10%';
+    }
+    
+    // Disable checkboxes during loading
+    document.querySelectorAll('.energy-detail-asset-checkbox').forEach(function(cb) {
+        cb.disabled = true;
+    });
+}
+
+function updateEnergyDetailLoadingProgress(percent, message) {
+    var progressBar = document.getElementById('energy-detail-loading-progress');
+    var loadingText = document.getElementById('energy-detail-loading-text');
+    
+    if (progressBar) progressBar.style.width = percent + '%';
+    if (loadingText && message) loadingText.textContent = message;
+}
+
+function hideEnergyDetailLoading() {
+    energyDetailIsLoading = false;
+    var loadingDiv = document.getElementById('energy-detail-loading');
+    
+    if (loadingDiv) loadingDiv.style.display = 'none';
+    
+    // Re-enable checkboxes
+    document.querySelectorAll('.energy-detail-asset-checkbox').forEach(function(cb) {
+        cb.disabled = false;
+    });
+}
+
+// Determine asset type from properties
+function getEnergyAssetType(props) {
+    if (!props) return 'other';
+    
+    // Check amenity=fuel (gas stations)
+    if (props.amenity === 'fuel') {
+        return 'fuel';
+    }
+    
+    // Check man_made=pipeline or substance=gas/oil
+    if (props.man_made === 'pipeline' || props.substance === 'gas' || props.substance === 'oil') {
+        return 'pipeline';
+    }
+    
+    var powerType = (props.power || '').toLowerCase();
+    if (powerType) {
+        var mapping = {
+            'tower': 'tower',
+            'pole': 'tower',
+            'portal': 'tower',
+            'catenary_mast': 'tower',
+            'line': 'line',
+            'cable': 'line',
+            'minor_line': 'line',
+            'substation': 'substation',
+            'sub_station': 'substation',
+            'plant': 'plant',
+            'generator': 'generator',
+            'transformer': 'substation',
+            'switch': 'substation',
+            'switchgear': 'substation',
+            'compensator': 'substation',
+            'converter': 'substation'
+        };
+        return mapping[powerType] || 'other';
+    }
+    
+    return 'other';
+}
+
+// Get color for asset type
+function getEnergyDetailColor(assetType) {
+    return energyDetailColors[assetType] || energyDetailColors['other'];
+}
+
+// Format large numbers
+function formatNumber(num) {
+    if (num === null || num === undefined) return '--';
+    if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + 'M';
+    } else if (num >= 1000) {
+        return (num / 1000).toFixed(1) + 'K';
+    }
+    return num.toLocaleString();
+}
+
+// Load energy data for all selected states
+async function loadEnergyDetailData() {
+    if (selectedStates.length === 0) {
+        console.warn('⚡ No states selected for energy detail view');
+        updateEnergyDetailSummary([], {});
+        hideEnergyDetailLoading();
+        return;
+    }
+    
+    showEnergyDetailLoading('Loading energy data...');
+    energyDetailData = {};
+    energyDetailAllFeatures = [];
+    
+    var loadedCount = 0;
+    var totalStates = selectedStates.length;
+    
+    for (var i = 0; i < selectedStates.length; i++) {
+        var state = selectedStates[i];
+        var stateCode = state.toLowerCase().replace(/ /g, '_');
+        var url = window.DATA_BASE_URL + '/states/' + stateCode + '/Energy_Sector.geojson';
+        
+        updateEnergyDetailLoadingProgress(
+            10 + (loadedCount / totalStates) * 70,
+            'Loading ' + state + ' (' + (loadedCount + 1) + '/' + totalStates + ')...'
+        );
+        
+        try {
+            var response = await fetch(url);
+            if (response.ok) {
+                var data = await response.json();
+                energyDetailData[stateCode] = data;
+                
+                // Add state info to each feature and collect
+                if (data.features) {
+                    data.features.forEach(function(feature) {
+                        feature.properties._state = stateCode;
+                        feature.properties._asset_type = getEnergyAssetType(feature.properties);
+                        energyDetailAllFeatures.push(feature);
+                    });
+                }
+                console.log('⚡ Loaded ' + state + ': ' + (data.features ? data.features.length : 0) + ' assets');
+            } else {
+                console.warn('⚡ No data for ' + state + ': ' + response.status);
+            }
+        } catch (error) {
+            console.error('⚡ Error loading ' + state + ':', error);
+        }
+        
+        loadedCount++;
+    }
+    
+    updateEnergyDetailLoadingProgress(85, 'Processing ' + energyDetailAllFeatures.length + ' assets...');
+    
+    // Sort features: prioritize non-tower assets (more important first)
+    energyDetailAllFeatures.sort(function(a, b) {
+        var typeOrder = {'plant': 0, 'substation': 1, 'generator': 2, 'pipeline': 3, 'fuel': 4, 'line': 5, 'tower': 6, 'other': 7};
+        var aOrder = typeOrder[a.properties._asset_type] || 7;
+        var bOrder = typeOrder[b.properties._asset_type] || 7;
+        return aOrder - bOrder;
+    });
+    
+    updateEnergyDetailLoadingProgress(90, 'Rendering map...');
+    
+    // Render with current filters
+    renderEnergyDetailLayer();
+    
+    updateEnergyDetailLoadingProgress(100, 'Done!');
+    hideEnergyDetailLoading();
+}
+
+// Filter features based on asset types and LOD
+function getFilteredEnergyFeatures() {
+    var filtered = energyDetailAllFeatures.filter(function(feature) {
+        var assetType = feature.properties._asset_type;
+        
+        // Filter by asset type
+        if (energyDetailAssets.length === 0 || !energyDetailAssets.includes(assetType)) {
+            return false;
+        }
+        
+        return true;
+    });
+    
+    // Apply LOD — combine zoom-based ratio with manual slider
+    var effectivePercent = energyDetailLodPercent;
+    if (energyDetailZoomLodEnabled && typeof map !== 'undefined') {
+        var zoomRatio = getZoomLodRatio(map.getZoom());
+        effectivePercent = Math.min(energyDetailLodPercent, Math.round(zoomRatio * 100));
+    }
+    if (effectivePercent < 100) {
+        var count = Math.max(1, Math.ceil(filtered.length * (effectivePercent / 100)));
+        filtered = filtered.slice(0, count);
+    }
+
+    // Update LOD display to show effective %
+    var lodEffectiveEl = document.getElementById('energy-detail-lod-effective');
+    if (lodEffectiveEl) {
+        lodEffectiveEl.textContent = effectivePercent + '%';
+    }
+
+    return filtered;
+}
+
+// Render energy detail layer on map
+function renderEnergyDetailLayer() {
+    // Remove existing layer
+    if (energyDetailLayer) {
+        map.removeLayer(energyDetailLayer);
+        energyDetailLayer = null;
+    }
+    
+    var filteredFeatures = getFilteredEnergyFeatures();
+    console.log('⚡ Rendering ' + filteredFeatures.length + ' energy assets');
+    
+    // Create GeoJSON
+    var geojson = {
+        type: 'FeatureCollection',
+        features: filteredFeatures
+    };
+    
+    // Create layer with styling
+    energyDetailLayer = L.geoJSON(geojson, {
+        pointToLayer: function(feature, latlng) {
+            var assetType = feature.properties._asset_type;
+            var color = getEnergyDetailColor(assetType);
+            var radiusMap = {
+                'plant': 8,
+                'substation': 7,
+                'generator': 6,
+                'fuel': 5,
+                'pipeline': 5,
+                'line': 4,
+                'tower': 3,
+                'other': 4
+            };
+            var radius = radiusMap[assetType] || 4;
+            
+            return L.circleMarker(latlng, {
+                radius: radius,
+                fillColor: color,
+                color: '#333',
+                weight: 1,
+                opacity: 0.8,
+                fillOpacity: 0.7
+            });
+        },
+        style: function(feature) {
+            var assetType = feature.properties._asset_type;
+            var color = getEnergyDetailColor(assetType);
+            return {
+                color: color,
+                weight: feature.geometry.type === 'LineString' ? 2 : 2,
+                opacity: 0.8,
+                fillColor: color,
+                fillOpacity: 0.5
+            };
+        },
+        onEachFeature: function(feature, layer) {
+            var props = feature.properties;
+            var assetType = props._asset_type || 'Unknown';
+            var powerType = props.power || 'Unknown';
+            var state = (props._state || '').replace(/_/g, ' ');
+            var color = getEnergyDetailColor(assetType);
+            
+            var popup = '<div style="min-width: 220px;">';
+            popup += '<h4 style="margin: 0 0 8px 0; color: ' + color + ';">⚡ Energy Asset</h4>';
+            popup += '<table style="font-size: 12px; width: 100%;">';
+            popup += '<tr><td><strong>Type:</strong></td><td style="color: ' + color + ';">' + assetType + '</td></tr>';
+            popup += '<tr><td><strong>Power:</strong></td><td>' + powerType + '</td></tr>';
+            popup += '<tr><td><strong>State:</strong></td><td>' + state + '</td></tr>';
+            
+            // Add operator if available
+            if (props.operator) {
+                popup += '<tr><td><strong>Operator:</strong></td><td>' + props.operator + '</td></tr>';
+            }
+            
+            // Add voltage if available
+            if (props.voltage) {
+                popup += '<tr><td><strong>Voltage:</strong></td><td>' + props.voltage + '</td></tr>';
+            }
+            
+            // Add material for towers
+            if (props.material) {
+                popup += '<tr><td><strong>Material:</strong></td><td>' + props.material + '</td></tr>';
+            }
+            
+            // Add design for towers
+            if (props.design) {
+                popup += '<tr><td><strong>Design:</strong></td><td>' + props.design + '</td></tr>';
+            }
+            
+            popup += '</table></div>';
+            layer.bindPopup(popup);
+        }
+    });
+    
+    energyDetailLayer.addTo(map);
+    
+    // Update summary
+    var breakdown = {};
+    filteredFeatures.forEach(function(f) {
+        var type = f.properties._asset_type;
+        breakdown[type] = (breakdown[type] || 0) + 1;
+    });
+    updateEnergyDetailSummary(filteredFeatures, breakdown);
+}
+
+// Update summary statistics
+function updateEnergyDetailSummary(filteredFeatures, breakdown) {
+    var totalEl = document.getElementById('energy-detail-total-assets');
+    var displayedEl = document.getElementById('energy-detail-displayed-assets');
+    var breakdownEl = document.getElementById('energy-detail-breakdown');
+    
+    if (totalEl) totalEl.textContent = formatNumber(energyDetailAllFeatures.length);
+    if (displayedEl) displayedEl.textContent = formatNumber(filteredFeatures.length);
+    
+    if (breakdownEl) {
+        var html = '';
+        var typesInOrder = ['plant', 'substation', 'generator', 'pipeline', 'fuel', 'line', 'tower', 'other'];
+        typesInOrder.forEach(function(type) {
+            if (breakdown[type]) {
+                var color = getEnergyDetailColor(type);
+                html += '<div style="display: flex; align-items: center; gap: 5px; margin: 3px 0;">';
+                html += '<span style="display: inline-block; width: 10px; height: 10px; background: ' + color + '; border-radius: 2px;"></span>';
+                html += '<span>' + type.charAt(0).toUpperCase() + type.slice(1) + ': ' + formatNumber(breakdown[type]) + '</span>';
+                html += '</div>';
+            }
+        });
+        breakdownEl.innerHTML = html || '<span style="color: #999;">No assets displayed</span>';
+    }
+}
+
+// Update asset type filter
+function updateEnergyDetailAssetFilter() {
+    energyDetailAssets = [];
+    document.querySelectorAll('.energy-detail-asset-checkbox:checked').forEach(function(cb) {
+        energyDetailAssets.push(cb.value);
+    });
+    console.log('⚡ Asset filter updated:', energyDetailAssets);
+    renderEnergyDetailLayer();
+}
+
+// Initialize event listeners for energy detail controls
+function initEnergyDetailControls() {
+    // Asset type checkboxes
+    document.querySelectorAll('.energy-detail-asset-checkbox').forEach(function(cb) {
+        cb.addEventListener('change', updateEnergyDetailAssetFilter);
+    });
+    
+    // Select all / clear all buttons
+    var selectAllBtn = document.getElementById('energy-detail-select-all');
+    var selectNoneBtn = document.getElementById('energy-detail-select-none');
+    
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', function() {
+            document.querySelectorAll('.energy-detail-asset-checkbox').forEach(function(cb) {
+                cb.checked = true;
+            });
+            updateEnergyDetailAssetFilter();
+        });
+    }
+    
+    if (selectNoneBtn) {
+        selectNoneBtn.addEventListener('click', function() {
+            document.querySelectorAll('.energy-detail-asset-checkbox').forEach(function(cb) {
+                cb.checked = false;
+            });
+            updateEnergyDetailAssetFilter();
+        });
+    }
+    
+    // LOD slider
+    var lodSlider = document.getElementById('energy-detail-lod-slider');
+    var lodDisplay = document.getElementById('energy-detail-lod-display');
+
+    if (lodSlider) {
+        lodSlider.addEventListener('input', function() {
+            energyDetailLodPercent = parseInt(this.value);
+            if (lodDisplay) lodDisplay.textContent = this.value + '%';
+        });
+        lodSlider.addEventListener('change', function() {
+            renderEnergyDetailLayer();
+        });
+    }
+
+    // Zoom-based auto LOD toggle
+    var zoomLodToggle = document.getElementById('energy-detail-zoom-lod-toggle');
+    if (zoomLodToggle) {
+        zoomLodToggle.addEventListener('change', function() {
+            energyDetailZoomLodEnabled = this.checked;
+            renderEnergyDetailLayer();
+        });
+    }
+
+    // Listen to zoom changes → re-render with new LOD ratio
+    if (typeof map !== 'undefined') {
+        map.on('zoomend', function() {
+            if (energyDetailZoomLodEnabled && energyDetailAllFeatures.length > 0 && !energyDetailIsLoading) {
+                renderEnergyDetailLayer();
+            }
+        });
+    }
+}
+
+// Initialize energy detail view
+if (MAP_CONFIG.viewType === 'energy_detail') {
+    console.log('⚡ Initializing Energy Detail view...');
+    
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+        initEnergyDetailControls();
+        loadEnergyDetailData();
+    });
+    
+    // If DOM already loaded, initialize now
+    if (document.readyState !== 'loading') {
+        initEnergyDetailControls();
+        loadEnergyDetailData();
+    }
+}
+
+
+// ===== social_vulnerability loader =====
+<!-- Social Vulnerability Loader -->
+// Load Social Vulnerability Index data (US county-level, 2022)
+const sviLayers = [];
+let sviData = null;
+
+console.log('Loading Social Vulnerability Index data (US county-level)...');
+
+// Color scale for SVI (green = low vulnerability -> red = high vulnerability)
+function getSVIColor(score) {
+    if (score === null || score === undefined || score < 0) return '#f5f5f5';
+    const colors = [
+        [27, 94, 32],    // 0.0 - very low
+        [56, 142, 60],   // 0.1
+        [104, 159, 56],  // 0.2
+        [175, 180, 43],  // 0.3
+        [251, 192, 45],  // 0.4
+        [255, 160, 0],   // 0.5
+        [245, 124, 0],   // 0.6
+        [230, 81, 0],    // 0.7
+        [191, 54, 12],   // 0.8
+        [183, 28, 28]    // 1.0 - very high
+    ];
+    const idx = Math.min(Math.floor(score * 10), 9);
+    const [r, g, b] = colors[idx];
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
+function getSVIOpacity(score) {
+    if (score === null || score === undefined || score < 0) return 0.1;
+    return 0.3 + score * 0.5;  // 0.3 to 0.8
+}
+
+// Get SVI level label
+function getSVILevel(score) {
+    if (score >= 0.75) return 'Very High';
+    if (score >= 0.50) return 'High';
+    if (score >= 0.25) return 'Moderate';
+    return 'Low';
+}
+
+// Get current filter/metric settings
+function getSVISettings() {
+    const thresholdEl = document.getElementById('svi-threshold-slider');
+    const threshold = thresholdEl ? parseInt(thresholdEl.value) / 100 : 0;
+    return {
+        metric: document.getElementById('svi-map-metric')?.value || 'RPL_THEMES',
+        threshold: threshold,
+        showVeryHigh: document.getElementById('svi-filter-veryhigh')?.checked ?? true,
+        showHigh: document.getElementById('svi-filter-high')?.checked ?? true,
+        showModerate: document.getElementById('svi-filter-moderate')?.checked ?? true,
+        showLow: document.getElementById('svi-filter-low')?.checked ?? true,
+    };
+}
+
+function passesSVIFilter(feature, settings) {
+    const score = feature.properties[settings.metric];
+    if (score === undefined || score === null || score < 0) return false;
+    if (score < settings.threshold) return false;
+    
+    const level = getSVILevel(score);
+    if (level === 'Very High' && !settings.showVeryHigh) return false;
+    if (level === 'High' && !settings.showHigh) return false;
+    if (level === 'Moderate' && !settings.showModerate) return false;
+    if (level === 'Low' && !settings.showLow) return false;
+    return true;
+}
+
+// Theme display names
+const themeNames = {
+    'RPL_THEMES': 'Overall SVI',
+    'RPL_THEME1': 'Socioeconomic Status',
+    'RPL_THEME2': 'Household Characteristics',
+    'RPL_THEME3': 'Racial & Ethnic Minority',
+    'RPL_THEME4': 'Housing Type & Transport'
+};
+
+function updateSVIDisplay() {
+    if (!sviData) return;
+    const settings = getSVISettings();
+    
+    // Remove existing layers
+    sviLayers.forEach(layer => map.removeLayer(layer));
+    sviLayers.length = 0;
+    
+    let visibleCount = 0;
+    let totalPop = 0;
+    
+    const filtered = sviData.features.filter(f => passesSVIFilter(f, settings));
+    visibleCount = filtered.length;
+    filtered.forEach(f => { totalPop += f.properties.E_TOTPOP || 0; });
+    
+    if (filtered.length > 0) {
+        const layer = L.geoJSON({
+            type: 'FeatureCollection',
+            features: filtered
+        }, {
+            style: function(feature) {
+                const score = feature.properties[settings.metric] || 0;
+                return {
+                    fillColor: getSVIColor(score),
+                    weight: 0.5,
+                    opacity: 0.6,
+                    color: '#555',
+                    fillOpacity: getSVIOpacity(score)
+                };
+            },
+            onEachFeature: function(feature, layer) {
+                const p = feature.properties;
+                const metricLabel = themeNames[settings.metric] || settings.metric;
+                const score = p[settings.metric];
+                const popup = `
+                    <div style="min-width: 240px;">
+                        <strong style="color: #6a1b9a;">🏘️ ${p.COUNTY}, ${p.ST_ABBR}</strong>
+                        <div style="font-size: 11px; color: #888;">FIPS: ${p.FIPS}</div>
+                        <hr style="margin: 6px 0; border-color: #e1bee7;">
+                        <div style="font-size: 12px;">
+                            <div style="margin: 3px 0;"><strong>${metricLabel}:</strong> ${score !== undefined ? score.toFixed(4) : 'N/A'} — <em>${getSVILevel(score)}</em></div>
+                            <div style="margin: 3px 0;"><strong>Population:</strong> ${(p.E_TOTPOP || 0).toLocaleString()}</div>
+                            <hr style="margin: 6px 0; border-color: #f3e5f5;">
+                            <div style="margin: 3px 0; font-size: 11px; color: #666;">
+                                <strong>All Themes:</strong><br>
+                                Overall: ${(p.RPL_THEMES ?? -1).toFixed(4)}<br>
+                                Socioeconomic: ${(p.RPL_THEME1 ?? -1).toFixed(4)}<br>
+                                Household: ${(p.RPL_THEME2 ?? -1).toFixed(4)}<br>
+                                Minority: ${(p.RPL_THEME3 ?? -1).toFixed(4)}<br>
+                                Housing/Transport: ${(p.RPL_THEME4 ?? -1).toFixed(4)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                layer.bindPopup(popup);
+            }
+        }).addTo(map);
+        sviLayers.push(layer);
+    }
+    
+    // Update stats
+    const statsEl = document.getElementById('svi-stats');
+    if (statsEl) {
+        const metricLabel = themeNames[settings.metric] || settings.metric;
+        statsEl.innerHTML = `<strong>${metricLabel}</strong> | Showing: ${visibleCount} / ${sviData.features.length} counties | Pop: ${totalPop.toLocaleString()}`;
+    }
+    
+    // Update threshold display
+    const thresholdVal = document.getElementById('svi-threshold-value');
+    if (thresholdVal) {
+        thresholdVal.textContent = (settings.threshold * 100).toFixed(0) + '%';
+    }
+}
+
+// Load SVI GeoJSON
+const sviUrl = window.DATA_BASE_URL + '/';
+fetch(sviUrl)
+    .then(r => { if (!r.ok) throw new Error('Failed to load SVI'); return r.json(); })
+    .then(data => {
+        console.log(`Loaded SVI: ${data.features.length} US counties`);
+        sviData = data;
+        updateSVIDisplay();
+    })
+    .catch(err => console.error('SVI load error:', err));
+
+// Event listeners
+['svi-filter-veryhigh', 'svi-filter-high', 'svi-filter-moderate', 'svi-filter-low'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', updateSVIDisplay);
+});
+const sviMetricEl = document.getElementById('svi-map-metric');
+if (sviMetricEl) sviMetricEl.addEventListener('change', updateSVIDisplay);
+const sviThresholdEl = document.getElementById('svi-threshold-slider');
+if (sviThresholdEl) sviThresholdEl.addEventListener('input', updateSVIDisplay);
+
+
+            })
+            .catch(function(err) { console.error(err); alert('Error loading map data.'); });
+
+        // ===== Event handlers =====
+        initViewToggle();
+        initBackgroundToggle(map, MAP_CONFIG.showBackground);
+        var setCurrentCounty = initCoordinateDisplay(map);
+
+        var panelToggle = document.getElementById('panel-toggle');
+        var sectorPanel = document.getElementById('sector-panel');
+        if (panelToggle && sectorPanel) {
+            panelToggle.addEventListener('click', function() {
+                var isHidden = sectorPanel.classList.toggle('hidden');
+                panelToggle.classList.toggle('panel-hidden', isHidden);
+                panelToggle.querySelector('.toggle-text').textContent = isHidden ? 'Show Panel' : 'Hide Panel';
+            });
+        }
+
+        if (MAP_CONFIG.viewType === 'heatmap') initHeatmapControls(HeatmapLOD, MAP_CONFIG.useGeoTiff);
+        if (MAP_CONFIG.viewType === 'hazard') initHazardControls(HazardLOD);
+    </script>
+</body>
+</html>

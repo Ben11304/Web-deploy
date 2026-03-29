@@ -1,0 +1,316 @@
+/**
+ * Map Page Styles
+ * Monochrome Aesthetic Theme
+ */
+
+/* ========== Map Container ========== */
+#map {
+    height: calc(100vh - 90px);
+    width: 100%;
+    background-color: #f5f5f5;
+}
+
+/* ========== Panel Toggle Button ========== */
+.panel-toggle-btn {
+    position: absolute;
+    top: 100px;
+    left: 10px;
+    z-index: 1001;
+    background: #111;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.panel-toggle-btn:hover {
+    background: #333;
+}
+
+.panel-toggle-btn .toggle-icon {
+    font-size: 12px;
+    transition: transform 0.2s;
+}
+
+.panel-toggle-btn.panel-hidden .toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* ========== Sector Panel (Left Sidebar) ========== */
+#sector-panel {
+    position: absolute;
+    top: 150px;
+    left: 10px;
+    background: #fff;
+    padding: 16px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    z-index: 1000;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+#sector-panel.hidden {
+    transform: translateX(-110%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+#sector-panel table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#sector-panel th,
+#sector-panel td {
+    border: 1px solid #e0e0e0;
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 13px;
+}
+
+#sector-panel th {
+    background-color: #f5f5f5;
+    font-weight: 500;
+}
+
+/* ========== View Toggle Buttons ========== */
+.view-toggle {
+    display: flex;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 12px;
+    gap: 4px;
+}
+
+.view-toggle button {
+    flex: 1;
+    padding: 8px 4px;
+    border: 1px solid #e0e0e0;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 11px;
+    background: #fafafa;
+    border-radius: 4px;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.view-toggle button.active {
+    background-color: #111;
+    color: white;
+    border-color: #111;
+}
+
+.view-toggle button:not(.active):hover {
+    background-color: #f0f0f0;
+}
+
+/* ========== Division Info ========== */
+.division-info {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 12px;
+    padding: 8px 10px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+}
+
+/* ========== Heatmap Legend ========== */
+#heatmap-legend {
+    position: absolute;
+    bottom: 60px;
+    right: 20px;
+    background: #fff;
+    padding: 12px 16px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    z-index: 1000;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+#heatmap-legend strong {
+    font-size: 12px;
+    font-weight: 500;
+    color: #111;
+}
+
+.legend-gradient {
+    width: 180px;
+    height: 16px;
+    background: linear-gradient(to right, #f5f5f5, #d0d0d0, #a0a0a0, #707070, #404040, #111);
+    border-radius: 2px;
+    margin-top: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.legend-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    margin-top: 4px;
+    color: #666;
+}
+
+/* ========== Back Button ========== */
+.back-button {
+    position: absolute;
+    top: 100px;
+    right: 20px;
+    z-index: 1001;
+    background: #111;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 13px;
+    transition: background 0.2s;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.back-button:hover {
+    background: #333;
+}
+
+/* ========== LOD Compact Indicator ========== */
+.lod-compact {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 12px;
+    padding-left: 12px;
+    border-left: 1px solid #e0e0e0;
+}
+
+.lod-compact-label {
+    font-size: 11px;
+    color: #666;
+}
+
+.lod-compact-bar {
+    width: 50px;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+
+.lod-compact-fill {
+    height: 100%;
+    background: linear-gradient(to right, #888, #333);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.lod-compact-text {
+    font-size: 11px;
+    font-weight: 500;
+    color: #333;
+    min-width: 35px;
+}
+
+/* ========== Heatmap LOD Control ========== */
+.heatmap-lod-control {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+}
+
+.heatmap-lod-control h5 {
+    margin: 0 0 10px 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+}
+
+.lod-slider-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lod-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: linear-gradient(to right, #e0e0e0, #666);
+    border-radius: 3px;
+    outline: none;
+}
+
+.lod-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #333;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.lod-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #333;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.lod-value-display {
+    min-width: 40px;
+    text-align: center;
+    font-weight: 500;
+    color: #333;
+    font-size: 13px;
+}
+
+.lod-info {
+    font-size: 11px;
+    color: #888;
+    margin-top: 8px;
+}
+
+.lod-stats {
+    font-size: 11px;
+    color: #666;
+    margin-top: 6px;
+    padding-top: 8px;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* ========== Coordinates Display ========== */
+#coords {
+    position: fixed;
+    left: 10px;
+    bottom: 30px;
+    background: #fff;
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    font-size: 12px;
+    z-index: 1000;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    color: #333;
+}
