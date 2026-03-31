@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<script>
+var params = window.location.search;
+var vt = new URLSearchParams(params).get('view_type') || 'heatmap';
+window.location.replace('map_' + vt + '.html' + params);
+</script>
+</head><body>Redirecting...</body></html>
