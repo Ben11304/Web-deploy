@@ -66,8 +66,9 @@
         /* Main Content */
         .main-content {
             flex: 1;
-            padding: 0;
+            
         }
+        
         
         /* Split Layout */
         .content-wrapper { 
@@ -79,24 +80,8 @@
             flex-direction: column;
             overflow: hidden;
         }
-    </style>
-    
-</head>
-<body>
-    <!-- Header -->
-    <header class="main-header">
-        <div class="header-left">
-            <img src="./static/images/kent-logo.png" alt="Kent State University" class="header-logo">
-            <div>
-                <div class="header-title">Energy Critical Infrastructure</div>
-                <div class="header-subtitle">Geographic Information System</div>
-            </div>
-        </div>
-    </header>
-    
-    <!-- Main Content -->
-    <main class="main-content">
-                .split-container {
+        
+        .split-container {
             display: flex;
             flex: 1;
             min-height: 0;
@@ -362,10 +347,26 @@
             color: #333;
         }
 
-
-
+    </style>
+    
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-left">
+            <img src="./static/images/kent-logo.png" alt="Kent State University" class="header-logo">
+            <div>
+                <div class="header-title">Energy Critical Infrastructure</div>
+                <div class="header-subtitle">Geographic Information System</div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        
     <div class="content-wrapper">
-        <form action="map.html" method="GET">
+        <form action="map_heatmap.html" id="main-form" method="GET">
             <input type="hidden" name="division_type" value="state">
             
             <div class="split-container">
@@ -391,57 +392,207 @@
                             <input type="text" id="state-search" placeholder="Search states..." 
                                    style="width: 100%; margin-top: 12px;">
                             <div class="region-container">
-                                <label class="region-option state-option"><input type="checkbox" name="region" value="alabama"> Alabama</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="alaska"> Alaska</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="arizona"> Arizona</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="arkansas"> Arkansas</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="california"> California</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="colorado"> Colorado</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="connecticut"> Connecticut</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="delaware"> Delaware</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="florida"> Florida</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="georgia"> Georgia</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="hawaii"> Hawaii</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="idaho"> Idaho</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="illinois"> Illinois</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="indiana"> Indiana</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="iowa"> Iowa</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="kansas"> Kansas</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="kentucky"> Kentucky</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="louisiana"> Louisiana</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="maine"> Maine</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="maryland"> Maryland</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="massachusetts"> Massachusetts</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="michigan"> Michigan</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="minnesota"> Minnesota</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="mississippi"> Mississippi</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="missouri"> Missouri</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="montana"> Montana</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="nebraska"> Nebraska</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="nevada"> Nevada</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="new_hampshire"> New Hampshire</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="new_jersey"> New Jersey</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="new_mexico"> New Mexico</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="new_york"> New York</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="north_carolina"> North Carolina</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="north_dakota"> North Dakota</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="ohio"> Ohio</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="oklahoma"> Oklahoma</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="oregon"> Oregon</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="pennsylvania"> Pennsylvania</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="rhode_island"> Rhode Island</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="south_carolina"> South Carolina</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="south_dakota"> South Dakota</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="tennessee"> Tennessee</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="texas"> Texas</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="utah"> Utah</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="vermont"> Vermont</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="virginia"> Virginia</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="washington"> Washington</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="west_virginia"> West Virginia</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="wisconsin"> Wisconsin</label>
-<label class="region-option state-option"><input type="checkbox" name="region" value="wyoming"> Wyoming</label>
-
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="alabama"> Alabama
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="alaska"> Alaska
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="arizona"> Arizona
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="arkansas"> Arkansas
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="california"> California
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="colorado"> Colorado
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="connecticut"> Connecticut
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="delaware"> Delaware
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="florida"> Florida
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="georgia"> Georgia
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="hawaii"> Hawaii
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="idaho"> Idaho
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="illinois"> Illinois
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="indiana"> Indiana
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="iowa"> Iowa
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="kansas"> Kansas
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="kentucky"> Kentucky
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="louisiana"> Louisiana
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="maine"> Maine
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="maryland"> Maryland
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="massachusetts"> Massachusetts
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="michigan"> Michigan
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="minnesota"> Minnesota
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="mississippi"> Mississippi
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="missouri"> Missouri
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="montana"> Montana
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="nebraska"> Nebraska
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="nevada"> Nevada
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="new_hampshire"> New Hampshire
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="new_jersey"> New Jersey
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="new_mexico"> New Mexico
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="new_york"> New York
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="north_carolina"> North Carolina
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="north_dakota"> North Dakota
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="ohio"> Ohio
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="oklahoma"> Oklahoma
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="oregon"> Oregon
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="pennsylvania"> Pennsylvania
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="rhode_island"> Rhode Island
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="south_carolina"> South Carolina
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="south_dakota"> South Dakota
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="tennessee"> Tennessee
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="texas"> Texas
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="utah"> Utah
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="vermont"> Vermont
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="virginia"> Virginia
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="washington"> Washington
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="west_virginia"> West Virginia
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="wisconsin"> Wisconsin
+                                    </label>
+                                
+                                    <label class="region-option state-option">
+                                        <input type="checkbox" name="region" value="wyoming"> Wyoming
+                                    </label>
+                                
                                 
                             </div>
                             <small style="color: #888; font-size: 12px; margin-top: 8px; display: block;">
@@ -533,24 +684,40 @@
                             </label>
                             <select name="heatmap_sector" id="heatmap-sector-select">
                                 <option value="combined">Combined (All Sectors)</option>
-<option value="energy_county_scale">Energy Sector (County Scale)</option>
-<option value="Chemical_Sector">Chemical Sector</option>
-<option value="Commercial_Facilities_Sector">Commercial Facilities Sector</option>
-<option value="Communications_Sector">Communications Sector</option>
-<option value="Critical_Manufacturing_Sector">Critical Manufacturing Sector</option>
-<option value="Dams_Sector">Dams Sector</option>
-<option value="Defense_Industrial_Base_Sector">Defense Industrial Base Sector</option>
-<option value="Emergency_Services_Sector">Emergency Services Sector</option>
-<option value="Energy_Sector">Energy Sector</option>
-<option value="Financial_Services_Sector">Financial Services Sector</option>
-<option value="Food_And_Agriculture_Sector">Food and Agriculture Sector</option>
-<option value="Government_Facilities_Sector">Government Facilities Sector</option>
-<option value="Healthcare_And_Public_Health_Sector">Healthcare and Public Health Sector</option>
-<option value="Information_Technology_Sector">Information Technology Sector</option>
-<option value="Nuclear_Reactors_Materials_And_Waste_Sector">Nuclear Reactors, Materials, and Waste Sector</option>
-<option value="Transportation_Systems_Sector">Transportation Systems Sector</option>
-<option value="Water_And_Wastewater_Systems_Sector">Water and Wastewater Systems Sector</option>
-
+                                <option value="energy_county_scale">Energy Sector (County Scale)</option>
+                                
+                                    <option value="Chemical_Sector">Chemical Sector</option>
+                                
+                                    <option value="Commercial_Facilities_Sector">Commercial Facilities Sector</option>
+                                
+                                    <option value="Communications_Sector">Communications Sector</option>
+                                
+                                    <option value="Critical_Manufacturing_Sector">Critical Manufacturing Sector</option>
+                                
+                                    <option value="Dams_Sector">Dams Sector</option>
+                                
+                                    <option value="Defense_Industrial_Base_Sector">Defense Industrial Base Sector</option>
+                                
+                                    <option value="Emergency_Services_Sector">Emergency Services Sector</option>
+                                
+                                    <option value="Energy_Sector">Energy Sector</option>
+                                
+                                    <option value="Financial_Services_Sector">Financial Services Sector</option>
+                                
+                                    <option value="Food_And_Agriculture_Sector">Food and Agriculture Sector</option>
+                                
+                                    <option value="Government_Facilities_Sector">Government Facilities Sector</option>
+                                
+                                    <option value="Healthcare_And_Public_Health_Sector">Healthcare and Public Health Sector</option>
+                                
+                                    <option value="Information_Technology_Sector">Information Technology Sector</option>
+                                
+                                    <option value="Nuclear_Reactors_Materials_And_Waste_Sector">Nuclear Reactors, Materials, and Waste Sector</option>
+                                
+                                    <option value="Transportation_Systems_Sector">Transportation Systems Sector</option>
+                                
+                                    <option value="Water_And_Wastewater_Systems_Sector">Water and Wastewater Systems Sector</option>
+                                
                             </select>
                             <div class="info-box">
                                 <p>Shows critical infrastructure density across the selected region, colored by count.</p>
@@ -579,10 +746,18 @@
                                 Hazard Type:
                             </label>
                             <select name="hazard_type" id="hazard-type-select">
-                                <option value="flood">Flood Hazard</option>
-<option value="wildfire">Wildfire Historical</option>
-<option value="drought">Drought Monitor</option>
-<option value="earthquake">Earthquake</option>
+                                
+                                    <option value="flood">🌊 Flood Hazard</option>
+
+                                    <option value="wildfire">🔥 Wildfire Historical</option>
+
+                                    <option value="drought">🏜️ Drought Monitor</option>
+
+                                    <option value="earthquake">🌋 Earthquake</option>
+
+                                    <option value="hurricane">🌀 Hurricane Wind Swaths</option>
+
+                                    <option value="winter_storm">❄️ Winter Storm (SWE)</option>
 
                             </select>
                             <div class="info-box">
@@ -611,9 +786,11 @@
                                 Impact Data Source:
                             </label>
                             <select name="impact_type" id="impact-type-select">
-                                <option value="poweroutage_2022">Power Outage 2022</option>
-<option value="poweroutage_2024">Power Outage 2024</option>
-
+                                
+                                    <option value="poweroutage_2022">⚡ Power Outage 2022</option>
+                                
+                                    <option value="poweroutage_2024">⚡ Power Outage 2024</option>
+                                
                             </select>
                             
                             <label style="font-size: 13px; color: #666; display: block; margin-bottom: 8px; margin-top: 16px;">
@@ -683,9 +860,20 @@
                                 Hazard Type:
                             </label>
                             <select name="exposure_type" id="exposure-type-select">
-                                <option value="flood">Flood Exposure</option>
-<option value="earthquake">Earthquake MMI</option>
-<option value="wildfire">Wildfire Exposure</option>
+
+                                    <option value="flood">🌊 Flood Exposure (FEMA SFHA)</option>
+
+                                    <option value="earthquake">🌋 Earthquake MMI (Legacy)</option>
+
+                                    <option value="earthquake_psha">🌋 Earthquake PSHA (USGS 2023)</option>
+
+                                    <option value="wildfire">🔥 Wildfire Historical Burns</option>
+
+                                    <option value="wildfire_wfpi">🔥 Wildfire WFPI P95 (USGS)</option>
+
+                                    <option value="hurricane">🌀 Hurricane (IBTrACS ≥64kt)</option>
+
+                                    <option value="winter_storm">❄️ Winter Storm (SNODAS SWE P95)</option>
 
                             </select>
                             
@@ -693,15 +881,55 @@
                                 Asset Types to Display:
                             </label>
                             <div style="max-height: 150px; overflow-y: auto; border: 1px solid #e0e0e0; padding: 10px; border-radius: 4px; background: #fafafa;">
-                                <label style="display: block; margin: 4px 0; font-size: 13px;"><input type="checkbox" name="exposure_asset" value="plant" checked> Plant</label>
-<label style="display: block; margin: 4px 0; font-size: 13px;"><input type="checkbox" name="exposure_asset" value="substation" checked> Substation</label>
-<label style="display: block; margin: 4px 0; font-size: 13px;"><input type="checkbox" name="exposure_asset" value="line" checked> Line</label>
-<label style="display: block; margin: 4px 0; font-size: 13px;"><input type="checkbox" name="exposure_asset" value="tower" > Tower</label>
-<label style="display: block; margin: 4px 0; font-size: 13px;"><input type="checkbox" name="exposure_asset" value="generator" checked> Generator</label>
-<label style="display: block; margin: 4px 0; font-size: 13px;"><input type="checkbox" name="exposure_asset" value="pipeline" checked> Pipeline</label>
-<label style="display: block; margin: 4px 0; font-size: 13px;"><input type="checkbox" name="exposure_asset" value="fuel" checked> Fuel Station</label>
-<label style="display: block; margin: 4px 0; font-size: 13px;"><input type="checkbox" name="exposure_asset" value="other" checked> Other</label>
-
+                                
+                                    <label style="display: block; margin: 4px 0; font-size: 13px;">
+                                        <input type="checkbox" name="exposure_asset" value="plant" 
+                                               checked>
+                                        Plant
+                                    </label>
+                                
+                                    <label style="display: block; margin: 4px 0; font-size: 13px;">
+                                        <input type="checkbox" name="exposure_asset" value="substation" 
+                                               checked>
+                                        Substation
+                                    </label>
+                                
+                                    <label style="display: block; margin: 4px 0; font-size: 13px;">
+                                        <input type="checkbox" name="exposure_asset" value="line" 
+                                               checked>
+                                        Line
+                                    </label>
+                                
+                                    <label style="display: block; margin: 4px 0; font-size: 13px;">
+                                        <input type="checkbox" name="exposure_asset" value="tower" 
+                                               >
+                                        Tower
+                                    </label>
+                                
+                                    <label style="display: block; margin: 4px 0; font-size: 13px;">
+                                        <input type="checkbox" name="exposure_asset" value="generator" 
+                                               checked>
+                                        Generator
+                                    </label>
+                                
+                                    <label style="display: block; margin: 4px 0; font-size: 13px;">
+                                        <input type="checkbox" name="exposure_asset" value="pipeline" 
+                                               checked>
+                                        Pipeline
+                                    </label>
+                                
+                                    <label style="display: block; margin: 4px 0; font-size: 13px;">
+                                        <input type="checkbox" name="exposure_asset" value="fuel" 
+                                               checked>
+                                        Fuel Station
+                                    </label>
+                                
+                                    <label style="display: block; margin: 4px 0; font-size: 13px;">
+                                        <input type="checkbox" name="exposure_asset" value="other" 
+                                               checked>
+                                        Other
+                                    </label>
+                                
                             </div>
                             
                             <div class="info-box">
@@ -731,12 +959,17 @@
                                 Visualization Metric:
                             </label>
                             <select name="svi_metric" id="svi-metric-select">
-                                <option value="RPL_THEMES">Overall SVI</option>
-<option value="RPL_THEME1">Socioeconomic Status</option>
-<option value="RPL_THEME2">Household Characteristics</option>
-<option value="RPL_THEME3">Racial & Ethnic Minority</option>
-<option value="RPL_THEME4">Housing Type & Transportation</option>
-
+                                
+                                    <option value="RPL_THEMES">Overall SVI</option>
+                                
+                                    <option value="RPL_THEME1">Socioeconomic Status</option>
+                                
+                                    <option value="RPL_THEME2">Household Characteristics</option>
+                                
+                                    <option value="RPL_THEME3">Racial & Ethnic Minority</option>
+                                
+                                    <option value="RPL_THEME4">Housing Type & Transportation</option>
+                                
                             </select>
                             
                             <div class="info-box">
@@ -798,7 +1031,9 @@
             </div>
         </form>
     </div>
+
     </main>
+    
     
     <script>
         // Elements
@@ -919,5 +1154,64 @@
         showDetailPanel('heatmap');
 
     </script>
-</body>
+
+
+    <script>
+    // Static site: override view toggle to navigate to correct HTML file
+    (function() {
+        var viewMap = {
+            'btn-heatmap': 'map_heatmap.html',
+            'btn-hazard': 'map_hazard.html',
+            'btn-impact': 'map_impact.html',
+            'btn-energy-vulnerability': 'map_energy_vulnerability.html',
+            'btn-exposure': 'map_exposure.html',
+            'btn-energy-detail': 'map_energy_detail.html',
+            'btn-social-vulnerability': 'map_social_vulnerability.html'
+        };
+        Object.keys(viewMap).forEach(function(btnId) {
+            var btn = document.getElementById(btnId);
+            if (btn) {
+                // Remove ALL existing click listeners by cloning
+                var newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                // Add static site navigation
+                newBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var url = new URL(window.location);
+                    var params = new URLSearchParams(url.search);
+                    // Keep region and mode params, remove view-specific ones
+                    var keep = ['region', 'mode', 'division_type', 'show_background'];
+                    var newParams = new URLSearchParams();
+                    keep.forEach(function(k) {
+                        params.getAll(k).forEach(function(v) { newParams.append(k, v); });
+                    });
+                    window.location.href = viewMap[btnId] + '?' + newParams.toString();
+                });
+            }
+        });
+    })();
+    </script>
+    
+
+    <script>
+    // Update form action when view type selection changes
+    function updateFormAction(viewType) {
+        var form = document.getElementById('main-form');
+        if (form) form.action = 'map_' + viewType + '.html';
+    }
+    // Listen to view-type-item clicks (the actual UI interaction)
+    document.querySelectorAll('.view-type-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+            updateFormAction(this.dataset.value);
+        });
+    });
+    // Also listen to radio changes as fallback
+    document.querySelectorAll('input[name="view_type"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            updateFormAction(this.value);
+        });
+    });
+    </script>
+    </body>
 </html>
