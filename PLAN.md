@@ -89,6 +89,15 @@ Cập nhật: 2026-04-06
   - Heatmap sector dropdown không hoạt động (hardcoded "combined" trong loadGeoJSONHeatmap)
   - Hazard dropdown cũng không sync value từ URL param
   - GitHub Pages deploy config sai path `/docs` → `/`
+
+- [x] ~~**Web: Thêm tất cả exposure/hazard types mới**~~ → Done 2026-04-06
+  - Exposure: +4 (earthquake PSHA, wildfire WFPI, hurricane, winter storm, flood FEMA)
+  - Hazard: +2 (hurricane, winter storm)
+  - Legacy flood phát hiện sai data (Ohio > Florida) → FEMA SFHA làm default
+  - Thêm quantile/log color scale cho skewed data
+  - `.nojekyll` fix GitHub Pages build stuck
+  - 250 files mới uploaded R2 CDN
+
 - [ ] Drought data
 - [ ] Tower analysis riêng
 

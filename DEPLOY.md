@@ -193,6 +193,9 @@ wrangler r2 bucket cors set energy-risk-data --file cors-rules.json --force
 | 2026-04-06 | Dropdown không hiện đúng sector đang chọn | `initHeatmapControls()` không sync value từ URL param | Thêm `heatmapSelect.value = MAP_CONFIG.heatmapSector` |
 | 2026-04-06 | Hazard dropdown không sync | Tương tự heatmap | Thêm `hazardSelect.value = MAP_CONFIG.hazardType` |
 | 2026-04-06 | GitHub Pages deploy lỗi | Pages source path `/docs` sai (subtree tạo flat structure) | Đổi sang `/` (root) |
+| 2026-04-06 | GitHub Pages build stuck | Thiếu `.nojekyll` — Jekyll processing static HTML | Thêm `.nojekyll` file |
+| 2026-04-06 | Flood exposure data sai (Ohio > Florida) | Legacy flood dùng heatmap grid + arbitrary weights | Thêm FEMA SFHA direct làm default |
+| 2026-04-06 | Exposure map khó nhìn (hầu hết asset cùng màu) | Linear color scale + skewed data | Thêm quantile/log color scale modes |
 | Trước đó | CSS render ngoài `<style>` | Regex-based template processing | Dùng Jinja2 engine trực tiếp |
 | Trước đó | Tất cả view dẫn đến heatmap | Form action cố định | JS `updateFormAction()` theo view type |
 | Trước đó | Data không load | `/static/geojson/` paths hardcoded | `fix_paths()` thay bằng `DATA_BASE_URL` |

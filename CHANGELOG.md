@@ -2,7 +2,51 @@
 
 ---
 
-## 2026-04-06
+## 2026-04-06 (update 3)
+
+### Web: Thêm FEMA SFHA flood exposure, fix legacy flood data sai
+
+**Phát hiện**: Legacy flood exposure (`Exposure/flood/`) dùng heatmap grid với arbitrary weights cho kết quả sai — Ohio 9.8% > Florida 2.5%, ngược thực tế. Nguyên nhân: grid cells overlap nhiều flood zone polygons nhỏ ở inland → score cao giả tạo.
+
+**Fix**: Thêm FEMA SFHA direct (`Exposure/flood_fema/`) làm default. Florida 24.1%, Louisiana 28.6%, Ohio 4.8% — đúng. Legacy flood đổi tên "Flood Heatmap (Legacy)".
+
+### Web: Thêm quantile/log color scale cho exposure visualization
+
+Data exposure rất skewed → linear color mapping khiến hầu hết asset hiện cùng màu nhạt. Thêm 3 chế độ:
+- **Quantile** (default): equal-count bins — mỗi bin cùng số assets
+- **Logarithmic**: spread low values
+- **Linear**: absolute values (cũ)
+
+Data gốc không thay đổi — chỉ ảnh hưởng rendering.
+
+---
+
+## 2026-04-06 (update 2)
+
+### Web: Thêm 4 exposure types + 2 hazard types mới
+
+**Exposure view** (7 loại, trước đó 3):
+- Flood FEMA SFHA (Direct) — **MỚI, default**
+- Flood Heatmap (Legacy)
+- Earthquake MMI (Legacy)
+- Earthquake PSHA (USGS 2023) — **MỚI**
+- Wildfire Historical Burns
+- Wildfire WFPI P95 (USGS) — **MỚI**
+- Hurricane (IBTrACS ≥64kt) — **MỚI**
+- Winter Storm (SNODAS SWE P95) — **MỚI**
+
+**Hazard view** (6 loại, trước đó 4):
+- Flood, Wildfire, Drought, Earthquake (existing)
+- Hurricane Wind Swaths — **MỚI**
+- Winter Storm (SWE) — **MỚI**
+
+Data: 200 files mới (196MB gzipped) uploaded lên R2 CDN.
+
+### Infra: Thêm `.nojekyll`, fix GitHub Pages build stuck/errored
+
+---
+
+## 2026-04-06 (update 1)
 
 ### Bug fix: Heatmap sector dropdown không hoạt động trên static site
 
