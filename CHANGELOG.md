@@ -10,6 +10,8 @@
 
 **Fix**: Thêm FEMA SFHA direct (`Exposure/flood_fema/`) làm default. Florida 24.1%, Louisiana 28.6%, Ohio 4.8% — đúng. Legacy flood đổi tên "Flood Heatmap (Legacy)".
 
+**Visualization**: Zone-based color gradient (VE > AE > A > X > Outside) tuân theo FEMA hierarchy. Numeric scores (VE=1.0, AE=0.7, etc.) là **design decision cho visualization only** — không có literature prescribing values. Exposure classification vẫn là binary SFHA (in/out). Ghi rõ trong METHODOLOGY.md.
+
 ### Web: Thêm quantile/log color scale cho exposure visualization
 
 Data exposure rất skewed → linear color mapping khiến hầu hết asset hiện cùng màu nhạt. Thêm 3 chế độ:
