@@ -711,14 +711,17 @@ var colorScaleMode = 'quantile';
 // Quantile breakpoints — computed from actual data after loading
 var quantileBreaks = [];
 
-// Compute quantile breakpoints from loaded data
+// Compute quantile breakpoints from loaded data (sampled for performance)
 function computeQuantileBreaks() {
     if (exposureAllResults.length === 0) { quantileBreaks = []; return; }
     var config = getCurrentExposureConfig();
-    // Collect all non-zero scores
+    // Sample up to 50k scores for performance (sort is O(n log n))
+    var maxSample = 50000;
+    var step = Math.max(1, Math.floor(exposureAllResults.length / maxSample));
     var scores = [];
-    for (var i = 0; i < exposureAllResults.length; i++) {
-        var s = exposureAllResults[i][config.scoreField] || 0;
+    for (var i = 0; i < exposureAllResults.length; i += step) {
+        var val = exposureAllResults[i][config.scoreField];
+        var s = (val === true) ? 1 : (val === false) ? 0 : (val || 0);
         if (s > 0) scores.push(s);
     }
     if (scores.length === 0) { quantileBreaks = []; return; }
@@ -730,14 +733,15 @@ function computeQuantileBreaks() {
         var idx = Math.floor((q / nBins) * scores.length);
         quantileBreaks.push(scores[Math.min(idx, scores.length - 1)]);
     }
-    console.log('Quantile breaks (' + exposureType + '):', quantileBreaks.map(function(v){return v.toFixed(4);}).join(', '));
+    console.log('Quantile breaks (' + exposureType + ', sampled ' + scores.length + '):', quantileBreaks.map(function(v){return v.toFixed(4);}).join(', '));
 }
 
 // Get visual normalized score (0-1) based on color scale mode
 // This is ONLY for rendering — original data is never modified
 function getVisualScore(result) {
     var config = getCurrentExposureConfig();
-    var score = result[config.scoreField] || 0;
+    var val = result[config.scoreField];
+    var score = (val === true) ? 1 : (val === false) ? 0 : (val || 0);
     if (score === 0) return 0;
 
     if (colorScaleMode === 'quantile' && quantileBreaks.length > 0) {
