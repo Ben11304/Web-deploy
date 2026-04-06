@@ -577,12 +577,12 @@ var exposureMaxScore = 1;
 // Exposure type configuration
 var exposureConfig = {
     'flood_fema': {
-        scoreField: 'sfha',
-        normalizedField: 'sfha',
+        scoreField: '_flood_fema_score',
+        normalizedField: '_flood_fema_score',
         detailField: 'fld_zone',
         fileSuffix: '_flood_results.json',
         subDir: 'flood_fema',
-        maxScoreDefault: 1  // Binary: 0 or 1 (SFHA true/false)
+        maxScoreDefault: 1
     },
     'flood': {
         scoreField: 'flood_score',
@@ -681,7 +681,7 @@ function getNormalizedExposureScore(result) {
         return Math.min(score / 500, 1);  // SWE 0-500mm → 0-1 (most below 500)
     }
     if (exposureType === 'flood_fema') {
-        return score > 0 ? 1 : 0;  // Binary: in SFHA = 1, not = 0
+        return Math.min(score, 1);  // Zone-based 0-1 score
     }
     return Math.min(score, 1);  // Flood legacy already 0-1
 }
@@ -896,6 +896,21 @@ async function loadExposureData() {
     }
     
     updateExposureLoadingProgress(85, 'Processing ' + exposureAllResults.length + ' assets...');
+
+    // Compute derived scores for FEMA flood (zone-based gradient, not binary)
+    if (exposureType === 'flood_fema') {
+        var zoneScores = {
+            'VE': 1.0, 'V': 0.95,           // Coastal high velocity — highest risk
+            'AO': 0.85, 'AH': 0.80,         // Sheet flow / shallow flooding
+            'AE': 0.70, 'A': 0.60,          // 1% annual chance (100-yr)
+            'AR': 0.50, 'A99': 0.45,        // Special / future SFHA
+            'X': 0.20,                       // 0.2% annual chance (500-yr, shaded)
+        };
+        for (var fi = 0; fi < exposureAllResults.length; fi++) {
+            var zone = exposureAllResults[fi].fld_zone || 'None';
+            exposureAllResults[fi]._flood_fema_score = zoneScores[zone] || 0;
+        }
+    }
 
     // Cache score into each result to avoid repeated lookups during sort/render
     var config = getCurrentExposureConfig();
