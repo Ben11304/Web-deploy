@@ -649,9 +649,9 @@ function getCurrentExposureConfig() {
 
 // Get score from result based on exposure type
 function getExposureScore(result) {
+    if (result._cachedScore !== undefined) return result._cachedScore;
     var config = getCurrentExposureConfig();
     var val = result[config.scoreField];
-    // Handle boolean fields (FEMA SFHA: true/false → 1/0)
     if (val === true) return 1;
     if (val === false) return 0;
     return val || 0;
@@ -720,8 +720,7 @@ function computeQuantileBreaks() {
     var step = Math.max(1, Math.floor(exposureAllResults.length / maxSample));
     var scores = [];
     for (var i = 0; i < exposureAllResults.length; i += step) {
-        var val = exposureAllResults[i][config.scoreField];
-        var s = (val === true) ? 1 : (val === false) ? 0 : (val || 0);
+        var s = exposureAllResults[i]._cachedScore || 0;
         if (s > 0) scores.push(s);
     }
     if (scores.length === 0) { quantileBreaks = []; return; }
@@ -739,9 +738,7 @@ function computeQuantileBreaks() {
 // Get visual normalized score (0-1) based on color scale mode
 // This is ONLY for rendering — original data is never modified
 function getVisualScore(result) {
-    var config = getCurrentExposureConfig();
-    var val = result[config.scoreField];
-    var score = (val === true) ? 1 : (val === false) ? 0 : (val || 0);
+    var score = getExposureScore(result);
     if (score === 0) return 0;
 
     if (colorScaleMode === 'quantile' && quantileBreaks.length > 0) {
@@ -899,12 +896,19 @@ async function loadExposureData() {
     }
     
     updateExposureLoadingProgress(85, 'Processing ' + exposureAllResults.length + ' assets...');
-    
-    // Sort by score descending for LOD
+
+    // Cache score into each result to avoid repeated lookups during sort/render
+    var config = getCurrentExposureConfig();
+    for (var ci = 0; ci < exposureAllResults.length; ci++) {
+        var val = exposureAllResults[ci][config.scoreField];
+        exposureAllResults[ci]._cachedScore = (val === true) ? 1 : (val === false) ? 0 : (val || 0);
+    }
+
+    // Sort by cached score descending for LOD (show highest-score assets first)
     exposureAllResults.sort(function(a, b) {
-        return getExposureScore(b) - getExposureScore(a);
+        return b._cachedScore - a._cachedScore;
     });
-    
+
     updateExposureLoadingProgress(88, 'Computing color scale...');
     computeQuantileBreaks();
 
