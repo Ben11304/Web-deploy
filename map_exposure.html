@@ -165,7 +165,9 @@
     <label style="font-size: 12px; color: #555; display: block; margin-bottom: 4px;">📊 Exposure Type</label>
     <select id="exposure-type-select" style="width: 100%; padding: 8px; font-size: 14px; border-radius: 4px; border: 1px solid #ddd;">
 
-            <option value="flood" selected>🌊 Flood Exposure (FEMA SFHA)</option>
+            <option value="flood_fema" selected>🌊 Flood FEMA SFHA (Direct)</option>
+
+            <option value="flood" >🌊 Flood Heatmap (Legacy)</option>
 
             <option value="earthquake" >🌋 Earthquake MMI (Legacy)</option>
 
@@ -574,6 +576,14 @@ var exposureMaxScore = 1;
 
 // Exposure type configuration
 var exposureConfig = {
+    'flood_fema': {
+        scoreField: 'sfha',
+        normalizedField: 'sfha',
+        detailField: 'fld_zone',
+        fileSuffix: '_flood_results.json',
+        subDir: 'flood_fema',
+        maxScoreDefault: 1  // Binary: 0 or 1 (SFHA true/false)
+    },
     'flood': {
         scoreField: 'flood_score',
         normalizedField: 'flood_score_normalized',
@@ -640,7 +650,11 @@ function getCurrentExposureConfig() {
 // Get score from result based on exposure type
 function getExposureScore(result) {
     var config = getCurrentExposureConfig();
-    return result[config.scoreField] || 0;
+    var val = result[config.scoreField];
+    // Handle boolean fields (FEMA SFHA: true/false → 1/0)
+    if (val === true) return 1;
+    if (val === false) return 0;
+    return val || 0;
 }
 
 // Get normalized score (for color mapping)
@@ -666,7 +680,10 @@ function getNormalizedExposureScore(result) {
     if (exposureType === 'winter_storm') {
         return Math.min(score / 500, 1);  // SWE 0-500mm → 0-1 (most below 500)
     }
-    return Math.min(score, 1);  // Flood already 0-1
+    if (exposureType === 'flood_fema') {
+        return score > 0 ? 1 : 0;  // Binary: in SFHA = 1, not = 0
+    }
+    return Math.min(score, 1);  // Flood legacy already 0-1
 }
 
 // Get selected states from MAP_CONFIG
