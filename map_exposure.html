@@ -285,6 +285,17 @@
     </div>
 </div>
 
+<!-- Color Scale Mode -->
+<div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #e8eaf6, #c5cae9); border-radius: 8px; border-left: 4px solid #3f51b5;">
+    <h5 style="color: #1a237e; margin: 0 0 8px 0;">🎨 Color Scale</h5>
+    <select id="color-scale-mode" style="width: 100%; padding: 6px; font-size: 13px; border-radius: 4px; border: 1px solid #9fa8da;">
+        <option value="quantile" selected>Quantile (equal-count bins)</option>
+        <option value="linear">Linear (absolute values)</option>
+        <option value="log">Logarithmic (spread low values)</option>
+    </select>
+    <div style="font-size: 10px; color: #5c6bc0; margin-top: 4px;">Quantile: equal number of assets per color bin. Best for skewed data.</div>
+</div>
+
 <!-- Score Range Filter -->
 <div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 8px; border-left: 4px solid #ff9800;">
     <h5 style="color: #e65100; margin: 0 0 10px 0;">🔍 Filter by Score</h5>
@@ -677,6 +688,62 @@ var exposureColorScale = [
     '#67000d',  // Very dark - highest
 ];
 
+// Color scale mode: 'quantile', 'linear', or 'log'
+var colorScaleMode = 'quantile';
+
+// Quantile breakpoints — computed from actual data after loading
+var quantileBreaks = [];
+
+// Compute quantile breakpoints from loaded data
+function computeQuantileBreaks() {
+    if (exposureAllResults.length === 0) { quantileBreaks = []; return; }
+    var config = getCurrentExposureConfig();
+    // Collect all non-zero scores
+    var scores = [];
+    for (var i = 0; i < exposureAllResults.length; i++) {
+        var s = exposureAllResults[i][config.scoreField] || 0;
+        if (s > 0) scores.push(s);
+    }
+    if (scores.length === 0) { quantileBreaks = []; return; }
+    scores.sort(function(a, b) { return a - b; });
+    // Create breakpoints for N color bins
+    var nBins = exposureColorScale.length;
+    quantileBreaks = [];
+    for (var q = 0; q < nBins; q++) {
+        var idx = Math.floor((q / nBins) * scores.length);
+        quantileBreaks.push(scores[Math.min(idx, scores.length - 1)]);
+    }
+    console.log('Quantile breaks (' + exposureType + '):', quantileBreaks.map(function(v){return v.toFixed(4);}).join(', '));
+}
+
+// Get visual normalized score (0-1) based on color scale mode
+// This is ONLY for rendering — original data is never modified
+function getVisualScore(result) {
+    var config = getCurrentExposureConfig();
+    var score = result[config.scoreField] || 0;
+    if (score === 0) return 0;
+
+    if (colorScaleMode === 'quantile' && quantileBreaks.length > 0) {
+        // Find which bin this score falls into
+        for (var i = quantileBreaks.length - 1; i >= 0; i--) {
+            if (score >= quantileBreaks[i]) {
+                return (i + 1) / quantileBreaks.length;
+            }
+        }
+        return 1 / quantileBreaks.length;  // Below lowest break
+    }
+
+    if (colorScaleMode === 'log') {
+        // Log scale: spread out low values
+        var maxScore = config.maxScoreDefault || 1;
+        var logScore = Math.log1p(score) / Math.log1p(maxScore);
+        return Math.max(0, Math.min(1, logScore));
+    }
+
+    // Linear (default fallback) — use existing getNormalizedExposureScore
+    return getNormalizedExposureScore(result);
+}
+
 // Loading indicator functions
 function showExposureLoading(message) {
     exposureIsLoading = true;
@@ -817,8 +884,11 @@ async function loadExposureData() {
         return getExposureScore(b) - getExposureScore(a);
     });
     
+    updateExposureLoadingProgress(88, 'Computing color scale...');
+    computeQuantileBreaks();
+
     updateExposureLoadingProgress(90, 'Rendering map...');
-    
+
     // Render with current filters
     renderExposureLayer();
     
@@ -930,10 +1000,10 @@ function renderExposureLayer() {
     var features = filteredResults.map(function(result) {
         var assetType = getAssetType(result.properties);
         var score = getExposureScore(result);
-        var normalizedScore = getNormalizedExposureScore(result);
-        var detailCount = result[config.detailField] ? 
+        var visualScore = getVisualScore(result);
+        var detailCount = result[config.detailField] ?
             (Array.isArray(result[config.detailField]) ? result[config.detailField].length : result[config.detailField]) : 0;
-        
+
         return {
             type: 'Feature',
             geometry: result.geometry,
@@ -941,7 +1011,7 @@ function renderExposureLayer() {
                 ...result.properties,
                 _asset_type: assetType,
                 _exposure_score: score,
-                _exposure_normalized: normalizedScore,
+                _exposure_normalized: visualScore,
                 _calculation_method: result.calculation_method,
                 _detail_count: detailCount,
                 _state: result._state,
@@ -1142,6 +1212,15 @@ function initExposureControls() {
         });
     }
     
+    // Color scale mode selector
+    var colorModeSelect = document.getElementById('color-scale-mode');
+    if (colorModeSelect) {
+        colorModeSelect.addEventListener('change', function() {
+            colorScaleMode = this.value;
+            renderExposureLayer();
+        });
+    }
+
     // Exposure type selector
     var typeSelect = document.getElementById('exposure-type-select');
     if (typeSelect) {
