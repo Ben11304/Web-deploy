@@ -231,6 +231,10 @@ function initHeatmapControls(HeatmapLOD, useGeoTiff) {
     // Heatmap sector selector
     var heatmapSelect = document.getElementById('heatmap-select');
     if (heatmapSelect) {
+        // Sync dropdown value from URL parameter
+        if (MAP_CONFIG.heatmapSector) {
+            heatmapSelect.value = MAP_CONFIG.heatmapSector;
+        }
         heatmapSelect.addEventListener('change', function() {
             var url = new URL(window.location);
             url.searchParams.set('heatmap_sector', this.value);
@@ -289,6 +293,10 @@ function initHazardControls(HazardLOD) {
     // Hazard type selector
     var hazardSelect = document.getElementById('hazard-select');
     if (hazardSelect) {
+        // Sync dropdown value from URL parameter
+        if (MAP_CONFIG.hazardType) {
+            hazardSelect.value = MAP_CONFIG.hazardType;
+        }
         hazardSelect.addEventListener('change', function() {
             var url = new URL(window.location);
             url.searchParams.set('hazard_type', this.value);
