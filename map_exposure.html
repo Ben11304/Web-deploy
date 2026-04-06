@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>US Map - State (Exposure)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: #fafafa;
+            color: #1a1a1a;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+        
+        /* Header Styles - Monochrome */
+        .main-header {
+            background: #111;
+            color: #fff;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #222;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        
+        .header-logo {
+            height: 70px;
+            width: auto;
+            border-radius: 4px;
+            /* No background - transparent PNG */
+        }
+        
+        .header-title {
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+        }
+        
+        .header-subtitle {
+            font-size: 12px;
+            font-weight: 300;
+            opacity: 0.6;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 0;
+        }
+        
+        
+    </style>
+    
+    <!-- Leaflet CSS/JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./static/css/map.css" />
+    
+    
+
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-left">
+            <img src="./static/images/kent-logo.png" alt="Kent State University" class="header-logo">
+            <div>
+                <div class="header-title">Energy Critical Infrastructure</div>
+                <div class="header-subtitle">Geographic Information System</div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        
+    
+    <a href="index.html" class="back-button">← Back to Home</a>
+    
+    <!-- Panel Toggle Button -->
+    <button id="panel-toggle" class="panel-toggle-btn">
+        <span class="toggle-icon">◀</span>
+        <span class="toggle-text">Hide Panel</span>
+    </button>
+    
+    
+    
+    
+    
+    <div id="sector-panel">
+        <!-- Division Type Info -->
+        <div class="division-info">
+            Division: <strong>State</strong> | 
+            Mode: <strong>Select</strong>
+        </div>
+        
+        <!-- View Type Toggle -->
+        <div class="view-toggle">
+            <button id="btn-heatmap" onclick="window.location.href='map_heatmap.html'+window.location.search" class="">Heatmap</button>
+            <button id="btn-hazard" onclick="window.location.href='map_hazard.html'+window.location.search" class="">Hazard</button>
+            <button id="btn-impact" onclick="window.location.href='map_impact.html'+window.location.search" class="">Impact</button>
+            <button id="btn-energy-vulnerability" onclick="window.location.href='map_energy_vulnerability.html'+window.location.search" class="">Vuln</button>
+            <button id="btn-exposure" onclick="window.location.href='map_exposure.html'+window.location.search" class="active">Expo</button>
+            <button id="btn-energy-detail" onclick="window.location.href='map_energy_detail.html'+window.location.search" class="">Energy</button>
+            <button id="btn-social-vulnerability" onclick="window.location.href='map_social_vulnerability.html'+window.location.search" class="">SVI</button>
+        </div>
+        
+        <!-- Background Map Toggle -->
+        <div style="margin: 12px 0; padding: 10px; background: #f5f5f5; border-radius: 4px; border: 1px solid #e0e0e0;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                <input type="checkbox" id="bg-toggle" checked style="width: 14px; height: 14px;">
+                Background Map
+            </label>
+        </div>
+        
+        
+        <!-- Exposure Mode: Asset risk score visualization controls -->
+<h4>🎯 Exposure Analysis</h4>
+
+<!-- Loading Indicator -->
+<div id="exposure-loading" style="display: none; padding: 12px; background: linear-gradient(135deg, #fce4ec, #f8bbd0); border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #e91e63;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <div class="loading-spinner" style="width: 20px; height: 20px; border: 3px solid #e91e63; border-top: 3px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <span id="exposure-loading-text" style="font-size: 13px; color: #880e4f;">Loading exposure data...</span>
+    </div>
+    <div style="margin-top: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden;">
+        <div id="exposure-loading-progress" style="width: 0%; height: 4px; background: #e91e63; transition: width 0.3s;"></div>
+    </div>
+</div>
+
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+
+<!-- Exposure Type Selector -->
+<div style="margin-bottom: 12px;">
+    <label style="font-size: 12px; color: #555; display: block; margin-bottom: 4px;">📊 Exposure Type</label>
+    <select id="exposure-type-select" style="width: 100%; padding: 8px; font-size: 14px; border-radius: 4px; border: 1px solid #ddd;">
+
+            <option value="flood" selected>🌊 Flood Exposure (FEMA SFHA)</option>
+
+            <option value="earthquake" >🌋 Earthquake MMI (Legacy)</option>
+
+            <option value="earthquake_psha" >🌋 Earthquake PSHA (USGS 2023)</option>
+
+            <option value="wildfire" >🔥 Wildfire Historical Burns</option>
+
+            <option value="wildfire_wfpi" >🔥 Wildfire WFPI P95 (USGS)</option>
+
+            <option value="hurricane" >🌀 Hurricane (IBTrACS ≥64kt)</option>
+
+            <option value="winter_storm" >❄️ Winter Storm (SNODAS SWE P95)</option>
+
+    </select>
+</div>
+
+<!-- Asset Type Filter -->
+<div style="margin-bottom: 12px;">
+    <label style="font-size: 12px; color: #555; display: block; margin-bottom: 4px;">🏭 Asset Types</label>
+    <div id="exposure-asset-types" style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 8px; border-radius: 4px; background: white;">
+        
+            <label style="display: block; margin: 3px 0; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" class="exposure-asset-checkbox" value="plant" 
+                       checked
+                       style="margin-right: 6px;">
+                Plant
+            </label>
+        
+            <label style="display: block; margin: 3px 0; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" class="exposure-asset-checkbox" value="substation" 
+                       checked
+                       style="margin-right: 6px;">
+                Substation
+            </label>
+        
+            <label style="display: block; margin: 3px 0; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" class="exposure-asset-checkbox" value="line" 
+                       checked
+                       style="margin-right: 6px;">
+                Line
+            </label>
+        
+            <label style="display: block; margin: 3px 0; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" class="exposure-asset-checkbox" value="tower" 
+                       
+                       style="margin-right: 6px;">
+                Tower
+            </label>
+        
+            <label style="display: block; margin: 3px 0; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" class="exposure-asset-checkbox" value="generator" 
+                       checked
+                       style="margin-right: 6px;">
+                Generator
+            </label>
+        
+            <label style="display: block; margin: 3px 0; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" class="exposure-asset-checkbox" value="pipeline" 
+                       checked
+                       style="margin-right: 6px;">
+                Pipeline
+            </label>
+        
+            <label style="display: block; margin: 3px 0; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" class="exposure-asset-checkbox" value="fuel" 
+                       checked
+                       style="margin-right: 6px;">
+                Fuel Station
+            </label>
+        
+            <label style="display: block; margin: 3px 0; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" class="exposure-asset-checkbox" value="other" 
+                       checked
+                       style="margin-right: 6px;">
+                Other
+            </label>
+        
+    </div>
+    <div style="margin-top: 6px;">
+        <button id="exposure-select-all" style="font-size: 10px; padding: 4px 8px; cursor: pointer; margin-right: 4px;">Select All</button>
+        <button id="exposure-select-none" style="font-size: 10px; padding: 4px 8px; cursor: pointer;">Clear All</button>
+    </div>
+</div>
+
+<p style="font-size: 11px; color: #666; margin-top: 8px;">
+    🎯 Asset exposure scores calculated by geographic overlap with hazard grids
+</p>
+
+<!-- Selected States Info -->
+
+<div style="margin-top: 10px; padding: 8px; background: #fff3e0; border-radius: 4px; border-left: 3px solid #ff9800;">
+    <strong style="font-size: 11px; color: #e65100;">⚠️ Please select at least one state</strong>
+</div>
+
+
+<!-- Statistics Summary -->
+<div id="exposure-summary" style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #fce4ec, #f8bbd0); border-radius: 8px; border-left: 4px solid #e91e63;">
+    <h5 style="color: #880e4f; margin: 0 0 10px 0;">📊 Summary Statistics</h5>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;">
+        <div style="background: #fff; padding: 8px; border-radius: 4px; text-align: center;">
+            <div style="color: #666; font-size: 10px;">Total Assets</div>
+            <div id="exposure-total-assets" style="font-size: 16px; font-weight: bold; color: #c2185b;">--</div>
+        </div>
+        <div style="background: #fff; padding: 8px; border-radius: 4px; text-align: center;">
+            <div style="color: #666; font-size: 10px;">Displayed</div>
+            <div id="exposure-displayed-assets" style="font-size: 16px; font-weight: bold; color: #c2185b;">--</div>
+        </div>
+        <div style="background: #fff; padding: 8px; border-radius: 4px; text-align: center;">
+            <div style="color: #666; font-size: 10px;">With Exposure</div>
+            <div id="exposure-assets-with-score" style="font-size: 16px; font-weight: bold; color: #c2185b;">--</div>
+        </div>
+        <div style="background: #fff; padding: 8px; border-radius: 4px; text-align: center;">
+            <div style="color: #666; font-size: 10px;">Avg Score</div>
+            <div id="exposure-avg-score" style="font-size: 16px; font-weight: bold; color: #c2185b;">--</div>
+        </div>
+    </div>
+</div>
+
+<!-- Score Range Filter -->
+<div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 8px; border-left: 4px solid #ff9800;">
+    <h5 style="color: #e65100; margin: 0 0 10px 0;">🔍 Filter by Score</h5>
+    
+    <div style="margin-bottom: 8px;">
+        <label style="font-size: 11px; color: #555;">Min Score: <span id="exposure-min-score-display">0</span></label>
+        <input type="range" id="exposure-min-score" min="0" max="1" step="0.01" value="0" 
+               style="width: 100%; margin-top: 4px;">
+    </div>
+    <div>
+        <label style="font-size: 11px; color: #555;">Max Score: <span id="exposure-max-score-display">1</span></label>
+        <input type="range" id="exposure-max-score" min="0" max="1" step="0.01" value="1" 
+               style="width: 100%; margin-top: 4px;">
+    </div>
+</div>
+
+<!-- Level of Detail (LOD) Slider -->
+<div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 8px; border-left: 4px solid #4caf50;">
+    <h5 style="color: #2e7d32; margin: 0 0 10px 0;">📐 Level of Detail</h5>
+
+    <!-- Zoom-based auto LOD toggle -->
+    <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+        <label style="font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            <input type="checkbox" id="exposure-zoom-lod-toggle" checked style="margin: 0;">
+            <span>Auto LOD (zoom-based)</span>
+        </label>
+        <span id="exposure-lod-effective" style="font-size: 12px; font-weight: bold; color: #2e7d32; margin-left: auto;">100%</span>
+    </div>
+
+    <div style="margin-bottom: 8px;">
+        <label style="font-size: 11px; color: #555;">Max LOD: <span id="exposure-lod-display">100</span>%</label>
+        <input type="range" id="exposure-lod-slider" min="1" max="100" step="1" value="100"
+               style="width: 100%; margin-top: 4px;">
+    </div>
+    <p style="font-size: 10px; color: #666; margin-top: 4px;">
+        💡 Auto LOD: zoom in to see more assets, zoom out to show only top-scoring. Slider sets max cap.
+    </p>
+</div>
+
+<!-- Top Assets by Score -->
+<div id="exposure-top-assets" style="margin-top: 15px; padding: 12px; background: #fff; border-radius: 8px; border: 1px solid #f8bbd0;">
+    <h5 style="color: #880e4f; margin: 0 0 10px 0;">🏆 Top 10 Assets (Highest Exposure)</h5>
+    <div id="exposure-top-list" style="font-size: 11px; max-height: 200px; overflow-y: auto;">
+        <p style="color: #999;">Loading...</p>
+    </div>
+</div>
+        
+    </div>
+    
+
+    <div id="map"></div>
+    
+    
+    
+    
+    
+    
+    
+    
+    <div id="heatmap-legend">
+        <strong>Flood Exposure</strong>
+        <div style="font-size: 11px; color: #888; margin-bottom: 5px;">Asset Exposure Score</div>
+        <div class="legend-gradient"></div>
+        <div class="legend-labels">
+            <span>Low (0)</span>
+            <span>High (1)</span>
+        </div>
+        <div style="margin-top: 8px; font-size: 10px;">
+            <div style="display: flex; align-items: center; gap: 5px; margin: 2px 0;">
+                <span style="display: inline-block; width: 10px; height: 10px; background: #eee; border: 1px solid #333;"></span> No exposure (0)
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px; margin: 2px 0;">
+                <span style="display: inline-block; width: 10px; height: 10px; background: #bbb; border: 1px solid #333;"></span> Low (<0.3)
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px; margin: 2px 0;">
+                <span style="display: inline-block; width: 10px; height: 10px; background: #666; border: 1px solid #333;"></span> Medium (0.3-0.7)
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px; margin: 2px 0;">
+                <span style="display: inline-block; width: 10px; height: 10px; background: #222; border: 1px solid #333;"></span> High (>0.7)
+            </div>
+        </div>
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    <div id="coords">
+        <span id="coords-text">Lat: --, Lng: --</span>
+        
+        
+    </div>
+
+    </main>
+    
+    
+    <!-- Custom JavaScript -->
+    <script src="./static/js/site-config.js"></script>
+    <script src="./static/js/map-utils.js"></script>
+    <script src="./static/js/lod-systems.js"></script>
+    <script src="./static/js/map-controls.js"></script>
+    
+    <script>
+        // ========== Configuration from Server ==========
+        var MAP_CONFIG = {
+            viewType: "exposure",
+            divisionType: "state",
+            mode: "select",
+            geojsonBasePath: "states",
+            selectedRegions: [],
+            selectedSectors: [],
+            heatmapSector: "combined",
+            hazardType: "flood",
+            impactType: "poweroutage_2022",
+            impactMetric: "total_customers",
+            energyVulnerabilityType: "energy_vulnerability",
+            exposureType: "flood",
+            exposureAssets: ["plant", "substation", "line", "generator", "pipeline", "fuel", "other"],
+            energyDetailAssets: ["plant", "substation", "line", "generator", "pipeline", "fuel", "other"],
+            energyDetailLod: "100",
+            showBackground: true,
+            useGeoTiff: false,
+            sviMetric: "RPL_THEMES"
+        };
+
+        // ========== Sector Configuration ==========
+        var sectorColors = {
+            'chemical_sector': '#00ff00',
+            'commercial_facilities_sector': '#ff0000',
+            'communications_sector': '#0000ff',
+            'critical_manufacturing_sector': '#ffff00',
+            'dams_sector': '#00ffff',
+            'defense_industrial_base_sector': '#ff00ff',
+            'emergency_services_sector': '#ff8000',
+            'energy_sector': '#8000ff',
+            'financial_services_sector': '#0080ff',
+            'food_and_agriculture_sector': '#80ff00',
+            'government_facilities_sector': '#ff0080',
+            'healthcare_and_public_health_sector': '#00ff80',
+            'information_technology_sector': '#8080ff',
+            'nuclear_reactors,_materials,_and_waste_sector': '#ff8080',
+            'transportation_systems_sector': '#80ff80',
+            'water_and_wastewater_systems_sector': '#ffff80'
+        };
+        
+        var sectorIcons = {
+            'chemical_sector': './static/CI_icon/chemical.png',
+            'commercial_facilities_sector': './static/CI_icon/commercial.png',
+            'communications_sector': './static/CI_icon/communications.png',
+            'critical_manufacturing_sector': './static/CI_icon/manufacturing.png',
+            'dams_sector': './static/CI_icon/dams.png',
+            'defense_industrial_base_sector': './static/CI_icon/defense.png',
+            'emergency_services_sector': './static/CI_icon/emergency.png',
+            'energy_sector': './static/CI_icon/energy.png',
+            'financial_services_sector': './static/CI_icon/financial.png',
+            'food_and_agriculture_sector': './static/CI_icon/food.png',
+            'government_facilities_sector': './static/CI_icon/government.png',
+            'healthcare_and_public_health_sector': './static/CI_icon/healthcare.png',
+            'information_technology_sector': './static/CI_icon/it.png',
+            'nuclear_reactors,_materials,_and_waste_sector': './static/CI_icon/nuclear.png',
+            'transportation_systems_sector': './static/CI_icon/transportation.png',
+            'water_and_wastewater_systems_sector': './static/CI_icon/water.png'
+        };
+
+        
+        var ALL_STATES = ["alabama", "alaska", "arizona", "arkansas", "california", "colorado", "connecticut", "delaware", "florida", "georgia", "hawaii", "idaho", "illinois", "indiana", "iowa", "kansas", "kentucky", "louisiana", "maine", "maryland", "massachusetts", "michigan", "minnesota", "mississippi", "missouri", "montana", "nebraska", "nevada", "new_hampshire", "new_jersey", "new_mexico", "new_york", "north_carolina", "north_dakota", "ohio", "oklahoma", "oregon", "pennsylvania", "rhode_island", "south_carolina", "south_dakota", "tennessee", "texas", "utah", "vermont", "virginia", "washington", "west_virginia", "wisconsin", "wyoming"];
+
+        // === URL param override (static site) ===
+        (function() {
+            var p = new URLSearchParams(window.location.search);
+            if (p.getAll('region').length > 0) MAP_CONFIG.selectedRegions = p.getAll('region');
+            if (p.get('mode') === 'entire') {
+                MAP_CONFIG.mode = 'entire';
+                MAP_CONFIG.selectedRegions = ALL_STATES;
+            }
+            if (p.get('heatmap_sector')) MAP_CONFIG.heatmapSector = p.get('heatmap_sector');
+            if (p.get('hazard_type')) MAP_CONFIG.hazardType = p.get('hazard_type');
+            if (p.get('impact_type')) MAP_CONFIG.impactType = p.get('impact_type');
+            if (p.get('impact_metric')) MAP_CONFIG.impactMetric = p.get('impact_metric');
+            if (p.get('exposure_type')) MAP_CONFIG.exposureType = p.get('exposure_type');
+            if (p.getAll('exposure_asset').length > 0) MAP_CONFIG.exposureAssets = p.getAll('exposure_asset');
+            if (p.getAll('energy_detail_asset').length > 0) MAP_CONFIG.energyDetailAssets = p.getAll('energy_detail_asset');
+            if (p.get('energy_detail_lod')) MAP_CONFIG.energyDetailLod = p.get('energy_detail_lod');
+            if (p.get('svi_metric')) MAP_CONFIG.sviMetric = p.get('svi_metric');
+            if (p.get('show_background') === 'false') MAP_CONFIG.showBackground = false;
+            console.log('MAP_CONFIG after URL override:', JSON.stringify(MAP_CONFIG));
+        })();
+
+        // ========== Initialize Map ==========
+        var map = L.map('map').setView([37.8, -96], 4);
+        
+        // ========== Initialize LOD Systems ==========
+        var LOD = createDetailLOD(map);
+        var HeatmapLOD = createHeatmapLOD(map);
+        var HazardLOD = createHazardLOD(map, MAP_CONFIG.hazardType || 'flood');
+        
+        // Initialize Detail LOD
+        LOD.init();
+
+        // ========== Load Base GeoJSON ==========
+        var geojsonUrl = MAP_CONFIG.divisionType === 'state' 
+            ? window.DATA_BASE_URL + '/us-states.geojson' 
+            : window.DATA_BASE_URL + '/us-counties.geojson';
+
+        fetch(geojsonUrl)
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load GeoJSON');
+                return response.json();
+            })
+            .then(geojsonData => {
+                var filteredData = geojsonData;
+
+                
+                if (MAP_CONFIG.selectedRegions.length > 0) {
+                    filteredData = {
+                        type: "FeatureCollection",
+                        features: geojsonData.features.filter(f => 
+                            MAP_CONFIG.selectedRegions.some(region => 
+                                f.properties.shapeName === region ||
+                                f.properties.name === region ||
+                                (f.properties.shapeName && f.properties.shapeName.toLowerCase().replace(/\s+/g, '_') === region.toLowerCase()) ||
+                                (f.properties.name && f.properties.name.toLowerCase().replace(/\s+/g, '_') === region.toLowerCase())
+                            )
+                        )
+                    };
+                    if (filteredData.features.length === 0) {
+                        console.log('No boundary features found, showing all regions');
+                        filteredData = geojsonData;
+                    }
+                }
+                
+
+                // Add boundary layer
+                var geoLayer = L.geoJSON(filteredData, {
+                    style: {
+                        color: "#888888",
+                        weight: 1,
+                        opacity: 0.8,
+                        dashArray: "5, 5",
+                        fillColor: "#f0f8ff",
+                        fillOpacity: 0.1
+                    },
+                    onEachFeature: function (feature, layer) {
+                        var popup = feature.properties.shapeName || feature.properties.name || 'Border';
+                        if (feature.properties.STATE) popup += ', ' + feature.properties.STATE;
+                        layer.bindPopup(popup);
+                    }
+                }).addTo(map);
+
+                map.fitBounds(geoLayer.getBounds());
+
+                // ========== Load View-Specific Data ==========
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                // ========== Exposure View Data Loader ==========
+var exposureType = MAP_CONFIG.exposureType || "flood";
+var exposureAssets = MAP_CONFIG.exposureAssets || [];
+var exposureLayer = null;
+var exposureData = {};  // {state: data}
+var exposureAllResults = [];  // Combined results from all states
+var exposureIsLoading = false;
+var exposureLodPercent = 100;       // Manual slider value (user override)
+var exposureZoomLodEnabled = true;  // Auto-LOD based on zoom
+var exposureMinScore = 0;
+var exposureMaxScore = 1;
+
+// Exposure type configuration
+var exposureConfig = {
+    'flood': {
+        scoreField: 'flood_score',
+        normalizedField: 'flood_score_normalized',
+        detailField: 'matching_grids',
+        fileSuffix: '_flood_results.json',
+        subDir: 'flood',
+        maxScoreDefault: 1
+    },
+    'earthquake': {
+        scoreField: 'mmi_earthquake_exposure',
+        normalizedField: 'mmi_earthquake_exposure',
+        detailField: 'contributing_earthquakes',
+        fileSuffix: '_mmi_results.json',
+        subDir: 'earthquake_simplified',
+        maxScoreDefault: 10  // MMI scale is 0-10
+    },
+    'wildfire': {
+        scoreField: 'wildfire_exposure_raw',
+        normalizedField: 'wildfire_exposure_normalized',
+        detailField: 'contributing_fires',
+        fileSuffix: '_wildfire_results.json',
+        subDir: 'wildfire',
+        maxScoreDefault: 1  // Normalized 0-1
+    },
+    'earthquake_psha': {
+        scoreField: 'pga_10pct50yr',
+        normalizedField: 'pga_10pct50yr',
+        detailField: 'calculation_method',
+        fileSuffix: '_psha_results.json',
+        subDir: 'earthquake_psha',
+        maxScoreDefault: 1.6  // PGA in g, max ~1.53g
+    },
+    'wildfire_wfpi': {
+        scoreField: 'wfpi_p95',
+        normalizedField: 'wfpi_p95',
+        detailField: 'wfpi_class',
+        fileSuffix: '_wfpi_results.json',
+        subDir: 'wildfire_wfpi',
+        maxScoreDefault: 150  // WFPI scale 0-150
+    },
+    'hurricane': {
+        scoreField: 'max_wind_kt',
+        normalizedField: 'max_wind_kt',
+        detailField: 'top_storms',
+        fileSuffix: '_hurricane_results.json',
+        subDir: 'hurricane',
+        maxScoreDefault: 140  // Wind speed in knots
+    },
+    'winter_storm': {
+        scoreField: 'swe_p95_mm',
+        normalizedField: 'swe_p95_mm',
+        detailField: 'winter_class',
+        fileSuffix: '_winter_results.json',
+        subDir: 'winter_storm',
+        maxScoreDefault: 3000  // SWE in mm
+    }
+};
+
+// Get current exposure config
+function getCurrentExposureConfig() {
+    return exposureConfig[exposureType] || exposureConfig['flood'];
+}
+
+// Get score from result based on exposure type
+function getExposureScore(result) {
+    var config = getCurrentExposureConfig();
+    return result[config.scoreField] || 0;
+}
+
+// Get normalized score (for color mapping)
+function getNormalizedExposureScore(result) {
+    var config = getCurrentExposureConfig();
+    var score = result[config.scoreField] || 0;
+    // Normalize based on max score for each type
+    if (exposureType === 'earthquake') {
+        return Math.min(score / 10, 1);  // MMI 0-10 → 0-1
+    }
+    if (exposureType === 'wildfire') {
+        return Math.min(result[config.normalizedField] || 0, 1);  // Already normalized 0-1
+    }
+    if (exposureType === 'earthquake_psha') {
+        return Math.min(score / 0.5, 1);  // PGA 0-0.5g → 0-1 (most assets below 0.5g)
+    }
+    if (exposureType === 'wildfire_wfpi') {
+        return Math.min(score / 150, 1);  // WFPI 0-150 → 0-1
+    }
+    if (exposureType === 'hurricane') {
+        return Math.min(score / 140, 1);  // Wind 0-140kt → 0-1
+    }
+    if (exposureType === 'winter_storm') {
+        return Math.min(score / 500, 1);  // SWE 0-500mm → 0-1 (most below 500)
+    }
+    return Math.min(score, 1);  // Flood already 0-1
+}
+
+// Get selected states from MAP_CONFIG
+var selectedStates = MAP_CONFIG.selectedRegions || [];
+console.log('🎯 Exposure: Selected states:', selectedStates);
+console.log('🎯 Exposure: Type:', exposureType);
+console.log('🎯 Exposure: Selected asset types:', exposureAssets);
+
+// Color scale for exposure visualization (Reds)
+var exposureColorScale = [
+    '#fff5f0',  // Very light - lowest
+    '#fee0d2',
+    '#fcbba1',
+    '#fc9272',
+    '#fb6a4a',
+    '#ef3b2c',
+    '#cb181d',
+    '#a50f15',
+    '#67000d',  // Very dark - highest
+];
+
+// Loading indicator functions
+function showExposureLoading(message) {
+    exposureIsLoading = true;
+    var loadingDiv = document.getElementById('exposure-loading');
+    var loadingText = document.getElementById('exposure-loading-text');
+    var progressBar = document.getElementById('exposure-loading-progress');
+    var typeSelect = document.getElementById('exposure-type-select');
+    
+    if (loadingDiv) {
+        loadingDiv.style.display = 'block';
+        if (loadingText) loadingText.textContent = message || 'Loading exposure data...';
+        if (progressBar) progressBar.style.width = '10%';
+    }
+    if (typeSelect) typeSelect.disabled = true;
+    
+    // Disable checkboxes during loading
+    document.querySelectorAll('.exposure-asset-checkbox').forEach(function(cb) {
+        cb.disabled = true;
+    });
+}
+
+function updateExposureLoadingProgress(percent, message) {
+    var progressBar = document.getElementById('exposure-loading-progress');
+    var loadingText = document.getElementById('exposure-loading-text');
+    
+    if (progressBar) progressBar.style.width = percent + '%';
+    if (loadingText && message) loadingText.textContent = message;
+}
+
+function hideExposureLoading() {
+    exposureIsLoading = false;
+    var loadingDiv = document.getElementById('exposure-loading');
+    var typeSelect = document.getElementById('exposure-type-select');
+    
+    if (loadingDiv) loadingDiv.style.display = 'none';
+    if (typeSelect) typeSelect.disabled = false;
+    
+    // Re-enable checkboxes
+    document.querySelectorAll('.exposure-asset-checkbox').forEach(function(cb) {
+        cb.disabled = false;
+    });
+}
+
+// Get color based on normalized score (0-1 scale)
+function getExposureColor(score) {
+    if (score === null || score === undefined || isNaN(score) || score === 0) {
+        return '#CCCCCC';  // Gray for no exposure
+    }
+    
+    // Score is 0-1, map to color scale
+    var ratio = Math.max(0, Math.min(1, score));
+    var index = Math.floor(ratio * (exposureColorScale.length - 1));
+    return exposureColorScale[index];
+}
+
+// Get radius for point based on score
+function getExposureRadius(score) {
+    if (score === null || score === undefined || isNaN(score) || score === 0) {
+        return 3;
+    }
+    // Scale radius from 3 to 10 based on score
+    return 3 + (score * 7);
+}
+
+// Format score for display
+function formatScore(score) {
+    if (score === null || score === undefined) return '--';
+    if (score === 0) return '0.000';
+    return score.toFixed(4);
+}
+
+// Format large numbers
+function formatNumber(num) {
+    if (num === null || num === undefined) return '--';
+    if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + 'M';
+    } else if (num >= 1000) {
+        return (num / 1000).toFixed(1) + 'K';
+    }
+    return num.toLocaleString();
+}
+
+// Load exposure data for all selected states
+async function loadExposureData() {
+    if (selectedStates.length === 0) {
+        console.warn('🎯 No states selected for exposure view');
+        updateExposureSummary([], 0);
+        hideExposureLoading();
+        return;
+    }
+    
+    showExposureLoading('Loading exposure data...');
+    exposureData = {};
+    exposureAllResults = [];
+    
+    var loadedCount = 0;
+    var totalStates = selectedStates.length;
+    var config = getCurrentExposureConfig();
+    
+    for (var i = 0; i < selectedStates.length; i++) {
+        var state = selectedStates[i];
+        var stateCode = state.toLowerCase().replace(/ /g, '_');
+        var url = window.DATA_BASE_URL + '/Exposure/' + config.subDir + '/' + stateCode + config.fileSuffix;
+        
+        updateExposureLoadingProgress(
+            10 + (loadedCount / totalStates) * 70,
+            'Loading ' + state + ' (' + (loadedCount + 1) + '/' + totalStates + ')...'
+        );
+        
+        try {
+            var response = await fetch(url);
+            if (response.ok) {
+                var data = await response.json();
+                exposureData[stateCode] = data;
+                
+                // Add state info to each result
+                if (data.results) {
+                    data.results.forEach(function(result) {
+                        result._state = stateCode;
+                        exposureAllResults.push(result);
+                    });
+                }
+                console.log('🎯 Loaded ' + state + ': ' + (data.results ? data.results.length : 0) + ' assets');
+            } else {
+                console.warn('🎯 No data for ' + state + ': ' + response.status);
+            }
+        } catch (error) {
+            console.error('🎯 Error loading ' + state + ':', error);
+        }
+        
+        loadedCount++;
+    }
+    
+    updateExposureLoadingProgress(85, 'Processing ' + exposureAllResults.length + ' assets...');
+    
+    // Sort by score descending for LOD
+    exposureAllResults.sort(function(a, b) {
+        return getExposureScore(b) - getExposureScore(a);
+    });
+    
+    updateExposureLoadingProgress(90, 'Rendering map...');
+    
+    // Render with current filters
+    renderExposureLayer();
+    
+    updateExposureLoadingProgress(100, 'Done!');
+    hideExposureLoading();
+}
+
+// Filter results based on asset types, score range, and LOD
+function getFilteredResults() {
+    var filtered = exposureAllResults.filter(function(result) {
+        // Determine asset type from properties
+        var assetType = getAssetType(result.properties);
+        
+        // Filter by asset type (if none selected, show nothing)
+        if (exposureAssets.length === 0 || !exposureAssets.includes(assetType)) {
+            return false;
+        }
+        
+        // Filter by score range (use normalized for comparison)
+        var score = getNormalizedExposureScore(result);
+        if (score < exposureMinScore || score > exposureMaxScore) {
+            return false;
+        }
+        
+        return true;
+    });
+    
+    // Apply LOD — combine zoom-based ratio with manual slider
+    var effectivePercent = exposureLodPercent;
+    if (exposureZoomLodEnabled && typeof map !== 'undefined') {
+        var zoomRatio = getZoomLodRatio(map.getZoom());
+        // Effective = min(slider%, zoom%) — most restrictive wins
+        effectivePercent = Math.min(exposureLodPercent, Math.round(zoomRatio * 100));
+    }
+    if (effectivePercent < 100) {
+        var count = Math.max(1, Math.ceil(filtered.length * (effectivePercent / 100)));
+        filtered = filtered.slice(0, count);
+    }
+
+    // Update LOD display to show effective %
+    var lodEffectiveEl = document.getElementById('exposure-lod-effective');
+    if (lodEffectiveEl) {
+        lodEffectiveEl.textContent = effectivePercent + '%';
+    }
+
+    return filtered;
+}
+
+// Determine asset type from properties based on OSM tags
+function getAssetType(props) {
+    if (!props) return 'other';
+    
+    // Check power=* tag first (most common for energy assets)
+    if (props.power) {
+        var powerType = props.power.toLowerCase();
+        // Map common power types
+        var powerMapping = {
+            'tower': 'tower',
+            'pole': 'pole',
+            'line': 'line',
+            'cable': 'cable',
+            'substation': 'substation',
+            'sub_station': 'substation',
+            'plant': 'plant',
+            'generator': 'generator',
+            'transformer': 'transformer',
+            'switch': 'switch',
+            'switchgear': 'switch',
+            'compensator': 'other',
+            'converter': 'other',
+            'portal': 'other',
+            'catenary_mast': 'pole',
+            'minor_line': 'line'
+        };
+        return powerMapping[powerType] || 'other';
+    }
+    
+    // Check amenity=fuel (gas stations)
+    if (props.amenity === 'fuel') {
+        return 'fuel';
+    }
+    
+    // Check man_made=pipeline
+    if (props.man_made === 'pipeline') {
+        return 'pipeline';
+    }
+    
+    // Check for pipeline substance
+    if (props.substance === 'gas' || props.substance === 'oil') {
+        return 'pipeline';
+    }
+    
+    return 'other';
+}
+
+// Render exposure layer on map
+function renderExposureLayer() {
+    // Remove existing layer
+    if (exposureLayer) {
+        map.removeLayer(exposureLayer);
+        exposureLayer = null;
+    }
+    
+    var filteredResults = getFilteredResults();
+    var config = getCurrentExposureConfig();
+    console.log('🎯 Rendering ' + filteredResults.length + ' assets for ' + exposureType);
+    
+    // Create GeoJSON features
+    var features = filteredResults.map(function(result) {
+        var assetType = getAssetType(result.properties);
+        var score = getExposureScore(result);
+        var normalizedScore = getNormalizedExposureScore(result);
+        var detailCount = result[config.detailField] ? 
+            (Array.isArray(result[config.detailField]) ? result[config.detailField].length : result[config.detailField]) : 0;
+        
+        return {
+            type: 'Feature',
+            geometry: result.geometry,
+            properties: {
+                ...result.properties,
+                _asset_type: assetType,
+                _exposure_score: score,
+                _exposure_normalized: normalizedScore,
+                _calculation_method: result.calculation_method,
+                _detail_count: detailCount,
+                _state: result._state,
+                _asset_index: result.asset_index
+            }
+        };
+    });
+    
+    var geojson = {
+        type: 'FeatureCollection',
+        features: features
+    };
+    
+    // Create layer with styling
+    exposureLayer = L.geoJSON(geojson, {
+        pointToLayer: function(feature, latlng) {
+            var normalizedScore = feature.properties._exposure_normalized || 0;
+            return L.circleMarker(latlng, {
+                radius: getExposureRadius(normalizedScore),
+                fillColor: getExposureColor(normalizedScore),
+                color: '#333',
+                weight: 1,
+                opacity: 0.8,
+                fillOpacity: 0.7
+            });
+        },
+        style: function(feature) {
+            var normalizedScore = feature.properties._exposure_normalized || 0;
+            return {
+                color: getExposureColor(normalizedScore),
+                weight: feature.geometry.type === 'LineString' ? 3 : 2,
+                opacity: 0.8,
+                fillColor: getExposureColor(normalizedScore),
+                fillOpacity: 0.5
+            };
+        },
+        onEachFeature: function(feature, layer) {
+            var props = feature.properties;
+            var assetType = props._asset_type || 'Unknown';
+            var scoreLabels = {'earthquake': 'MMI Score', 'flood': 'Flood Score', 'wildfire': 'Wildfire Score'};
+            var detailLabels = {'earthquake': 'Earthquakes', 'flood': 'Grids', 'wildfire': 'Fires'};
+            var scoreLabel = scoreLabels[exposureType] || 'Score';
+            var detailLabel = detailLabels[exposureType] || 'Details';
+            
+            var popup = '<div style="min-width: 200px;">';
+            popup += '<h4 style="margin: 0 0 8px 0; color: #880e4f;">🎯 ' + exposureType.charAt(0).toUpperCase() + exposureType.slice(1) + ' Exposure</h4>';
+            popup += '<table style="font-size: 12px; width: 100%;">';
+            popup += '<tr><td><strong>Type:</strong></td><td>' + assetType + '</td></tr>';
+            popup += '<tr><td><strong>' + scoreLabel + ':</strong></td><td>' + formatScore(props._exposure_score) + '</td></tr>';
+            popup += '<tr><td><strong>Normalized:</strong></td><td>' + formatScore(props._exposure_normalized) + '</td></tr>';
+            popup += '<tr><td><strong>Method:</strong></td><td>' + (props._calculation_method || '--') + '</td></tr>';
+            popup += '<tr><td><strong>' + detailLabel + ':</strong></td><td>' + (props._detail_count || 0) + '</td></tr>';
+            popup += '<tr><td><strong>State:</strong></td><td>' + (props._state || '--') + '</td></tr>';
+            popup += '</table></div>';
+            layer.bindPopup(popup);
+        }
+    });
+    
+    exposureLayer.addTo(map);
+    
+    // Update summary
+    updateExposureSummary(filteredResults, exposureAllResults.length);
+    
+    // Update top assets list
+    updateTopAssetsList(filteredResults);
+}
+
+// Update summary statistics
+function updateExposureSummary(filteredResults, totalAssets) {
+    document.getElementById('exposure-total-assets').textContent = formatNumber(totalAssets);
+    document.getElementById('exposure-displayed-assets').textContent = formatNumber(filteredResults.length);
+    
+    var assetsWithScore = filteredResults.filter(function(r) { return getExposureScore(r) > 0; }).length;
+    document.getElementById('exposure-assets-with-score').textContent = formatNumber(assetsWithScore);
+    
+    // Calculate average score
+    var totalScore = 0;
+    var scoreCount = 0;
+    filteredResults.forEach(function(r) {
+        var score = getExposureScore(r);
+        if (score > 0) {
+            totalScore += score;
+            scoreCount++;
+        }
+    });
+    var avgScore = scoreCount > 0 ? (totalScore / scoreCount) : 0;
+    document.getElementById('exposure-avg-score').textContent = formatScore(avgScore);
+}
+
+// Update top assets list
+function updateTopAssetsList(filteredResults) {
+    var topList = document.getElementById('exposure-top-list');
+    if (!topList) return;
+    
+    // Get top 10 by score
+    var top10 = filteredResults.slice(0, 10);
+    
+    if (top10.length === 0) {
+        topList.innerHTML = '<p style="color: #999;">No assets to display</p>';
+        return;
+    }
+    
+    var html = '<ol style="margin: 0; padding-left: 20px;">';
+    top10.forEach(function(result, i) {
+        var type = getAssetType(result.properties);
+        var state = result._state ? result._state.replace(/_/g, ' ') : '';
+        var score = getExposureScore(result);
+        var normalizedScore = getNormalizedExposureScore(result);
+        var color = getExposureColor(normalizedScore);
+        
+        html += '<li style="margin: 4px 0; padding: 4px; border-left: 3px solid ' + color + '; background: #f5f5f5;">';
+        html += '<strong style="color: ' + color + ';">' + formatScore(score) + '</strong> ';
+        html += '<span style="color: #666;">' + type + '</span>';
+        html += '<span style="color: #999; font-size: 10px;"> (' + state + ')</span>';
+        html += '</li>';
+    });
+    html += '</ol>';
+    
+    topList.innerHTML = html;
+}
+
+// Update asset type filter
+function updateExposureAssetFilter() {
+    exposureAssets = [];
+    document.querySelectorAll('.exposure-asset-checkbox:checked').forEach(function(cb) {
+        exposureAssets.push(cb.value);
+    });
+    console.log('🎯 Asset filter updated:', exposureAssets);
+    renderExposureLayer();
+}
+
+// Initialize event listeners for exposure controls
+function initExposureControls() {
+    // Asset type checkboxes
+    document.querySelectorAll('.exposure-asset-checkbox').forEach(function(cb) {
+        cb.addEventListener('change', updateExposureAssetFilter);
+    });
+    
+    // Select all / clear all buttons
+    var selectAllBtn = document.getElementById('exposure-select-all');
+    var selectNoneBtn = document.getElementById('exposure-select-none');
+    
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', function() {
+            document.querySelectorAll('.exposure-asset-checkbox').forEach(function(cb) {
+                cb.checked = true;
+            });
+            updateExposureAssetFilter();
+        });
+    }
+    
+    if (selectNoneBtn) {
+        selectNoneBtn.addEventListener('click', function() {
+            document.querySelectorAll('.exposure-asset-checkbox').forEach(function(cb) {
+                cb.checked = false;
+            });
+            updateExposureAssetFilter();
+        });
+    }
+    
+    // Score range sliders
+    var minScoreSlider = document.getElementById('exposure-min-score');
+    var maxScoreSlider = document.getElementById('exposure-max-score');
+    var minScoreDisplay = document.getElementById('exposure-min-score-display');
+    var maxScoreDisplay = document.getElementById('exposure-max-score-display');
+    
+    if (minScoreSlider) {
+        minScoreSlider.addEventListener('input', function() {
+            exposureMinScore = parseFloat(this.value);
+            if (minScoreDisplay) minScoreDisplay.textContent = this.value;
+        });
+        minScoreSlider.addEventListener('change', function() {
+            renderExposureLayer();
+        });
+    }
+    
+    if (maxScoreSlider) {
+        maxScoreSlider.addEventListener('input', function() {
+            exposureMaxScore = parseFloat(this.value);
+            if (maxScoreDisplay) maxScoreDisplay.textContent = this.value;
+        });
+        maxScoreSlider.addEventListener('change', function() {
+            renderExposureLayer();
+        });
+    }
+    
+    // LOD slider
+    var lodSlider = document.getElementById('exposure-lod-slider');
+    var lodDisplay = document.getElementById('exposure-lod-display');
+    
+    if (lodSlider) {
+        lodSlider.addEventListener('input', function() {
+            exposureLodPercent = parseInt(this.value);
+            if (lodDisplay) lodDisplay.textContent = this.value;
+        });
+        lodSlider.addEventListener('change', function() {
+            renderExposureLayer();
+        });
+    }
+    
+    // Exposure type selector
+    var typeSelect = document.getElementById('exposure-type-select');
+    if (typeSelect) {
+        // Sync dropdown value from URL parameter
+        if (MAP_CONFIG.exposureType) {
+            typeSelect.value = MAP_CONFIG.exposureType;
+        }
+        typeSelect.addEventListener('change', function() {
+            exposureType = this.value;
+            var url = new URL(window.location);
+            url.searchParams.set('exposure_type', this.value);
+            window.history.replaceState({}, '', url.toString());
+            loadExposureData();
+        });
+    }
+
+    // Zoom-based auto LOD toggle
+    var zoomLodToggle = document.getElementById('exposure-zoom-lod-toggle');
+    if (zoomLodToggle) {
+        zoomLodToggle.addEventListener('change', function() {
+            exposureZoomLodEnabled = this.checked;
+            renderExposureLayer();
+        });
+    }
+
+    // Listen to zoom changes → re-render with new LOD ratio
+    if (typeof map !== 'undefined') {
+        map.on('zoomend', function() {
+            if (exposureZoomLodEnabled && exposureAllResults.length > 0 && !exposureIsLoading) {
+                renderExposureLayer();
+            }
+        });
+    }
+}
+
+// Initialize exposure view
+if (MAP_CONFIG.viewType === 'exposure') {
+    console.log('🎯 Initializing Exposure view...');
+    
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+        initExposureControls();
+        loadExposureData();
+    });
+    
+    // If DOM already loaded, initialize now
+    if (document.readyState !== 'loading') {
+        initExposureControls();
+        loadExposureData();
+    }
+}
+                
+                
+                
+                
+                
+            })
+            .catch(error => {
+                console.error(error);
+                alert('Error loading map. Check GeoJSON file and console.');
+            });
+
+        // ========== Initialize Event Handlers ==========
+        initViewToggle();
+        initBackgroundToggle(map, MAP_CONFIG.showBackground);
+        var setCurrentCounty = initCoordinateDisplay(map);
+        
+        // ========== Panel Toggle Functionality ==========
+        var panelToggle = document.getElementById('panel-toggle');
+        var sectorPanel = document.getElementById('sector-panel');
+        
+        if (panelToggle && sectorPanel) {
+            panelToggle.addEventListener('click', function() {
+                var isHidden = sectorPanel.classList.toggle('hidden');
+                panelToggle.classList.toggle('panel-hidden', isHidden);
+                panelToggle.querySelector('.toggle-text').textContent = isHidden ? 'Show Panel' : 'Hide Panel';
+            });
+        }
+        
+        
+        
+        
+    </script>
+
+
+    <script>
+    // Static site: override view toggle to navigate to correct HTML file
+    (function() {
+        var viewMap = {
+            'btn-heatmap': 'map_heatmap.html',
+            'btn-hazard': 'map_hazard.html',
+            'btn-impact': 'map_impact.html',
+            'btn-energy-vulnerability': 'map_energy_vulnerability.html',
+            'btn-exposure': 'map_exposure.html',
+            'btn-energy-detail': 'map_energy_detail.html',
+            'btn-social-vulnerability': 'map_social_vulnerability.html'
+        };
+        Object.keys(viewMap).forEach(function(btnId) {
+            var btn = document.getElementById(btnId);
+            if (btn) {
+                // Remove ALL existing click listeners by cloning
+                var newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                // Add static site navigation
+                newBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var url = new URL(window.location);
+                    var params = new URLSearchParams(url.search);
+                    // Keep region and mode params, remove view-specific ones
+                    var keep = ['region', 'mode', 'division_type', 'show_background'];
+                    var newParams = new URLSearchParams();
+                    keep.forEach(function(k) {
+                        params.getAll(k).forEach(function(v) { newParams.append(k, v); });
+                    });
+                    window.location.href = viewMap[btnId] + '?' + newParams.toString();
+                });
+            }
+        });
+    })();
+    </script>
+    
+</body>
+</html>
