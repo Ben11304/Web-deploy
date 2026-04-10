@@ -69,6 +69,33 @@
             padding: 0;
         }
         
+        /* Footer */
+        .site-footer {
+            background: #111;
+            color: #999;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            border-top: 1px solid #222;
+        }
+
+        .site-footer a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .site-footer a:hover {
+            color: #fff;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
         
     </style>
     
@@ -164,23 +191,13 @@
 <div style="margin-bottom: 12px;">
     <label style="font-size: 12px; color: #555; display: block; margin-bottom: 4px;">📊 Exposure Type</label>
     <select id="exposure-type-select" style="width: 100%; padding: 8px; font-size: 14px; border-radius: 4px; border: 1px solid #ddd;">
-
-            <option value="flood_fema" selected>🌊 Flood FEMA SFHA (Direct)</option>
-
-            <option value="flood" >🌊 Flood Heatmap (Legacy)</option>
-
-            <option value="earthquake" >🌋 Earthquake MMI (Legacy)</option>
-
-            <option value="earthquake_psha" >🌋 Earthquake PSHA (USGS 2023)</option>
-
-            <option value="wildfire" >🔥 Wildfire Historical Burns</option>
-
-            <option value="wildfire_wfpi" >🔥 Wildfire WFPI P95 (USGS)</option>
-
-            <option value="hurricane" >🌀 Hurricane (IBTrACS ≥64kt)</option>
-
-            <option value="winter_storm" >❄️ Winter Storm (SNODAS SWE P95)</option>
-
+        
+            <option value="flood" selected>🌊 Flood Exposure</option>
+        
+            <option value="earthquake" >🌋 Earthquake MMI</option>
+        
+            <option value="wildfire" >🔥 Wildfire Exposure</option>
+        
     </select>
 </div>
 
@@ -287,17 +304,6 @@
     </div>
 </div>
 
-<!-- Color Scale Mode -->
-<div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #e8eaf6, #c5cae9); border-radius: 8px; border-left: 4px solid #3f51b5;">
-    <h5 style="color: #1a237e; margin: 0 0 8px 0;">🎨 Color Scale</h5>
-    <select id="color-scale-mode" style="width: 100%; padding: 6px; font-size: 13px; border-radius: 4px; border: 1px solid #9fa8da;">
-        <option value="quantile" selected>Quantile (equal-count bins)</option>
-        <option value="linear">Linear (absolute values)</option>
-        <option value="log">Logarithmic (spread low values)</option>
-    </select>
-    <div style="font-size: 10px; color: #5c6bc0; margin-top: 4px;">Quantile: equal number of assets per color bin. Best for skewed data.</div>
-</div>
-
 <!-- Score Range Filter -->
 <div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 8px; border-left: 4px solid #ff9800;">
     <h5 style="color: #e65100; margin: 0 0 10px 0;">🔍 Filter by Score</h5>
@@ -395,7 +401,16 @@
     </div>
 
     </main>
-    
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="data-sources.html">Data Sources</a>
+            <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">GitHub</a>
+        </div>
+        <div>&copy; 2026 Energy Critical Infrastructure &middot; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></div>
+    </footer>
+
     
     <!-- Custom JavaScript -->
     <script src="./static/js/site-config.js"></script>
@@ -576,14 +591,6 @@ var exposureMaxScore = 1;
 
 // Exposure type configuration
 var exposureConfig = {
-    'flood_fema': {
-        scoreField: '_flood_fema_score',
-        normalizedField: '_flood_fema_score',
-        detailField: 'fld_zone',
-        fileSuffix: '_flood_results.json',
-        subDir: 'flood_fema',
-        maxScoreDefault: 1
-    },
     'flood': {
         scoreField: 'flood_score',
         normalizedField: 'flood_score_normalized',
@@ -607,38 +614,6 @@ var exposureConfig = {
         fileSuffix: '_wildfire_results.json',
         subDir: 'wildfire',
         maxScoreDefault: 1  // Normalized 0-1
-    },
-    'earthquake_psha': {
-        scoreField: 'pga_10pct50yr',
-        normalizedField: 'pga_10pct50yr',
-        detailField: 'calculation_method',
-        fileSuffix: '_psha_results.json',
-        subDir: 'earthquake_psha',
-        maxScoreDefault: 1.6  // PGA in g, max ~1.53g
-    },
-    'wildfire_wfpi': {
-        scoreField: 'wfpi_p95',
-        normalizedField: 'wfpi_p95',
-        detailField: 'wfpi_class',
-        fileSuffix: '_wfpi_results.json',
-        subDir: 'wildfire_wfpi',
-        maxScoreDefault: 150  // WFPI scale 0-150
-    },
-    'hurricane': {
-        scoreField: 'max_wind_kt',
-        normalizedField: 'max_wind_kt',
-        detailField: 'top_storms',
-        fileSuffix: '_hurricane_results.json',
-        subDir: 'hurricane',
-        maxScoreDefault: 140  // Wind speed in knots
-    },
-    'winter_storm': {
-        scoreField: 'swe_p95_mm',
-        normalizedField: 'swe_p95_mm',
-        detailField: 'winter_class',
-        fileSuffix: '_winter_results.json',
-        subDir: 'winter_storm',
-        maxScoreDefault: 3000  // SWE in mm
     }
 };
 
@@ -649,41 +624,22 @@ function getCurrentExposureConfig() {
 
 // Get score from result based on exposure type
 function getExposureScore(result) {
-    if (result._cachedScore !== undefined) return result._cachedScore;
     var config = getCurrentExposureConfig();
-    var val = result[config.scoreField];
-    if (val === true) return 1;
-    if (val === false) return 0;
-    return val || 0;
+    return result[config.scoreField] || 0;
 }
 
 // Get normalized score (for color mapping)
 function getNormalizedExposureScore(result) {
     var config = getCurrentExposureConfig();
     var score = result[config.scoreField] || 0;
-    // Normalize based on max score for each type
+    // Normalize based on max score
     if (exposureType === 'earthquake') {
         return Math.min(score / 10, 1);  // MMI 0-10 → 0-1
     }
     if (exposureType === 'wildfire') {
         return Math.min(result[config.normalizedField] || 0, 1);  // Already normalized 0-1
     }
-    if (exposureType === 'earthquake_psha') {
-        return Math.min(score / 0.5, 1);  // PGA 0-0.5g → 0-1 (most assets below 0.5g)
-    }
-    if (exposureType === 'wildfire_wfpi') {
-        return Math.min(score / 150, 1);  // WFPI 0-150 → 0-1
-    }
-    if (exposureType === 'hurricane') {
-        return Math.min(score / 140, 1);  // Wind 0-140kt → 0-1
-    }
-    if (exposureType === 'winter_storm') {
-        return Math.min(score / 500, 1);  // SWE 0-500mm → 0-1 (most below 500)
-    }
-    if (exposureType === 'flood_fema') {
-        return Math.min(score, 1);  // Zone-based 0-1 score
-    }
-    return Math.min(score, 1);  // Flood legacy already 0-1
+    return Math.min(score, 1);  // Flood already 0-1
 }
 
 // Get selected states from MAP_CONFIG
@@ -704,63 +660,6 @@ var exposureColorScale = [
     '#a50f15',
     '#67000d',  // Very dark - highest
 ];
-
-// Color scale mode: 'quantile', 'linear', or 'log'
-var colorScaleMode = 'quantile';
-
-// Quantile breakpoints — computed from actual data after loading
-var quantileBreaks = [];
-
-// Compute quantile breakpoints from loaded data (sampled for performance)
-function computeQuantileBreaks() {
-    if (exposureAllResults.length === 0) { quantileBreaks = []; return; }
-    var config = getCurrentExposureConfig();
-    // Sample up to 50k scores for performance (sort is O(n log n))
-    var maxSample = 50000;
-    var step = Math.max(1, Math.floor(exposureAllResults.length / maxSample));
-    var scores = [];
-    for (var i = 0; i < exposureAllResults.length; i += step) {
-        var s = exposureAllResults[i]._cachedScore || 0;
-        if (s > 0) scores.push(s);
-    }
-    if (scores.length === 0) { quantileBreaks = []; return; }
-    scores.sort(function(a, b) { return a - b; });
-    // Create breakpoints for N color bins
-    var nBins = exposureColorScale.length;
-    quantileBreaks = [];
-    for (var q = 0; q < nBins; q++) {
-        var idx = Math.floor((q / nBins) * scores.length);
-        quantileBreaks.push(scores[Math.min(idx, scores.length - 1)]);
-    }
-    console.log('Quantile breaks (' + exposureType + ', sampled ' + scores.length + '):', quantileBreaks.map(function(v){return v.toFixed(4);}).join(', '));
-}
-
-// Get visual normalized score (0-1) based on color scale mode
-// This is ONLY for rendering — original data is never modified
-function getVisualScore(result) {
-    var score = getExposureScore(result);
-    if (score === 0) return 0;
-
-    if (colorScaleMode === 'quantile' && quantileBreaks.length > 0) {
-        // Find which bin this score falls into
-        for (var i = quantileBreaks.length - 1; i >= 0; i--) {
-            if (score >= quantileBreaks[i]) {
-                return (i + 1) / quantileBreaks.length;
-            }
-        }
-        return 1 / quantileBreaks.length;  // Below lowest break
-    }
-
-    if (colorScaleMode === 'log') {
-        // Log scale: spread out low values
-        var maxScore = config.maxScoreDefault || 1;
-        var logScore = Math.log1p(score) / Math.log1p(maxScore);
-        return Math.max(0, Math.min(1, logScore));
-    }
-
-    // Linear (default fallback) — use existing getNormalizedExposureScore
-    return getNormalizedExposureScore(result);
-}
 
 // Loading indicator functions
 function showExposureLoading(message) {
@@ -896,39 +795,14 @@ async function loadExposureData() {
     }
     
     updateExposureLoadingProgress(85, 'Processing ' + exposureAllResults.length + ' assets...');
-
-    // Compute derived scores for FEMA flood (zone-based gradient, not binary)
-    if (exposureType === 'flood_fema') {
-        var zoneScores = {
-            'VE': 1.0, 'V': 0.95,           // Coastal high velocity — highest risk
-            'AO': 0.85, 'AH': 0.80,         // Sheet flow / shallow flooding
-            'AE': 0.70, 'A': 0.60,          // 1% annual chance (100-yr)
-            'AR': 0.50, 'A99': 0.45,        // Special / future SFHA
-            'X': 0.20,                       // 0.2% annual chance (500-yr, shaded)
-        };
-        for (var fi = 0; fi < exposureAllResults.length; fi++) {
-            var zone = exposureAllResults[fi].fld_zone || 'None';
-            exposureAllResults[fi]._flood_fema_score = zoneScores[zone] || 0;
-        }
-    }
-
-    // Cache score into each result to avoid repeated lookups during sort/render
-    var config = getCurrentExposureConfig();
-    for (var ci = 0; ci < exposureAllResults.length; ci++) {
-        var val = exposureAllResults[ci][config.scoreField];
-        exposureAllResults[ci]._cachedScore = (val === true) ? 1 : (val === false) ? 0 : (val || 0);
-    }
-
-    // Sort by cached score descending for LOD (show highest-score assets first)
+    
+    // Sort by score descending for LOD
     exposureAllResults.sort(function(a, b) {
-        return b._cachedScore - a._cachedScore;
+        return getExposureScore(b) - getExposureScore(a);
     });
-
-    updateExposureLoadingProgress(88, 'Computing color scale...');
-    computeQuantileBreaks();
-
+    
     updateExposureLoadingProgress(90, 'Rendering map...');
-
+    
     // Render with current filters
     renderExposureLayer();
     
@@ -1040,10 +914,10 @@ function renderExposureLayer() {
     var features = filteredResults.map(function(result) {
         var assetType = getAssetType(result.properties);
         var score = getExposureScore(result);
-        var visualScore = getVisualScore(result);
-        var detailCount = result[config.detailField] ?
+        var normalizedScore = getNormalizedExposureScore(result);
+        var detailCount = result[config.detailField] ? 
             (Array.isArray(result[config.detailField]) ? result[config.detailField].length : result[config.detailField]) : 0;
-
+        
         return {
             type: 'Feature',
             geometry: result.geometry,
@@ -1051,7 +925,7 @@ function renderExposureLayer() {
                 ...result.properties,
                 _asset_type: assetType,
                 _exposure_score: score,
-                _exposure_normalized: visualScore,
+                _exposure_normalized: normalizedScore,
                 _calculation_method: result.calculation_method,
                 _detail_count: detailCount,
                 _state: result._state,
@@ -1252,27 +1126,11 @@ function initExposureControls() {
         });
     }
     
-    // Color scale mode selector
-    var colorModeSelect = document.getElementById('color-scale-mode');
-    if (colorModeSelect) {
-        colorModeSelect.addEventListener('change', function() {
-            colorScaleMode = this.value;
-            renderExposureLayer();
-        });
-    }
-
     // Exposure type selector
     var typeSelect = document.getElementById('exposure-type-select');
     if (typeSelect) {
-        // Sync dropdown value from URL parameter
-        if (MAP_CONFIG.exposureType) {
-            typeSelect.value = MAP_CONFIG.exposureType;
-        }
         typeSelect.addEventListener('change', function() {
             exposureType = this.value;
-            var url = new URL(window.location);
-            url.searchParams.set('exposure_type', this.value);
-            window.history.replaceState({}, '', url.toString());
             loadExposureData();
         });
     }

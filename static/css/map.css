@@ -314,3 +314,8 @@
     align-items: center;
     color: #333;
 }
+
+/* Hide footer on map pages */
+.site-footer {
+    display: none;
+}

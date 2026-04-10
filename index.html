@@ -69,6 +69,33 @@
             
         }
         
+        /* Footer */
+        .site-footer {
+            background: #111;
+            color: #999;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            border-top: 1px solid #222;
+        }
+
+        .site-footer a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .site-footer a:hover {
+            color: #fff;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
         
         /* Split Layout */
         .content-wrapper { 
@@ -748,17 +775,13 @@
                             <select name="hazard_type" id="hazard-type-select">
                                 
                                     <option value="flood">🌊 Flood Hazard</option>
-
+                                
                                     <option value="wildfire">🔥 Wildfire Historical</option>
-
+                                
                                     <option value="drought">🏜️ Drought Monitor</option>
-
+                                
                                     <option value="earthquake">🌋 Earthquake</option>
-
-                                    <option value="hurricane">🌀 Hurricane Wind Swaths</option>
-
-                                    <option value="winter_storm">❄️ Winter Storm (SWE)</option>
-
+                                
                             </select>
                             <div class="info-box">
                                 <p>Shows hazard risk levels across the selected region based on historical data.</p>
@@ -860,23 +883,13 @@
                                 Hazard Type:
                             </label>
                             <select name="exposure_type" id="exposure-type-select">
-
-                                    <option value="flood_fema">🌊 Flood FEMA SFHA (Direct)</option>
-
-                                    <option value="flood">🌊 Flood Heatmap (Legacy)</option>
-
-                                    <option value="earthquake">🌋 Earthquake MMI (Legacy)</option>
-
-                                    <option value="earthquake_psha">🌋 Earthquake PSHA (USGS 2023)</option>
-
-                                    <option value="wildfire">🔥 Wildfire Historical Burns</option>
-
-                                    <option value="wildfire_wfpi">🔥 Wildfire WFPI P95 (USGS)</option>
-
-                                    <option value="hurricane">🌀 Hurricane (IBTrACS ≥64kt)</option>
-
-                                    <option value="winter_storm">❄️ Winter Storm (SNODAS SWE P95)</option>
-
+                                
+                                    <option value="flood">🌊 Flood Exposure</option>
+                                
+                                    <option value="earthquake">🌋 Earthquake MMI</option>
+                                
+                                    <option value="wildfire">🔥 Wildfire Exposure</option>
+                                
                             </select>
                             
                             <label style="font-size: 13px; color: #666; display: block; margin-bottom: 8px; margin-top: 16px;">
@@ -1035,7 +1048,16 @@
     </div>
 
     </main>
-    
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="data-sources.html">Data Sources</a>
+            <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">GitHub</a>
+        </div>
+        <div>&copy; 2026 Energy Critical Infrastructure &middot; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></div>
+    </footer>
+
     
     <script>
         // Elements

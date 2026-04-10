@@ -69,6 +69,33 @@
             padding: 0;
         }
         
+        /* Footer */
+        .site-footer {
+            background: #111;
+            color: #999;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            border-top: 1px solid #222;
+        }
+
+        .site-footer a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .site-footer a:hover {
+            color: #fff;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
         
     </style>
     
@@ -217,19 +244,15 @@ function setGlobalLoadingError(message) {
 </script>
 <h4>🌊 Hazard Layer</h4>
 <select id="hazard-select" style="width: 100%; padding: 8px; font-size: 14px;">
-
+    
         <option value="flood" selected>🌊 Flood Hazard</option>
-
+    
         <option value="wildfire" >🔥 Wildfire Historical</option>
-
+    
         <option value="drought" >🏜️ Drought Monitor</option>
-
+    
         <option value="earthquake" >🌋 Earthquake</option>
-
-        <option value="hurricane" >🌀 Hurricane Wind Swaths</option>
-
-        <option value="winter_storm" >❄️ Winter Storm (SWE)</option>
-
+    
 </select>
 
 
@@ -304,7 +327,16 @@ function setGlobalLoadingError(message) {
     </div>
 
     </main>
-    
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="data-sources.html">Data Sources</a>
+            <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">GitHub</a>
+        </div>
+        <div>&copy; 2026 Energy Critical Infrastructure &middot; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></div>
+    </footer>
+
     
     <!-- Custom JavaScript -->
     <script src="./static/js/site-config.js"></script>
