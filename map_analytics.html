@@ -206,6 +206,7 @@
                 <option value="flood_pct">Flood</option>
                 <option value="wfpi_pct">Wildfire</option>
                 <option value="hurr_pct">Hurricane</option>
+                <option value="winter_pct">Winter Storm</option>
             </select>
         </div>
         <div class="chart-container">
@@ -459,6 +460,7 @@
         flood_pct: '#3498db',
         wfpi_pct: '#e67e22',
         hurr_pct: '#9b59b6',
+        winter_pct: '#5dade2',
         any_pct: '#2c3e50',
         multi_pct: '#1abc9c'
     };
@@ -520,7 +522,7 @@
     function renderSummary() {
         var states = getSelectedStates();
 
-        var totalAssets = 0, eqW = 0, floodW = 0, wfpiW = 0, hurrW = 0, anyW = 0, multiW = 0;
+        var totalAssets = 0, eqW = 0, floodW = 0, wfpiW = 0, hurrW = 0, winterW = 0, anyW = 0, multiW = 0;
         states.forEach(function(s) {
             var t = s.total_assets;
             totalAssets += t;
@@ -528,6 +530,7 @@
             floodW += s.flood_pct * t;
             wfpiW += s.wfpi_pct * t;
             hurrW += s.hurr_pct * t;
+            winterW += (s.winter_pct || 0) * t;
             anyW += s.any_pct * t;
             multiW += s.multi_pct * t;
         });
@@ -537,6 +540,7 @@
             flood_pct: totalAssets ? (floodW / totalAssets) : 0,
             wfpi_pct: totalAssets ? (wfpiW / totalAssets) : 0,
             hurr_pct: totalAssets ? (hurrW / totalAssets) : 0,
+            winter_pct: totalAssets ? (winterW / totalAssets) : 0,
             any_pct: totalAssets ? (anyW / totalAssets) : 0,
             multi_pct: totalAssets ? (multiW / totalAssets) : 0,
         };
@@ -551,11 +555,11 @@
         charts.hazardBars = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Earthquake', 'Flood', 'Wildfire', 'Hurricane'],
+                labels: ['Earthquake', 'Flood', 'Wildfire', 'Hurricane', 'Winter Storm'],
                 datasets: [{
                     label: 'Exposure %',
-                    data: [stats.eq_pct, stats.flood_pct, stats.wfpi_pct, stats.hurr_pct],
-                    backgroundColor: [HAZARD_COLORS.eq_pct, HAZARD_COLORS.flood_pct, HAZARD_COLORS.wfpi_pct, HAZARD_COLORS.hurr_pct],
+                    data: [stats.eq_pct, stats.flood_pct, stats.wfpi_pct, stats.hurr_pct, stats.winter_pct],
+                    backgroundColor: [HAZARD_COLORS.eq_pct, HAZARD_COLORS.flood_pct, HAZARD_COLORS.wfpi_pct, HAZARD_COLORS.hurr_pct, HAZARD_COLORS.winter_pct],
                 }]
             },
             options: {
@@ -587,6 +591,7 @@
                     { label: 'Flood', data: top.map(function(s) { return s.flood_pct; }), backgroundColor: HAZARD_COLORS.flood_pct },
                     { label: 'Wildfire', data: top.map(function(s) { return s.wfpi_pct; }), backgroundColor: HAZARD_COLORS.wfpi_pct },
                     { label: 'Hurricane', data: top.map(function(s) { return s.hurr_pct; }), backgroundColor: HAZARD_COLORS.hurr_pct },
+                    { label: 'Winter Storm', data: top.map(function(s) { return s.winter_pct || 0; }), backgroundColor: HAZARD_COLORS.winter_pct },
                 ]
             },
             options: {
@@ -754,7 +759,8 @@
                                 'Assets: ' + d.total_assets.toLocaleString() + '<br>' +
                                 'Any hazard: ' + d.any_pct + '%<br>' +
                                 'EQ: ' + d.eq_pct + '% | Flood: ' + d.flood_pct + '%<br>' +
-                                'Wildfire: ' + d.wfpi_pct + '% | Hurricane: ' + d.hurr_pct + '%'
+                                'Wildfire: ' + d.wfpi_pct + '% | Hurricane: ' + d.hurr_pct + '%<br>' +
+                                'Winter Storm: ' + (d.winter_pct || 0) + '%'
                             );
                         }
                     }
