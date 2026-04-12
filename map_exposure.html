@@ -655,13 +655,17 @@ function getCurrentExposureConfig() {
 // Get score from result based on exposure type
 function getExposureScore(result) {
     var config = getCurrentExposureConfig();
-    return result[config.scoreField] || 0;
+    var val = result[config.scoreField];
+    // Handle booleans (e.g. flood_fema flood_exposed: true/false)
+    if (typeof val === 'boolean') return val ? 1 : 0;
+    return val || 0;
 }
 
 // Get normalized score (for color mapping)
 function getNormalizedExposureScore(result) {
     var config = getCurrentExposureConfig();
-    var score = result[config.scoreField] || 0;
+    var val = result[config.scoreField];
+    var score = (typeof val === 'boolean') ? (val ? 1 : 0) : (val || 0);
     // Normalize to 0-1 for color mapping based on each hazard's scale
     if (exposureType === 'flood_fema') {
         return score ? 1 : 0;  // Binary: SFHA or not
