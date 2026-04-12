@@ -325,6 +325,19 @@
     </div>
 </div>
 
+<!-- Color Scale Mode -->
+<div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #e8eaf6, #c5cae9); border-radius: 8px; border-left: 4px solid #3f51b5;">
+    <h5 style="color: #283593; margin: 0 0 10px 0;">🎨 Color Scale</h5>
+    <select id="exposure-color-mode" style="width: 100%; padding: 8px; font-size: 13px; border-radius: 4px; border: 1px solid #ddd;">
+        <option value="linear">Linear</option>
+        <option value="quantile" selected>Quantile (recommended)</option>
+        <option value="log">Logarithmic</option>
+    </select>
+    <p style="font-size: 10px; color: #666; margin-top: 6px;" id="color-mode-desc">
+        Quantile: equal number of assets per color bin — best for skewed data.
+    </p>
+</div>
+
 <!-- Level of Detail (LOD) Slider -->
 <div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 8px; border-left: 4px solid #4caf50;">
     <h5 style="color: #2e7d32; margin: 0 0 10px 0;">📐 Level of Detail</h5>
@@ -598,6 +611,8 @@ var exposureLayer = null;
 var exposureData = {};  // {state: data}
 var exposureAllResults = [];  // Combined results from all states
 var exposureIsLoading = false;
+var exposureColorMode = 'quantile';  // 'linear', 'quantile', 'log'
+var exposureQuantileBreaks = [];     // Computed from data for quantile mode
 var exposureLodPercent = 100;       // Manual slider value (user override)
 var exposureZoomLodEnabled = true;  // Auto-LOD based on zoom
 var exposureMinScore = 0;
@@ -747,15 +762,52 @@ function hideExposureLoading() {
     });
 }
 
-// Get color based on normalized score (0-1 scale)
+// Compute quantile breaks from current filtered data
+function computeQuantileBreaks(scores, nBins) {
+    nBins = nBins || exposureColorScale.length;
+    var sorted = scores.filter(function(s) { return s > 0; }).sort(function(a, b) { return a - b; });
+    if (sorted.length === 0) return [];
+    var breaks = [];
+    for (var i = 1; i < nBins; i++) {
+        var idx = Math.floor(i * sorted.length / nBins);
+        breaks.push(sorted[Math.min(idx, sorted.length - 1)]);
+    }
+    return breaks;
+}
+
+// Update quantile breaks when data or filters change
+function updateQuantileBreaks() {
+    var scores = exposureAllResults.map(function(r) {
+        return getNormalizedExposureScore(r);
+    });
+    exposureQuantileBreaks = computeQuantileBreaks(scores, exposureColorScale.length);
+}
+
+// Get color based on normalized score using current color mode
 function getExposureColor(score) {
     if (score === null || score === undefined || isNaN(score) || score === 0) {
         return '#CCCCCC';  // Gray for no exposure
     }
-    
-    // Score is 0-1, map to color scale
-    var ratio = Math.max(0, Math.min(1, score));
+
+    var ratio;
+    if (exposureColorMode === 'quantile' && exposureQuantileBreaks.length > 0) {
+        // Quantile: find which bin this score falls into
+        var bin = 0;
+        for (var i = 0; i < exposureQuantileBreaks.length; i++) {
+            if (score > exposureQuantileBreaks[i]) bin = i + 1;
+        }
+        ratio = bin / exposureQuantileBreaks.length;
+    } else if (exposureColorMode === 'log') {
+        // Log: compress high values, expand low values
+        var logScore = Math.log1p(score * 100) / Math.log1p(100);
+        ratio = Math.max(0, Math.min(1, logScore));
+    } else {
+        // Linear: direct mapping
+        ratio = Math.max(0, Math.min(1, score));
+    }
+
     var index = Math.floor(ratio * (exposureColorScale.length - 1));
+    index = Math.min(index, exposureColorScale.length - 1);
     return exposureColorScale[index];
 }
 
@@ -765,7 +817,7 @@ function getExposureRadius(score) {
         return 3;
     }
     // Scale radius from 3 to 10 based on score
-    return 3 + (score * 7);
+    return 3 + (Math.max(0, Math.min(1, score)) * 7);
 }
 
 // Format score for display
@@ -844,6 +896,9 @@ async function loadExposureData() {
         return getExposureScore(b) - getExposureScore(a);
     });
     
+    // Compute quantile breaks for color scale
+    updateQuantileBreaks();
+
     updateExposureLoadingProgress(90, 'Rendering map...');
     
     // Render with current filters
@@ -1176,6 +1231,22 @@ function initExposureControls() {
         typeSelect.addEventListener('change', function() {
             exposureType = this.value;
             loadExposureData();
+        });
+    }
+
+    // Color scale mode selector
+    var colorModeSelect = document.getElementById('exposure-color-mode');
+    var colorModeDesc = document.getElementById('color-mode-desc');
+    var modeDescs = {
+        'linear': 'Linear: direct score-to-color mapping — works for uniform distributions.',
+        'quantile': 'Quantile: equal number of assets per color bin — best for skewed data.',
+        'log': 'Logarithmic: expands differences at low values — good for heavy-tailed data.'
+    };
+    if (colorModeSelect) {
+        colorModeSelect.addEventListener('change', function() {
+            exposureColorMode = this.value;
+            if (colorModeDesc) colorModeDesc.textContent = modeDescs[this.value] || '';
+            renderExposureLayer();
         });
     }
 
