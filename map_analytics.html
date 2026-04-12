@@ -105,6 +105,10 @@
     
     
     
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./static/css/map.css" />
     
@@ -449,8 +453,7 @@
                 
 
                 
-                <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<script>
+                // ========== Analytics View Data Loader ==========
 (function() {
     var ANALYTICS_DATA = null;
     var charts = {};
@@ -771,7 +774,6 @@
     }
 
 })();
-</script>
                 
             })
             .catch(error => {
