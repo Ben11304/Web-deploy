@@ -193,17 +193,11 @@
     <label style="font-size: 12px; color: #555; display: block; margin-bottom: 4px;">📊 Exposure Type</label>
     <select id="exposure-type-select" style="width: 100%; padding: 8px; font-size: 14px; border-radius: 4px; border: 1px solid #ddd;">
         
-            <option value="flood" selected>🌊 Flood Exposure</option>
+            <option value="flood_fema" selected>🌊 Flood (FEMA NFHL SFHA)</option>
         
-            <option value="earthquake" >🌋 Earthquake MMI</option>
+            <option value="earthquake_psha" >🌋 Earthquake (USGS PSHA 2023)</option>
         
-            <option value="wildfire" >🔥 Wildfire Exposure</option>
-        
-            <option value="flood_fema" >🌊 Flood FEMA SFHA (Direct)</option>
-        
-            <option value="earthquake_psha" >🌋 Earthquake PSHA (USGS 2023)</option>
-        
-            <option value="wildfire_wfpi" >🔥 Wildfire WFPI P95 (USGS)</option>
+            <option value="wildfire_wfpi" >🔥 Wildfire (USGS WFPI P95)</option>
         
             <option value="hurricane" >🌀 Hurricane (IBTrACS ≥64kt)</option>
         
@@ -377,7 +371,7 @@
     
     
     <div id="heatmap-legend">
-        <strong>Flood Exposure</strong>
+        <strong>Flood_fema Exposure</strong>
         <div style="font-size: 11px; color: #888; margin-bottom: 5px;">Asset Exposure Score</div>
         <div class="legend-gradient"></div>
         <div class="legend-labels">
@@ -445,7 +439,7 @@
             impactType: "poweroutage_2022",
             impactMetric: "total_customers",
             energyVulnerabilityType: "energy_vulnerability",
-            exposureType: "flood",
+            exposureType: "flood_fema",
             exposureAssets: ["plant", "substation", "line", "generator", "pipeline", "fuel", "other"],
             energyDetailAssets: ["plant", "substation", "line", "generator", "pipeline", "fuel", "other"],
             energyDetailLod: "100",
@@ -591,7 +585,7 @@
                 
                 
                 // ========== Exposure View Data Loader ==========
-var exposureType = MAP_CONFIG.exposureType || "flood";
+var exposureType = MAP_CONFIG.exposureType || "flood_fema";
 var exposureAssets = MAP_CONFIG.exposureAssets || [];
 var exposureLayer = null;
 var exposureData = {};  // {state: data}
@@ -604,30 +598,6 @@ var exposureMaxScore = 1;
 
 // Exposure type configuration
 var exposureConfig = {
-    'flood': {
-        scoreField: 'flood_score',
-        normalizedField: 'flood_score_normalized',
-        detailField: 'matching_grids',
-        fileSuffix: '_flood_results.json',
-        subDir: 'flood',
-        maxScoreDefault: 1
-    },
-    'earthquake': {
-        scoreField: 'mmi_earthquake_exposure',
-        normalizedField: 'mmi_earthquake_exposure',
-        detailField: 'contributing_earthquakes',
-        fileSuffix: '_mmi_results.json',
-        subDir: 'earthquake_simplified',
-        maxScoreDefault: 10  // MMI scale is 0-10
-    },
-    'wildfire': {
-        scoreField: 'wildfire_exposure_raw',
-        normalizedField: 'wildfire_exposure_normalized',
-        detailField: 'contributing_fires',
-        fileSuffix: '_wildfire_results.json',
-        subDir: 'wildfire',
-        maxScoreDefault: 1  // Normalized 0-1
-    },
     'flood_fema': {
         scoreField: 'flood_exposed',
         normalizedField: 'flood_exposed',
@@ -672,7 +642,7 @@ var exposureConfig = {
 
 // Get current exposure config
 function getCurrentExposureConfig() {
-    return exposureConfig[exposureType] || exposureConfig['flood'];
+    return exposureConfig[exposureType] || exposureConfig['flood_fema'];
 }
 
 // Get score from result based on exposure type
@@ -686,17 +656,11 @@ function getNormalizedExposureScore(result) {
     var config = getCurrentExposureConfig();
     var score = result[config.scoreField] || 0;
     // Normalize to 0-1 for color mapping based on each hazard's scale
-    if (exposureType === 'earthquake') {
-        return Math.min(score / 10, 1);  // MMI 0-10 → 0-1
-    }
     if (exposureType === 'flood_fema') {
         return score ? 1 : 0;  // Binary: SFHA or not
     }
     if (exposureType === 'earthquake_psha') {
         return Math.min(score / 0.5, 1);  // PGA 0-0.5g → 0-1
-    }
-    if (exposureType === 'wildfire') {
-        return Math.min(result[config.normalizedField] || 0, 1);  // Already normalized 0-1
     }
     if (exposureType === 'wildfire_wfpi') {
         return Math.min(score / 150, 1);  // WFPI 0-150 → 0-1
@@ -707,7 +671,7 @@ function getNormalizedExposureScore(result) {
     if (exposureType === 'winter_storm') {
         return Math.min(score / 500, 1);  // SWE 0-500mm → 0-1
     }
-    return Math.min(score, 1);  // Flood already 0-1
+    return Math.min(score, 1);  // Fallback
 }
 
 // Get selected states from MAP_CONFIG
