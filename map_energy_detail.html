@@ -155,6 +155,7 @@
             <button id="btn-exposure" onclick="window.location.href='map_exposure.html'+window.location.search" class="">Expo</button>
             <button id="btn-energy-detail" onclick="window.location.href='map_energy_detail.html'+window.location.search" class="active">Energy</button>
             <button id="btn-social-vulnerability" onclick="window.location.href='map_social_vulnerability.html'+window.location.search" class="">SVI</button>
+            <button id="btn-analytics" onclick="window.location.href='map_analytics.html'+window.location.search" class="">Analytics</button>
         </div>
         
         <!-- Background Map Toggle -->
@@ -335,7 +336,9 @@
     </div>
     
 
+    
     <div id="map"></div>
+    
     
     
     
@@ -1012,6 +1015,8 @@ if (MAP_CONFIG.viewType === 'energy_detail') {
                 
                 
                 
+
+                
             })
             .catch(error => {
                 console.error(error);
@@ -1051,7 +1056,8 @@ if (MAP_CONFIG.viewType === 'energy_detail') {
             'btn-energy-vulnerability': 'map_energy_vulnerability.html',
             'btn-exposure': 'map_exposure.html',
             'btn-energy-detail': 'map_energy_detail.html',
-            'btn-social-vulnerability': 'map_social_vulnerability.html'
+            'btn-social-vulnerability': 'map_social_vulnerability.html',
+            'btn-analytics': 'map_analytics.html'
         };
         Object.keys(viewMap).forEach(function(btnId) {
             var btn = document.getElementById(btnId);

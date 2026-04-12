@@ -688,6 +688,14 @@
                                     <div class="view-type-desc">CDC SVI by US county (2022)</div>
                                 </div>
                             </label>
+
+                            <label class="view-type-item" data-value="analytics">
+                                <input type="radio" name="view_type" value="analytics">
+                                <div>
+                                    <div class="view-type-label">Analytics</div>
+                                    <div class="view-type-desc">Pre-computed statistical analysis</div>
+                                </div>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -1190,7 +1198,8 @@
             'btn-energy-vulnerability': 'map_energy_vulnerability.html',
             'btn-exposure': 'map_exposure.html',
             'btn-energy-detail': 'map_energy_detail.html',
-            'btn-social-vulnerability': 'map_social_vulnerability.html'
+            'btn-social-vulnerability': 'map_social_vulnerability.html',
+            'btn-analytics': 'map_analytics.html'
         };
         Object.keys(viewMap).forEach(function(btnId) {
             var btn = document.getElementById(btnId);
