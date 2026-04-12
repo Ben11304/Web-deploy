@@ -199,6 +199,16 @@
         
             <option value="wildfire" >🔥 Wildfire Exposure</option>
         
+            <option value="flood_fema" >🌊 Flood FEMA SFHA (Direct)</option>
+        
+            <option value="earthquake_psha" >🌋 Earthquake PSHA (USGS 2023)</option>
+        
+            <option value="wildfire_wfpi" >🔥 Wildfire WFPI P95 (USGS)</option>
+        
+            <option value="hurricane" >🌀 Hurricane (IBTrACS ≥64kt)</option>
+        
+            <option value="winter_storm" >❄️ Winter Storm (SNODAS SWE P95)</option>
+        
     </select>
 </div>
 
@@ -617,6 +627,46 @@ var exposureConfig = {
         fileSuffix: '_wildfire_results.json',
         subDir: 'wildfire',
         maxScoreDefault: 1  // Normalized 0-1
+    },
+    'flood_fema': {
+        scoreField: 'flood_exposed',
+        normalizedField: 'flood_exposed',
+        detailField: 'fld_zone',
+        fileSuffix: '_flood_results.json',
+        subDir: 'flood_fema',
+        maxScoreDefault: 1  // Binary 0/1
+    },
+    'earthquake_psha': {
+        scoreField: 'pga_10pct50yr',
+        normalizedField: 'pga_10pct50yr',
+        detailField: null,
+        fileSuffix: '_psha_results.json',
+        subDir: 'earthquake_psha',
+        maxScoreDefault: 1  // PGA in g
+    },
+    'wildfire_wfpi': {
+        scoreField: 'wfpi_p95',
+        normalizedField: 'wfpi_p95',
+        detailField: null,
+        fileSuffix: '_wfpi_results.json',
+        subDir: 'wildfire_wfpi',
+        maxScoreDefault: 150  // WFPI scale 0-150
+    },
+    'hurricane': {
+        scoreField: 'max_wind_kt',
+        normalizedField: 'max_wind_kt',
+        detailField: 'top_storms',
+        fileSuffix: '_hurricane_results.json',
+        subDir: 'hurricane',
+        maxScoreDefault: 200  // wind speed in kt
+    },
+    'winter_storm': {
+        scoreField: 'swe_p95_mm',
+        normalizedField: 'swe_p95_mm',
+        detailField: null,
+        fileSuffix: '_winter_results.json',
+        subDir: 'winter_storm',
+        maxScoreDefault: 1000  // SWE in mm
     }
 };
 
@@ -635,12 +685,27 @@ function getExposureScore(result) {
 function getNormalizedExposureScore(result) {
     var config = getCurrentExposureConfig();
     var score = result[config.scoreField] || 0;
-    // Normalize based on max score
+    // Normalize to 0-1 for color mapping based on each hazard's scale
     if (exposureType === 'earthquake') {
         return Math.min(score / 10, 1);  // MMI 0-10 → 0-1
     }
+    if (exposureType === 'flood_fema') {
+        return score ? 1 : 0;  // Binary: SFHA or not
+    }
+    if (exposureType === 'earthquake_psha') {
+        return Math.min(score / 0.5, 1);  // PGA 0-0.5g → 0-1
+    }
     if (exposureType === 'wildfire') {
         return Math.min(result[config.normalizedField] || 0, 1);  // Already normalized 0-1
+    }
+    if (exposureType === 'wildfire_wfpi') {
+        return Math.min(score / 150, 1);  // WFPI 0-150 → 0-1
+    }
+    if (exposureType === 'hurricane') {
+        return Math.min(score / 150, 1);  // wind 0-150kt → 0-1
+    }
+    if (exposureType === 'winter_storm') {
+        return Math.min(score / 500, 1);  // SWE 0-500mm → 0-1
     }
     return Math.min(score, 1);  // Flood already 0-1
 }
