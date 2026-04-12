@@ -585,7 +585,14 @@
                 
                 
                 // ========== Exposure View Data Loader ==========
-var exposureType = MAP_CONFIG.exposureType || "flood_fema";
+// Map legacy exposure types to current ones
+var exposureLegacyMap = {
+    'flood': 'flood_fema',
+    'earthquake': 'earthquake_psha',
+    'wildfire': 'wildfire_wfpi'
+};
+var rawExposureType = MAP_CONFIG.exposureType || "flood_fema";
+var exposureType = exposureLegacyMap[rawExposureType] || rawExposureType;
 var exposureAssets = MAP_CONFIG.exposureAssets || [];
 var exposureLayer = null;
 var exposureData = {};  // {state: data}
@@ -1158,9 +1165,10 @@ function initExposureControls() {
         });
     }
     
-    // Exposure type selector
+    // Exposure type selector — sync dropdown to corrected type
     var typeSelect = document.getElementById('exposure-type-select');
     if (typeSelect) {
+        typeSelect.value = exposureType;
         typeSelect.addEventListener('change', function() {
             exposureType = this.value;
             loadExposureData();
