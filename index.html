@@ -40,7 +40,7 @@
     <div>
       <div class="section-tag"><span class="num">01</span><span>Introduction</span></div>
       <h1>Where the grid meets <em>the storm</em>, <em>the fire</em>, <em>the flood</em>.</h1>
-      <p class="deck">A working atlas for policy makers and emergency planners. Trace the exposure of energy infrastructure to eight modeled hazards across all fifty states &mdash; built from federal open data and peer-reviewed hazard models.</p>
+      <p class="deck">A working atlas for policy makers and emergency planners. Trace the exposure of energy infrastructure to five modeled hazards across all fifty states &mdash; built from federal open data and peer-reviewed hazard models.</p>
     </div>
     <aside class="hero-side">
       <div class="caption">Edition notes</div>
@@ -50,78 +50,17 @@
       </div>
       <dl>
         <div><dt>Coverage</dt><dd>50 states &middot; 3,125 counties</dd></div>
-        <div><dt>Hazards modeled</dt><dd><b>Eight</b></dd></div>
+        <div><dt>Hazards modeled</dt><dd><b>Five</b></dd></div>
         <div><dt>License</dt><dd>CC BY 4.0</dd></div>
       </dl>
     </aside>
   </section>
 
   <!-- ============================================================= -->
-  <!-- ATLAS PLATE I — the composite map                               -->
-  <!-- ============================================================= -->
-  <section class="atlas">
-    <figure class="atlas-map">
-      <svg viewBox="0 0 1000 625" preserveAspectRatio="xMidYMid slice" aria-label="Composite hazard field over the United States">
-        <defs>
-          <pattern id="hatchB" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-            <line x1="0" y1="0" x2="0" y2="8" stroke="#c4a33a" stroke-width="0.8" opacity="0.4"/>
-          </pattern>
-        </defs>
-        <rect width="1000" height="625" fill="#e8e0d0"/>
-        <g stroke="#c4bba5" stroke-width="0.5" opacity="0.4">
-          <line x1="0" y1="100" x2="1000" y2="100"/><line x1="0" y1="200" x2="1000" y2="200"/>
-          <line x1="0" y1="300" x2="1000" y2="300"/><line x1="0" y1="400" x2="1000" y2="400"/>
-          <line x1="0" y1="500" x2="1000" y2="500"/>
-          <line x1="100" y1="0" x2="100" y2="625"/><line x1="250" y1="0" x2="250" y2="625"/>
-          <line x1="400" y1="0" x2="400" y2="625"/><line x1="550" y1="0" x2="550" y2="625"/>
-          <line x1="700" y1="0" x2="700" y2="625"/><line x1="850" y1="0" x2="850" y2="625"/>
-        </g>
-        <path d="M120,280 L160,220 L230,190 L320,170 L430,155 L560,148 L700,145 L840,150 L940,170 L970,210 L960,280 L920,340 L850,380 L760,400 L650,415 L540,420 L440,405 L340,385 L250,350 L180,310 L120,280 Z"
-              fill="url(#hatchB)" stroke="#5a4a2a" stroke-width="1.2"/>
-        <g opacity="0.55">
-          <circle cx="250" cy="280" r="38" fill="#c23b3b" opacity="0.28"/><circle cx="250" cy="280" r="18" fill="#c23b3b" opacity="0.6"/>
-          <circle cx="720" cy="320" r="42" fill="#7d6b2a" opacity="0.28"/><circle cx="720" cy="320" r="22" fill="#7d6b2a" opacity="0.6"/>
-          <circle cx="830" cy="250" r="32" fill="#5a4a2a" opacity="0.3"/>
-          <circle cx="450" cy="310" r="36" fill="#c8a93a" opacity="0.35"/>
-        </g>
-        <g fill="#1a1815">
-          <circle cx="250" cy="280" r="1.8"/><circle cx="270" cy="300" r="1.5"/><circle cx="230" cy="260" r="1.4"/>
-          <circle cx="450" cy="310" r="1.8"/><circle cx="470" cy="330" r="1.5"/><circle cx="430" cy="290" r="1.4"/>
-          <circle cx="720" cy="320" r="2"/><circle cx="740" cy="340" r="1.6"/><circle cx="700" cy="300" r="1.5"/>
-          <circle cx="830" cy="250" r="1.8"/><circle cx="850" cy="270" r="1.5"/>
-          <circle cx="560" cy="340" r="1.3"/><circle cx="600" cy="360" r="1.5"/>
-        </g>
-        <g font-family="Inter, sans-serif" font-size="11" fill="#5a4a2a">
-          <line x1="250" y1="240" x2="250" y2="110" stroke="#5a4a2a" stroke-width="0.6"/>
-          <text x="258" y="112" font-weight="600">Cascadia subduction zone</text>
-          <text x="258" y="126" font-size="9.5" fill="#8a7a5a">475-yr PGA &middot; high</text>
-          <line x1="720" y1="360" x2="720" y2="490" stroke="#5a4a2a" stroke-width="0.6"/>
-          <text x="590" y="505" font-weight="600">Gulf Coast &middot; Hurricane corridor</text>
-          <text x="590" y="519" font-size="9.5" fill="#8a7a5a">183 yrs of IBTrACS tracks</text>
-          <line x1="450" y1="345" x2="450" y2="490" stroke="#5a4a2a" stroke-width="0.6"/>
-          <text x="340" y="505" font-weight="600">Mississippi alluvial plain</text>
-          <text x="340" y="519" font-size="9.5" fill="#8a7a5a">Flood hazard &middot; FEMA SFHA</text>
-        </g>
-      </svg>
-      <figcaption class="map-cap">
-        <b>Plate I &middot; Composite risk field</b>
-        <span>Scale 1:12,500,000 &middot; Albers equal-area</span>
-      </figcaption>
-    </figure>
-
-    <div class="atlas-intro">
-      <div class="section-tag"><span class="num">02</span><span>The atlas</span></div>
-      <h2>A ground truth for decisions that can't wait.</h2>
-      <p>Energy assets don't fail uniformly. A coastal substation fears wind; a Sierra switchyard fears fire; a Louisiana pipeline fears both. Generic risk maps average these differences away. This atlas keeps them distinct.</p>
-      <p>Every layer below is point-in-polygon tested against federal hazard models &mdash; no interpretations, no interpolations that obscure provenance. You see the data the agencies publish, overlaid on the assets the country depends on.</p>
-    </div>
-  </section>
-
-  <!-- ============================================================= -->
   <!-- CONSOLE — the form                                              -->
   <!-- ============================================================= -->
   <section class="console" id="console">
-    <div class="section-tag"><span class="num">03</span><span>Begin here</span></div>
+    <div class="section-tag"><span class="num">02</span><span>Begin here</span></div>
     <h2>Select a region. Choose a view. Render the map.</h2>
     <p class="lede">Each view runs against your selected region and produces an interactive map with the underlying hazard &amp; infrastructure data layered accordingly.</p>
 
@@ -740,7 +679,7 @@
   <!-- COLOPHON — sources                                              -->
   <!-- ============================================================= -->
   <section class="colophon" id="methods">
-    <div class="section-tag"><span class="num">04</span><span>Colophon &amp; sources</span></div>
+    <div class="section-tag"><span class="num">03</span><span>Colophon &amp; sources</span></div>
     <h2>Where the data comes from.</h2>
     <p class="lede">Every layer in this atlas is traceable to a U.S. federal agency or peer-reviewed open-data platform. Nothing is inferred, simulated, or averaged across sources.</p>
 
