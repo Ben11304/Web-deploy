@@ -1,1196 +1,910 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Energy Critical Infrastructure</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: #fafafa;
-            color: #1a1a1a;
-            font-weight: 400;
-            letter-spacing: -0.01em;
-        }
-        
-        /* Header Styles - Navy */
-        .main-header {
-            background: #1b3a5c;
-            color: #fff;
-            padding: 20px 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #15304d;
-        }
-        
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-        }
-        
-        .header-logo {
-            height: 70px;
-            width: auto;
-            border-radius: 4px;
-            /* No background - transparent PNG */
-        }
-        
-        .header-title {
-            font-size: 22px;
-            font-weight: 500;
-            letter-spacing: -0.02em;
-        }
-        
-        .header-subtitle {
-            font-size: 12px;
-            font-weight: 300;
-            opacity: 0.6;
-            margin-top: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-        
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            
-        }
-        
-        /* Footer */
-        .site-footer {
-            background: #1b3a5c;
-            color: #a8c4de;
-            padding: 20px 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 12px;
-            border-top: 1px solid #15304d;
-        }
-
-        .site-footer a {
-            color: #d0e0f0;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .site-footer a:hover {
-            color: #fff;
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 24px;
-        }
-
-        
-        /* Split Layout */
-        .content-wrapper { 
-            padding: 0;
-            max-width: none;
-            margin: 0;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        
-        .split-container {
-            display: flex;
-            flex: 1;
-            min-height: 0;
-        }
-        
-        .left-panel {
-            width: 50%;
-            border-right: 1px solid #e0e0e0;
-            padding: 40px;
-            overflow-y: auto;
-            background: #fff;
-        }
-        
-        .right-panel {
-            width: 50%;
-            padding: 40px;
-            overflow-y: auto;
-            background: #fafafa;
-        }
-        
-        .panel-header {
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: #888;
-            margin-bottom: 24px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        h1 { color: #111; margin-bottom: 10px; font-weight: 500; }
-        h2 { 
-            color: #111; 
-            margin-top: 0; 
-            font-size: 16px; 
-            font-weight: 500;
-            letter-spacing: -0.02em;
-            margin-bottom: 16px;
-        }
-        h3 { 
-            color: #333; 
-            font-size: 13px; 
-            font-weight: 500; 
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 12px;
-            margin-top: 28px;
-        }
-        h4 {
-            color: #222;
-            font-size: 14px;
-            font-weight: 500;
-            margin-top: 0;
-            margin-bottom: 16px;
-        }
-        
-        form { margin: 0; }
-        select, input[type="text"] { 
-            padding: 12px 16px; 
-            font-size: 14px; 
-            margin: 8px 0; 
-            width: 100%;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background: #fff;
-            font-family: inherit;
-            transition: border-color 0.2s;
-        }
-        select:focus, input[type="text"]:focus {
-            outline: none;
-            border-color: #1b3a5c;
-        }
-        button { 
-            padding: 12px 16px; 
-            font-size: 14px; 
-            font-family: inherit;
-        }
-        
-        /* Section Card */
-        .section-card {
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            padding: 24px;
-            margin-bottom: 24px;
-        }
-        
-        .right-panel .section-card {
-            background: #fff;
-        }
-        
-        /* View Type List Selection */
-        .view-type-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .view-type-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 16px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: #fff;
-        }
-        
-        .view-type-item:hover {
-            border-color: #999;
-            background: #fafafa;
-        }
-        
-        .view-type-item.selected {
-            border-color: #1b3a5c;
-            background: #1b3a5c;
-        }
-        
-        .view-type-item.selected .view-type-label {
-            color: #fff;
-        }
-        
-        .view-type-item.selected .view-type-desc {
-            color: #aaa;
-        }
-        
-        .view-type-item input[type="radio"] {
-            display: none;
-        }
-        
-        .view-type-label {
-            font-weight: 500;
-            color: #222;
-            font-size: 14px;
-        }
-        
-        .view-type-desc {
-            font-size: 12px;
-            color: #888;
-            margin-top: 2px;
-        }
-        
-        /* Detail Options Panel */
-        .detail-options {
-            display: none;
-        }
-        
-        .detail-options.active {
-            display: block;
-            animation: fadeIn 0.2s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .detail-placeholder {
-            text-align: center;
-            padding: 60px 20px;
-            color: #999;
-        }
-        
-        .detail-placeholder-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.3;
-        }
-        
-        /* Mode Selection */
-        .mode-option {
-            display: flex;
-            align-items: center;
-            padding: 12px 0;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        
-        .mode-option input[type="radio"] {
-            margin-right: 10px;
-            width: 16px;
-            height: 16px;
-        }
-        
-        .region-container {
-            border: 1px solid #e0e0e0;
-            padding: 12px;
-            background: #fafafa;
-            max-height: 180px;
-            overflow-y: auto;
-            margin-top: 12px;
-            border-radius: 4px;
-        }
-        .region-option {
-            display: block;
-            margin: 4px 0;
-            text-align: left;
-            font-size: 14px;
-            color: #333;
-        }
-        .region-option input[type="checkbox"] {
-            margin-right: 8px;
-        }
-        
-        /* Submit Section */
-        .submit-section {
-            margin-top: 32px;
-            padding-top: 24px;
-            border-top: 1px solid #e0e0e0;
-        }
-        
-        .submit-btn {
-            background: #1b3a5c;
-            color: white;
-            border: none;
-            padding: 14px 40px;
-            font-size: 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: 500;
-            transition: background 0.2s;
-            width: 100%;
-        }
-        
-        .submit-btn:hover {
-            background: #244b6e;
-        }
-        
-        .map-option-check {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        
-        .map-option-check input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            margin: 0;
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        /* Info Box */
-        .info-box {
-            background: #f5f5f5;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            padding: 12px;
-            margin-top: 16px;
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .info-box strong {
-            color: #333;
-        }
-
-    </style>
-    
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Energy Critical Infrastructure — An atlas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/atlas.css">
 </head>
 <body>
-    <!-- Header -->
-    <header class="main-header">
-        <div class="header-left">
-            <img src="./static/images/kent-logo.png" alt="Kent State University" class="header-logo">
-            <div>
-                <div class="header-title">Energy Critical Infrastructure</div>
-                <div class="header-subtitle">Geographic Information System</div>
-            </div>
-        </div>
-    </header>
-    
-    <!-- Main Content -->
-    <main class="main-content">
-        
-    <div class="content-wrapper">
-        <form action="map_heatmap.html" id="main-form" method="GET">
-            <input type="hidden" name="division_type" value="state">
-            
-            <div class="split-container">
-                <!-- LEFT PANEL: Area + View Type Selection -->
-                <div class="left-panel">
-                    <div class="panel-header">Selection</div>
-                    
-                    <!-- Area Selection -->
-                    <div class="section-card">
-                        <h2>Select Area</h2>
-                        
-                        <label class="mode-option">
-                            <input type="radio" name="mode" value="entire" id="mode-entire"> 
-                            <span>Entire United States</span>
-                        </label>
-                        
-                        <label class="mode-option">
-                            <input type="radio" name="mode" value="select" id="mode-select" checked> 
-                            <span>Select Specific States</span>
-                        </label>
-                        
-                        <div id="states-container">
-                            <input type="text" id="state-search" placeholder="Search states..." 
-                                   style="width: 100%; margin-top: 12px;">
-                            <div class="region-container">
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="alabama"> Alabama
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="alaska"> Alaska
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="arizona"> Arizona
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="arkansas"> Arkansas
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="california"> California
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="colorado"> Colorado
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="connecticut"> Connecticut
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="delaware"> Delaware
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="florida"> Florida
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="georgia"> Georgia
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="hawaii"> Hawaii
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="idaho"> Idaho
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="illinois"> Illinois
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="indiana"> Indiana
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="iowa"> Iowa
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="kansas"> Kansas
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="kentucky"> Kentucky
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="louisiana"> Louisiana
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="maine"> Maine
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="maryland"> Maryland
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="massachusetts"> Massachusetts
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="michigan"> Michigan
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="minnesota"> Minnesota
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="mississippi"> Mississippi
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="missouri"> Missouri
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="montana"> Montana
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="nebraska"> Nebraska
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="nevada"> Nevada
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="new_hampshire"> New Hampshire
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="new_jersey"> New Jersey
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="new_mexico"> New Mexico
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="new_york"> New York
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="north_carolina"> North Carolina
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="north_dakota"> North Dakota
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="ohio"> Ohio
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="oklahoma"> Oklahoma
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="oregon"> Oregon
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="pennsylvania"> Pennsylvania
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="rhode_island"> Rhode Island
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="south_carolina"> South Carolina
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="south_dakota"> South Dakota
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="tennessee"> Tennessee
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="texas"> Texas
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="utah"> Utah
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="vermont"> Vermont
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="virginia"> Virginia
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="washington"> Washington
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="west_virginia"> West Virginia
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="wisconsin"> Wisconsin
-                                    </label>
-                                
-                                    <label class="region-option state-option">
-                                        <input type="checkbox" name="region" value="wyoming"> Wyoming
-                                    </label>
-                                
-                                
-                            </div>
-                            <small style="color: #888; font-size: 12px; margin-top: 8px; display: block;">
-                                Available: 50 states with data
-                            </small>
-                        </div>
-                    </div>
-                    
-                    <!-- View Type Selection -->
-                    <div class="section-card">
-                        <h2>Select View Type</h2>
-                        
-                        <div class="view-type-list">
-                            <label class="view-type-item selected" data-value="heatmap">
-                                <input type="radio" name="view_type" value="heatmap" checked>
-                                <div>
-                                    <div class="view-type-label">CI Heatmap</div>
-                                    <div class="view-type-desc">Critical infrastructure density</div>
-                                </div>
-                            </label>
-                            
-                            <label class="view-type-item" data-value="hazard">
-                                <input type="radio" name="view_type" value="hazard">
-                                <div>
-                                    <div class="view-type-label">Hazard Heatmap</div>
-                                    <div class="view-type-desc">Natural hazard risk levels</div>
-                                </div>
-                            </label>
-                            
-                            <label class="view-type-item" data-value="impact">
-                                <input type="radio" name="view_type" value="impact">
-                                <div>
-                                    <div class="view-type-label">Impact Analysis</div>
-                                    <div class="view-type-desc">Power outage impact data</div>
-                                </div>
-                            </label>
-                            
-                            <label class="view-type-item" data-value="energy_vulnerability">
-                                <input type="radio" name="view_type" value="energy_vulnerability">
-                                <div>
-                                    <div class="view-type-label">Energy Vulnerability</div>
-                                    <div class="view-type-desc">Grid vulnerability analysis</div>
-                                </div>
-                            </label>
-                            
-                            <label class="view-type-item" data-value="exposure">
-                                <input type="radio" name="view_type" value="exposure">
-                                <div>
-                                    <div class="view-type-label">Exposure Analysis</div>
-                                    <div class="view-type-desc">Asset risk exposure scores</div>
-                                </div>
-                            </label>
-                            
-                            <label class="view-type-item" data-value="energy_detail">
-                                <input type="radio" name="view_type" value="energy_detail">
-                                <div>
-                                    <div class="view-type-label">Energy Detail</div>
-                                    <div class="view-type-desc">Detailed energy infrastructure</div>
-                                </div>
-                            </label>
-                            
-                            <label class="view-type-item" data-value="social_vulnerability">
-                                <input type="radio" name="view_type" value="social_vulnerability">
-                                <div>
-                                    <div class="view-type-label">Social Vulnerability</div>
-                                    <div class="view-type-desc">CDC SVI by US county (2022)</div>
-                                </div>
-                            </label>
 
-                            <label class="view-type-item" data-value="analytics">
-                                <input type="radio" name="view_type" value="analytics">
-                                <div>
-                                    <div class="view-type-label">Analytics</div>
-                                    <div class="view-type-desc">Pre-computed statistical analysis</div>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- RIGHT PANEL: Detail Options -->
-                <div class="right-panel">
-                    <div class="panel-header">Configuration</div>
-                    
-                    <!-- Placeholder when no view type needs config -->
-                    <div class="detail-options detail-placeholder active" id="placeholder-options">
-                        <div class="detail-placeholder-icon">⚙</div>
-                        <p>Select a view type on the left to configure options</p>
-                    </div>
-                    
-                    <!-- Heatmap Options -->
-                    <div class="detail-options" id="heatmap-options">
-                        <div class="section-card">
-                            <h4>CI Heatmap Configuration</h4>
-                            <label style="font-size: 13px; color: #666; display: block; margin-bottom: 8px;">
-                                Select Layer:
-                            </label>
-                            <select name="heatmap_sector" id="heatmap-sector-select">
-                                <option value="combined">Combined (All Sectors)</option>
-                                <option value="energy_county_scale">Energy Sector (County Scale)</option>
-                                
-                                    <option value="Chemical_Sector">Chemical Sector</option>
-                                
-                                    <option value="Commercial_Facilities_Sector">Commercial Facilities Sector</option>
-                                
-                                    <option value="Communications_Sector">Communications Sector</option>
-                                
-                                    <option value="Critical_Manufacturing_Sector">Critical Manufacturing Sector</option>
-                                
-                                    <option value="Dams_Sector">Dams Sector</option>
-                                
-                                    <option value="Defense_Industrial_Base_Sector">Defense Industrial Base Sector</option>
-                                
-                                    <option value="Emergency_Services_Sector">Emergency Services Sector</option>
-                                
-                                    <option value="Energy_Sector">Energy Sector</option>
-                                
-                                    <option value="Financial_Services_Sector">Financial Services Sector</option>
-                                
-                                    <option value="Food_And_Agriculture_Sector">Food and Agriculture Sector</option>
-                                
-                                    <option value="Government_Facilities_Sector">Government Facilities Sector</option>
-                                
-                                    <option value="Healthcare_And_Public_Health_Sector">Healthcare and Public Health Sector</option>
-                                
-                                    <option value="Information_Technology_Sector">Information Technology Sector</option>
-                                
-                                    <option value="Nuclear_Reactors_Materials_And_Waste_Sector">Nuclear Reactors, Materials, and Waste Sector</option>
-                                
-                                    <option value="Transportation_Systems_Sector">Transportation Systems Sector</option>
-                                
-                                    <option value="Water_And_Wastewater_Systems_Sector">Water and Wastewater Systems Sector</option>
-                                
-                            </select>
-                            <div class="info-box">
-                                <p>Shows critical infrastructure density across the selected region, colored by count.</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Map Display Options -->
-                        <div class="section-card">
-                            <h4>Map Display</h4>
-                            <label class="map-option-check">
-                                <input type="checkbox" name="show_background" value="true" checked>
-                                <span>Show Background Map (OpenStreetMap)</span>
-                            </label>
-                        </div>
-                        
-                        <div class="submit-section">
-                            <button type="submit" class="submit-btn">View Map</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Hazard Options -->
-                    <div class="detail-options" id="hazard-options">
-                        <div class="section-card">
-                            <h4>Hazard Heatmap Configuration</h4>
-                            <label style="font-size: 13px; color: #666; display: block; margin-bottom: 8px;">
-                                Hazard Type:
-                            </label>
-                            <select name="hazard_type" id="hazard-type-select">
-                                
-                                    <option value="flood">🌊 Flood Hazard</option>
-                                
-                                    <option value="wildfire">🔥 Wildfire Historical</option>
-                                
-                                    <option value="drought">🏜️ Drought Monitor</option>
-                                
-                                    <option value="earthquake">🌋 Earthquake</option>
-                                
-                            </select>
-                            <div class="info-box">
-                                <p>Shows hazard risk levels across the selected region based on historical data.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="section-card">
-                            <h4>Map Display</h4>
-                            <label class="map-option-check">
-                                <input type="checkbox" name="show_background" value="true" checked>
-                                <span>Show Background Map (OpenStreetMap)</span>
-                            </label>
-                        </div>
-                        
-                        <div class="submit-section">
-                            <button type="submit" class="submit-btn">View Map</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Impact Options -->
-                    <div class="detail-options" id="impact-options">
-                        <div class="section-card">
-                            <h4>Impact Analysis Configuration</h4>
-                            <label style="font-size: 13px; color: #666; display: block; margin-bottom: 8px;">
-                                Impact Data Source:
-                            </label>
-                            <select name="impact_type" id="impact-type-select">
-                                
-                                    <option value="poweroutage_2022">⚡ Power Outage 2022</option>
-                                
-                                    <option value="poweroutage_2024">⚡ Power Outage 2024</option>
-                                
-                            </select>
-                            
-                            <label style="font-size: 13px; color: #666; display: block; margin-bottom: 8px; margin-top: 16px;">
-                                Visualization Metric:
-                            </label>
-                            <select name="impact_metric" id="impact-metric-select">
-                                <option value="total_customers">Total Customers Affected</option>
-                                <option value="event_count">Number of Outage Events</option>
-                                <option value="avg_per_event">Avg Customers per Event</option>
-                            </select>
-                            
-                            <div class="info-box">
-                                <p>Shows power outage impact data from EAGLE-I (2022). Counties colored by selected metric intensity.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="section-card">
-                            <h4>Map Display</h4>
-                            <label class="map-option-check">
-                                <input type="checkbox" name="show_background" value="true" checked>
-                                <span>Show Background Map (OpenStreetMap)</span>
-                            </label>
-                        </div>
-                        
-                        <div class="submit-section">
-                            <button type="submit" class="submit-btn">View Map</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Energy Vulnerability Options -->
-                    <div class="detail-options" id="energy-vulnerability-options">
-                        <div class="section-card">
-                            <h4>Energy Vulnerability Configuration</h4>
-                            <input type="hidden" name="energy_vulnerability_type" value="energy_vulnerability">
-                            <div class="info-box">
-                                <p><strong>Analysis based on:</strong></p>
-                                <ul style="margin: 8px 0 0 0; padding-left: 16px;">
-                                    <li>Betweenness centrality (network flow criticality)</li>
-                                    <li>Voltage levels and power output</li>
-                                    <li>Grid connectivity patterns</li>
-                                </ul>
-                            </div>
-                            <div class="info-box" style="margin-top: 12px;">
-                                <strong>Criticality Levels:</strong><br>
-                                HIGH (&gt;0.75) | MEDIUM (0.5-0.75) | LOW (0.25-0.5) | MINIMAL (&lt;0.25)
-                            </div>
-                        </div>
-                        
-                        <div class="section-card">
-                            <h4>Map Display</h4>
-                            <label class="map-option-check">
-                                <input type="checkbox" name="show_background" value="true" checked>
-                                <span>Show Background Map (OpenStreetMap)</span>
-                            </label>
-                        </div>
-                        
-                        <div class="submit-section">
-                            <button type="submit" class="submit-btn">View Map</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Exposure Options -->
-                    <div class="detail-options" id="exposure-options">
-                        <div class="section-card">
-                            <h4>Exposure Analysis Configuration</h4>
-                            <label style="font-size: 13px; color: #666; display: block; margin-bottom: 8px;">
-                                Hazard Type:
-                            </label>
-                            <select name="exposure_type" id="exposure-type-select">
-                                
-                                    <option value="flood_fema">🌊 Flood (FEMA NFHL SFHA)</option>
-                                
-                                    <option value="earthquake_psha">🌋 Earthquake (USGS PSHA 2023)</option>
-                                
-                                    <option value="wildfire_wfpi">🔥 Wildfire (USGS WFPI P95)</option>
-                                
-                                    <option value="hurricane">🌀 Hurricane (IBTrACS ≥64kt)</option>
-                                
-                                    <option value="winter_storm">❄️ Winter Storm (SNODAS SWE P95)</option>
-                                
-                            </select>
-                            
-                            <label style="font-size: 13px; color: #666; display: block; margin-bottom: 8px; margin-top: 16px;">
-                                Asset Types to Display:
-                            </label>
-                            <div style="max-height: 150px; overflow-y: auto; border: 1px solid #e0e0e0; padding: 10px; border-radius: 4px; background: #fafafa;">
-                                
-                                    <label style="display: block; margin: 4px 0; font-size: 13px;">
-                                        <input type="checkbox" name="exposure_asset" value="plant" 
-                                               checked>
-                                        Plant
-                                    </label>
-                                
-                                    <label style="display: block; margin: 4px 0; font-size: 13px;">
-                                        <input type="checkbox" name="exposure_asset" value="substation" 
-                                               checked>
-                                        Substation
-                                    </label>
-                                
-                                    <label style="display: block; margin: 4px 0; font-size: 13px;">
-                                        <input type="checkbox" name="exposure_asset" value="line" 
-                                               checked>
-                                        Line
-                                    </label>
-                                
-                                    <label style="display: block; margin: 4px 0; font-size: 13px;">
-                                        <input type="checkbox" name="exposure_asset" value="tower" 
-                                               >
-                                        Tower
-                                    </label>
-                                
-                                    <label style="display: block; margin: 4px 0; font-size: 13px;">
-                                        <input type="checkbox" name="exposure_asset" value="generator" 
-                                               checked>
-                                        Generator
-                                    </label>
-                                
-                                    <label style="display: block; margin: 4px 0; font-size: 13px;">
-                                        <input type="checkbox" name="exposure_asset" value="pipeline" 
-                                               checked>
-                                        Pipeline
-                                    </label>
-                                
-                                    <label style="display: block; margin: 4px 0; font-size: 13px;">
-                                        <input type="checkbox" name="exposure_asset" value="fuel" 
-                                               checked>
-                                        Fuel Station
-                                    </label>
-                                
-                                    <label style="display: block; margin: 4px 0; font-size: 13px;">
-                                        <input type="checkbox" name="exposure_asset" value="other" 
-                                               checked>
-                                        Other
-                                    </label>
-                                
-                            </div>
-                            
-                            <div class="info-box">
-                                <p>Shows energy asset exposure scores for selected hazard.</p>
-                                <p style="margin-top: 4px;"><strong>Note:</strong> Towers hidden by default (~90% of assets).</p>
-                            </div>
-                        </div>
-                        
-                        <div class="section-card">
-                            <h4>Map Display</h4>
-                            <label class="map-option-check">
-                                <input type="checkbox" name="show_background" value="true" checked>
-                                <span>Show Background Map (OpenStreetMap)</span>
-                            </label>
-                        </div>
-                        
-                        <div class="submit-section">
-                            <button type="submit" class="submit-btn">View Map</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Social Vulnerability Options -->
-                    <div class="detail-options" id="social-vulnerability-options">
-                        <div class="section-card">
-                            <h4>Social Vulnerability Configuration</h4>
-                            <label style="font-size: 13px; color: #666; display: block; margin-bottom: 8px;">
-                                Visualization Metric:
-                            </label>
-                            <select name="svi_metric" id="svi-metric-select">
-                                
-                                    <option value="RPL_THEMES">Overall SVI</option>
-                                
-                                    <option value="RPL_THEME1">Socioeconomic Status</option>
-                                
-                                    <option value="RPL_THEME2">Household Characteristics</option>
-                                
-                                    <option value="RPL_THEME3">Racial & Ethnic Minority</option>
-                                
-                                    <option value="RPL_THEME4">Housing Type & Transportation</option>
-                                
-                            </select>
-                            
-                            <div class="info-box">
-                                <p><strong>CDC Social Vulnerability Index (SVI)</strong></p>
-                                <p style="margin-top: 4px;">County-level vulnerability based on socioeconomic status, household characteristics, racial/ethnic minority status, and housing type.</p>
-                                <p style="margin-top: 4px;"><strong>Region:</strong> United States (2022) — 3,125 counties</p>
-                            </div>
-                            
-                            <div class="info-box" style="margin-top: 12px;">
-                                <strong>Vulnerability Levels:</strong><br>
-                                <span style="color: #b71c1c;">Very High</span> (0.75–1.0) |
-                                <span style="color: #e65100;">High</span> (0.50–0.75) |
-                                <span style="color: #f9a825;">Moderate</span> (0.25–0.50) |
-                                <span style="color: #1b5e20;">Low</span> (0.00–0.25)
-                            </div>
-                        </div>
-                        
-                        <div class="section-card">
-                            <h4>Map Display</h4>
-                            <label class="map-option-check">
-                                <input type="checkbox" name="show_background" value="true" checked>
-                                <span>Show Background Map (OpenStreetMap)</span>
-                            </label>
-                        </div>
-                        
-                        <div class="submit-section">
-                            <button type="submit" class="submit-btn">View Map</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Energy Detail Options -->
-                    <div class="detail-options" id="energy-detail-options">
-                        <div class="section-card">
-                            <h4>Energy Detail Configuration</h4>
-                            <div class="info-box">
-                                <p>Displays detailed energy infrastructure including:</p>
-                                <ul style="margin: 8px 0 0 0; padding-left: 16px;">
-                                    <li>Power plants and generators</li>
-                                    <li>Transmission lines</li>
-                                    <li>Substations and transformers</li>
-                                    <li>Other energy facilities</li>
-                                </ul>
-                            </div>
-                        </div>
-                        
-                        <div class="section-card">
-                            <h4>Map Display</h4>
-                            <label class="map-option-check">
-                                <input type="checkbox" name="show_background" value="true" checked>
-                                <span>Show Background Map (OpenStreetMap)</span>
-                            </label>
-                        </div>
-                        
-                        <div class="submit-section">
-                            <button type="submit" class="submit-btn">View Map</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
+  <!-- ============================================================= -->
+  <!-- MASTHEAD                                                        -->
+  <!-- ============================================================= -->
+  <header class="mast">
+    <div class="mast-brand">
+      <img src="./static/images/kent-logo.png" alt="Kent State University" style="height:36px;width:auto;margin-right:4px;">
+      <span class="title">Energy Critical Infrastructure</span>
+      <span class="rule"></span>
+      <span class="edition">An atlas &middot; April 2026</span>
     </div>
+    <nav class="mast-nav">
+      <a href="index.html" class="active">Atlas</a>
+      <a href="#methods">Methods</a>
+      <a href="data-sources.html">Sources</a>
+      <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">Repository</a>
+    </nav>
+    <div class="mast-meta">
+      <span>Vol. II &middot; Edition 2.4</span>
+      <span class="live">Live</span>
+    </div>
+  </header>
 
-    </main>
+  <!-- ============================================================= -->
+  <!-- HERO                                                            -->
+  <!-- ============================================================= -->
+  <section class="hero">
+    <div>
+      <div class="section-tag"><span class="num">01</span><span>Introduction</span></div>
+      <h1>Where the grid meets <em>the storm</em>, <em>the fire</em>, <em>the flood</em>.</h1>
+      <p class="deck">A working atlas for policy makers and emergency planners. Trace the exposure of energy infrastructure to eight modeled hazards across all fifty states &mdash; built from federal open data and peer-reviewed hazard models.</p>
+    </div>
+    <aside class="hero-side">
+      <div class="caption">Edition notes</div>
+      <div class="byline">
+        <b>Volume II, Edition 2.4</b> &mdash; prepared for policy brief.<br>
+        Hazard models refreshed quarterly; asset index refreshed monthly from federal releases and OSM.
+      </div>
+      <dl>
+        <div><dt>Coverage</dt><dd>50 states &middot; 3,125 counties</dd></div>
+        <div><dt>Hazards modeled</dt><dd><b>Eight</b></dd></div>
+        <div><dt>License</dt><dd>CC BY 4.0</dd></div>
+      </dl>
+    </aside>
+  </section>
 
-    <!-- Footer -->
-    <footer class="site-footer">
-        <div class="footer-links">
-            <a href="data-sources.html">Data Sources</a>
-            <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">GitHub</a>
+  <!-- ============================================================= -->
+  <!-- ATLAS PLATE I — the composite map                               -->
+  <!-- ============================================================= -->
+  <section class="atlas">
+    <figure class="atlas-map">
+      <svg viewBox="0 0 1000 625" preserveAspectRatio="xMidYMid slice" aria-label="Composite hazard field over the United States">
+        <defs>
+          <pattern id="hatchB" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="8" stroke="#c4a33a" stroke-width="0.8" opacity="0.4"/>
+          </pattern>
+        </defs>
+        <rect width="1000" height="625" fill="#e8e0d0"/>
+        <g stroke="#c4bba5" stroke-width="0.5" opacity="0.4">
+          <line x1="0" y1="100" x2="1000" y2="100"/><line x1="0" y1="200" x2="1000" y2="200"/>
+          <line x1="0" y1="300" x2="1000" y2="300"/><line x1="0" y1="400" x2="1000" y2="400"/>
+          <line x1="0" y1="500" x2="1000" y2="500"/>
+          <line x1="100" y1="0" x2="100" y2="625"/><line x1="250" y1="0" x2="250" y2="625"/>
+          <line x1="400" y1="0" x2="400" y2="625"/><line x1="550" y1="0" x2="550" y2="625"/>
+          <line x1="700" y1="0" x2="700" y2="625"/><line x1="850" y1="0" x2="850" y2="625"/>
+        </g>
+        <path d="M120,280 L160,220 L230,190 L320,170 L430,155 L560,148 L700,145 L840,150 L940,170 L970,210 L960,280 L920,340 L850,380 L760,400 L650,415 L540,420 L440,405 L340,385 L250,350 L180,310 L120,280 Z"
+              fill="url(#hatchB)" stroke="#5a4a2a" stroke-width="1.2"/>
+        <g opacity="0.55">
+          <circle cx="250" cy="280" r="38" fill="#c23b3b" opacity="0.28"/><circle cx="250" cy="280" r="18" fill="#c23b3b" opacity="0.6"/>
+          <circle cx="720" cy="320" r="42" fill="#7d6b2a" opacity="0.28"/><circle cx="720" cy="320" r="22" fill="#7d6b2a" opacity="0.6"/>
+          <circle cx="830" cy="250" r="32" fill="#5a4a2a" opacity="0.3"/>
+          <circle cx="450" cy="310" r="36" fill="#c8a93a" opacity="0.35"/>
+        </g>
+        <g fill="#1a1815">
+          <circle cx="250" cy="280" r="1.8"/><circle cx="270" cy="300" r="1.5"/><circle cx="230" cy="260" r="1.4"/>
+          <circle cx="450" cy="310" r="1.8"/><circle cx="470" cy="330" r="1.5"/><circle cx="430" cy="290" r="1.4"/>
+          <circle cx="720" cy="320" r="2"/><circle cx="740" cy="340" r="1.6"/><circle cx="700" cy="300" r="1.5"/>
+          <circle cx="830" cy="250" r="1.8"/><circle cx="850" cy="270" r="1.5"/>
+          <circle cx="560" cy="340" r="1.3"/><circle cx="600" cy="360" r="1.5"/>
+        </g>
+        <g font-family="Inter, sans-serif" font-size="11" fill="#5a4a2a">
+          <line x1="250" y1="240" x2="250" y2="110" stroke="#5a4a2a" stroke-width="0.6"/>
+          <text x="258" y="112" font-weight="600">Cascadia subduction zone</text>
+          <text x="258" y="126" font-size="9.5" fill="#8a7a5a">475-yr PGA &middot; high</text>
+          <line x1="720" y1="360" x2="720" y2="490" stroke="#5a4a2a" stroke-width="0.6"/>
+          <text x="590" y="505" font-weight="600">Gulf Coast &middot; Hurricane corridor</text>
+          <text x="590" y="519" font-size="9.5" fill="#8a7a5a">183 yrs of IBTrACS tracks</text>
+          <line x1="450" y1="345" x2="450" y2="490" stroke="#5a4a2a" stroke-width="0.6"/>
+          <text x="340" y="505" font-weight="600">Mississippi alluvial plain</text>
+          <text x="340" y="519" font-size="9.5" fill="#8a7a5a">Flood hazard &middot; FEMA SFHA</text>
+        </g>
+      </svg>
+      <figcaption class="map-cap">
+        <b>Plate I &middot; Composite risk field</b>
+        <span>Scale 1:12,500,000 &middot; Albers equal-area</span>
+      </figcaption>
+    </figure>
+
+    <div class="atlas-intro">
+      <div class="section-tag"><span class="num">02</span><span>The atlas</span></div>
+      <h2>A ground truth for decisions that can't wait.</h2>
+      <p>Energy assets don't fail uniformly. A coastal substation fears wind; a Sierra switchyard fears fire; a Louisiana pipeline fears both. Generic risk maps average these differences away. This atlas keeps them distinct.</p>
+      <p>Every layer below is point-in-polygon tested against federal hazard models &mdash; no interpretations, no interpolations that obscure provenance. You see the data the agencies publish, overlaid on the assets the country depends on.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- CONSOLE — the form                                              -->
+  <!-- ============================================================= -->
+  <section class="console" id="console">
+    <div class="section-tag"><span class="num">03</span><span>Begin here</span></div>
+    <h2>Select a region. Choose a view. Render the map.</h2>
+    <p class="lede">Each view runs against your selected region and produces an interactive map with the underlying hazard &amp; infrastructure data layered accordingly.</p>
+
+    <form action="map_heatmap.html" id="main-form" method="GET">
+      <input type="hidden" name="division_type" value="state">
+
+      <div class="console-grid">
+
+        <!-- ================ AREA ================= -->
+        <div class="col-area">
+          <div class="col-head">
+            <span>I &middot; Area</span>
+            <span class="req">required</span>
+          </div>
+
+          <div class="area-opts" id="area-opts">
+            <label class="area-opt" data-mode="entire">
+              <input type="radio" name="mode" value="entire" id="mode-entire">
+              <span class="dot"></span>
+              <span>Entire United States</span>
+              <span class="desc">50 states</span>
+            </label>
+            <label class="area-opt sel" data-mode="select">
+              <input type="radio" name="mode" value="select" id="mode-select" checked>
+              <span class="dot"></span>
+              <span>Specific states</span>
+              <span class="desc">Multi-select</span>
+            </label>
+          </div>
+
+          <div class="state-picker" id="states-container">
+            <input type="text" id="state-search" placeholder="Search states&hellip;" autocomplete="off">
+            <div class="state-list" id="state-list">
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="alabama"> <span>Alabama</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="alaska"> <span>Alaska</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="arizona"> <span>Arizona</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="arkansas"> <span>Arkansas</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="california"> <span>California</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="colorado"> <span>Colorado</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="connecticut"> <span>Connecticut</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="delaware"> <span>Delaware</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="florida"> <span>Florida</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="georgia"> <span>Georgia</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="hawaii"> <span>Hawaii</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="idaho"> <span>Idaho</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="illinois"> <span>Illinois</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="indiana"> <span>Indiana</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="iowa"> <span>Iowa</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="kansas"> <span>Kansas</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="kentucky"> <span>Kentucky</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="louisiana"> <span>Louisiana</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="maine"> <span>Maine</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="maryland"> <span>Maryland</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="massachusetts"> <span>Massachusetts</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="michigan"> <span>Michigan</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="minnesota"> <span>Minnesota</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="mississippi"> <span>Mississippi</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="missouri"> <span>Missouri</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="montana"> <span>Montana</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="nebraska"> <span>Nebraska</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="nevada"> <span>Nevada</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="new_hampshire"> <span>New Hampshire</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="new_jersey"> <span>New Jersey</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="new_mexico"> <span>New Mexico</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="new_york"> <span>New York</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="north_carolina"> <span>North Carolina</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="north_dakota"> <span>North Dakota</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="ohio"> <span>Ohio</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="oklahoma"> <span>Oklahoma</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="oregon"> <span>Oregon</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="pennsylvania"> <span>Pennsylvania</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="rhode_island"> <span>Rhode Island</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="south_carolina"> <span>South Carolina</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="south_dakota"> <span>South Dakota</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="tennessee"> <span>Tennessee</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="texas"> <span>Texas</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="utah"> <span>Utah</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="vermont"> <span>Vermont</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="virginia"> <span>Virginia</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="washington"> <span>Washington</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="west_virginia"> <span>West Virginia</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="wisconsin"> <span>Wisconsin</span></label>
+              
+              <label class="state-opt"><input type="checkbox" name="region" value="wyoming"> <span>Wyoming</span></label>
+              
+              
+            </div>
+            <div class="state-count">
+              <span id="selected-count">None selected</span>
+              <span>50 available</span>
+            </div>
+          </div>
         </div>
-        <div>&copy; 2026 Energy Critical Infrastructure &middot; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></div>
-    </footer>
 
-    
-    <script>
-        // Elements
-        const modeEntire = document.getElementById('mode-entire');
-        const modeSelect = document.getElementById('mode-select');
-        const statesContainer = document.getElementById('states-container');
-        const stateSearch = document.getElementById('state-search');
-        const stateOptions = document.querySelectorAll('.state-option');
-        
-        // View type elements
-        const viewTypeItems = document.querySelectorAll('.view-type-item');
-        const viewTypeRadios = document.querySelectorAll('input[name="view_type"]');
-        
-        // Detail option panels
-        const placeholderOptions = document.getElementById('placeholder-options');
-        const heatmapOptions = document.getElementById('heatmap-options');
-        const hazardOptions = document.getElementById('hazard-options');
-        const impactOptions = document.getElementById('impact-options');
-        const energyVulnerabilityOptions = document.getElementById('energy-vulnerability-options');
-        const exposureOptions = document.getElementById('exposure-options');
-        const energyDetailOptions = document.getElementById('energy-detail-options');
-        const socialVulnerabilityOptions = document.getElementById('social-vulnerability-options');
-        
-        // All detail panels
-        const allDetailPanels = [
-            placeholderOptions,
-            heatmapOptions, 
-            hazardOptions, 
-            impactOptions, 
-            energyVulnerabilityOptions, 
-            exposureOptions,
-            energyDetailOptions,
-            socialVulnerabilityOptions
-        ];
-        
-        // Handle view type selection
-        viewTypeItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const radio = this.querySelector('input[type="radio"]');
-                const value = this.dataset.value;
-                
-                // Update radio
-                radio.checked = true;
-                
-                // Update selected state
-                viewTypeItems.forEach(i => i.classList.remove('selected'));
-                this.classList.add('selected');
-                
-                // Show corresponding detail panel
-                showDetailPanel(value);
-            });
+        <!-- ================ VIEW TYPE ================= -->
+        <div class="col-view">
+          <div class="col-head">
+            <span>II &middot; Analytical view</span>
+            <span>08 plates</span>
+          </div>
+
+          <div class="views-grid" id="views-grid">
+
+            <label class="view-card sel" data-value="heatmap">
+              <input type="radio" name="view_type" value="heatmap" checked>
+              <div class="plate"><span>PLATE II</span><span class="sel-mark">selected</span></div>
+              <div class="mini"><svg viewBox="0 0 160 100" preserveAspectRatio="none">
+                <rect width="160" height="100" fill="#e8e0d0"/>
+                <g fill="#8a6a2a">
+                  <rect x="16" y="22" width="20" height="14" opacity="0.2"/>
+                  <rect x="36" y="22" width="20" height="14" opacity="0.4"/>
+                  <rect x="56" y="22" width="20" height="14" opacity="0.62"/>
+                  <rect x="76" y="22" width="20" height="14" opacity="0.85"/>
+                  <rect x="96" y="22" width="20" height="14" opacity="0.72"/>
+                  <rect x="116" y="22" width="20" height="14" opacity="0.4"/>
+                  <rect x="36" y="36" width="20" height="14" opacity="0.35"/>
+                  <rect x="56" y="36" width="20" height="14" opacity="0.58"/>
+                  <rect x="76" y="36" width="20" height="14" opacity="0.9"/>
+                  <rect x="96" y="36" width="20" height="14" opacity="1"/>
+                  <rect x="116" y="36" width="20" height="14" opacity="0.55"/>
+                  <rect x="56" y="50" width="20" height="14" opacity="0.3"/>
+                  <rect x="76" y="50" width="20" height="14" opacity="0.5"/>
+                  <rect x="96" y="50" width="20" height="14" opacity="0.42"/>
+                </g>
+              </svg></div>
+              <div class="vt">Infrastructure density</div>
+              <div class="vd">Where do the assets cluster?</div>
+            </label>
+
+            <label class="view-card" data-value="hazard">
+              <input type="radio" name="view_type" value="hazard">
+              <div class="plate"><span>PLATE III</span><span class="sel-mark">selected</span></div>
+              <div class="mini"><svg viewBox="0 0 160 100" preserveAspectRatio="none">
+                <rect width="160" height="100" fill="#e8e0d0"/>
+                <path d="M12,42 Q46,14 82,38 T150,28" stroke="#c23b3b" stroke-width="1.6" fill="none" opacity="0.85"/>
+                <g fill="#c23b3b" opacity="0.75">
+                  <circle cx="44" cy="30" r="3.5"/><circle cx="80" cy="40" r="4.5"/><circle cx="118" cy="32" r="3"/>
+                </g>
+                <g fill="#8a6a2a" opacity="0.5">
+                  <circle cx="30" cy="60" r="3"/><circle cx="70" cy="66" r="2.5"/><circle cx="110" cy="62" r="3.5"/>
+                </g>
+              </svg></div>
+              <div class="vt">Hazard risk</div>
+              <div class="vd">Where is the danger highest?</div>
+            </label>
+
+            <label class="view-card" data-value="impact">
+              <input type="radio" name="view_type" value="impact">
+              <div class="plate"><span>PLATE IV</span><span class="sel-mark">selected</span></div>
+              <div class="mini"><svg viewBox="0 0 160 100" preserveAspectRatio="none">
+                <rect width="160" height="100" fill="#e8e0d0"/>
+                <g fill="#5a4a2a">
+                  <rect x="16" y="32" width="4" height="50"/><rect x="28" y="20" width="4" height="62"/>
+                  <rect x="40" y="44" width="4" height="38"/><rect x="52" y="12" width="4" height="70"/>
+                  <rect x="64" y="28" width="4" height="54"/><rect x="76" y="36" width="4" height="46"/>
+                  <rect x="88" y="16" width="4" height="66"/><rect x="100" y="32" width="4" height="50"/>
+                  <rect x="112" y="24" width="4" height="58"/><rect x="124" y="40" width="4" height="42"/>
+                  <rect x="136" y="22" width="4" height="60"/>
+                </g>
+              </svg></div>
+              <div class="vt">Power outage impact</div>
+              <div class="vd">Who has lost power, for how long?</div>
+            </label>
+
+            <label class="view-card" data-value="energy_vulnerability">
+              <input type="radio" name="view_type" value="energy_vulnerability">
+              <div class="plate"><span>PLATE V</span><span class="sel-mark">selected</span></div>
+              <div class="mini"><svg viewBox="0 0 160 100" preserveAspectRatio="none">
+                <rect width="160" height="100" fill="#e8e0d0"/>
+                <g stroke="#8a6a2a" fill="none" stroke-width="0.9" opacity="0.85">
+                  <path d="M22,78 L44,34 L78,20 L112,38 L140,74"/>
+                  <path d="M30,78 L52,42 L86,28 L116,54 L132,74"/>
+                  <path d="M78,20 L84,56"/><path d="M44,34 L72,52"/>
+                </g>
+                <g fill="#c8a93a">
+                  <circle cx="44" cy="34" r="2.5"/><circle cx="78" cy="20" r="3.2"/>
+                  <circle cx="112" cy="38" r="2.5"/><circle cx="86" cy="28" r="2"/>
+                </g>
+              </svg></div>
+              <div class="vt">Grid vulnerability</div>
+              <div class="vd">Which nodes are load-bearing?</div>
+            </label>
+
+            <label class="view-card" data-value="exposure">
+              <input type="radio" name="view_type" value="exposure">
+              <div class="plate"><span>PLATE VI</span><span class="sel-mark">selected</span></div>
+              <div class="mini"><svg viewBox="0 0 160 100" preserveAspectRatio="none">
+                <rect width="160" height="100" fill="#e8e0d0"/>
+                <g>
+                  <circle cx="38" cy="38" r="14" fill="#c23b3b" opacity="0.25"/>
+                  <circle cx="38" cy="38" r="5" fill="#c23b3b" opacity="0.85"/>
+                  <circle cx="96" cy="60" r="20" fill="#c8a93a" opacity="0.3"/>
+                  <circle cx="96" cy="60" r="7" fill="#c8a93a" opacity="0.9"/>
+                  <circle cx="128" cy="34" r="10" fill="#7d6b2a" opacity="0.45"/>
+                  <circle cx="128" cy="34" r="4" fill="#7d6b2a" opacity="0.9"/>
+                </g>
+              </svg></div>
+              <div class="vt">Hazard exposure</div>
+              <div class="vd">Which assets are at risk, and from what?</div>
+            </label>
+
+            <label class="view-card" data-value="energy_detail">
+              <input type="radio" name="view_type" value="energy_detail">
+              <div class="plate"><span>PLATE VII</span><span class="sel-mark">selected</span></div>
+              <div class="mini"><svg viewBox="0 0 160 100" preserveAspectRatio="none">
+                <rect width="160" height="100" fill="#e8e0d0"/>
+                <g stroke="#8a7a5a" opacity="0.55" fill="none" stroke-width="0.9">
+                  <path d="M14,70 L40,50 L64,56 L90,38 L118,44 L142,32"/>
+                </g>
+                <g fill="#8a6a2a">
+                  <rect x="36" y="42" width="8" height="12"/>
+                  <rect x="84" y="30" width="8" height="12"/>
+                  <rect x="136" y="24" width="8" height="12"/>
+                </g>
+                <g fill="#c8a93a" opacity="0.8">
+                  <circle cx="62" cy="56" r="2.2"/><circle cx="114" cy="46" r="2.2"/>
+                </g>
+              </svg></div>
+              <div class="vt">Energy assets atlas</div>
+              <div class="vd">What is where?</div>
+            </label>
+
+            <label class="view-card" data-value="social_vulnerability">
+              <input type="radio" name="view_type" value="social_vulnerability">
+              <div class="plate"><span>PLATE VIII</span><span class="sel-mark">selected</span></div>
+              <div class="mini"><svg viewBox="0 0 160 100" preserveAspectRatio="none">
+                <rect width="160" height="100" fill="#e8e0d0"/>
+                <g>
+                  <rect x="0" y="0" width="32" height="25" fill="#7d1621" opacity="0.75"/>
+                  <rect x="32" y="0" width="32" height="25" fill="#c23b3b" opacity="0.65"/>
+                  <rect x="64" y="0" width="32" height="25" fill="#c8a93a" opacity="0.6"/>
+                  <rect x="96" y="0" width="32" height="25" fill="#e8d878" opacity="0.5"/>
+                  <rect x="128" y="0" width="32" height="25" fill="#5a7a3a" opacity="0.55"/>
+                  <rect x="0" y="25" width="40" height="25" fill="#c23b3b" opacity="0.6"/>
+                  <rect x="40" y="25" width="40" height="25" fill="#c8a93a" opacity="0.55"/>
+                  <rect x="80" y="25" width="40" height="25" fill="#e8d878" opacity="0.45"/>
+                  <rect x="120" y="25" width="40" height="25" fill="#5a7a3a" opacity="0.5"/>
+                  <rect x="0" y="50" width="48" height="50" fill="#c8a93a" opacity="0.55"/>
+                  <rect x="48" y="50" width="56" height="50" fill="#e8d878" opacity="0.42"/>
+                  <rect x="104" y="50" width="56" height="50" fill="#5a7a3a" opacity="0.55"/>
+                </g>
+              </svg></div>
+              <div class="vt">Social vulnerability</div>
+              <div class="vd">Who bears the burden when systems fail?</div>
+            </label>
+
+            <label class="view-card" data-value="analytics">
+              <input type="radio" name="view_type" value="analytics">
+              <div class="plate"><span>PLATE IX</span><span class="sel-mark">selected</span></div>
+              <div class="mini"><svg viewBox="0 0 160 100" preserveAspectRatio="none">
+                <rect width="160" height="100" fill="#e8e0d0"/>
+                <g stroke="#5a4a2a" fill="none" stroke-width="1.2" opacity="0.85">
+                  <path d="M8,82 L32,64 L56,72 L80,40 L104,52 L128,26 L152,46"/>
+                </g>
+                <g stroke="#8a7a5a" fill="none" stroke-width="0.6" opacity="0.5" stroke-dasharray="2 2">
+                  <path d="M8,90 L152,54"/>
+                </g>
+                <g fill="#5a4a2a">
+                  <circle cx="32" cy="64" r="2"/><circle cx="80" cy="40" r="2.2"/><circle cx="128" cy="26" r="2.2"/>
+                </g>
+              </svg></div>
+              <div class="vt">Analytics summary</div>
+              <div class="vd">What do the numbers say at a glance?</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- ================ CONFIGURATION ================= -->
+        <div class="col-config">
+          <div class="col-head">
+            <span>III &middot; Configuration</span>
+            <span class="req">contextual</span>
+          </div>
+
+          <div class="config-panel">
+
+            <!-- HEATMAP -->
+            <div class="detail-opts active" id="heatmap-options">
+              <h3>Infrastructure density</h3>
+              <div class="sub">Critical infrastructure counts, coloured by county. Select a sector to refine.</div>
+
+              <label class="field">Sector layer</label>
+              <select name="heatmap_sector" id="heatmap-sector-select">
+                <option value="combined">Combined (all sectors)</option>
+                <option value="energy_county_scale">Energy sector (county scale)</option>
+                <option value="Chemical_Sector">Chemical</option>
+                <option value="Commercial_Facilities_Sector">Commercial facilities</option>
+                <option value="Communications_Sector">Communications</option>
+                <option value="Critical_Manufacturing_Sector">Critical manufacturing</option>
+                <option value="Dams_Sector">Dams</option>
+                <option value="Defense_Industrial_Base_Sector">Defense industrial base</option>
+                <option value="Emergency_Services_Sector">Emergency services</option>
+                <option value="Energy_Sector">Energy</option>
+                <option value="Financial_Services_Sector">Financial services</option>
+                <option value="Food_And_Agriculture_Sector">Food and agriculture</option>
+                <option value="Government_Facilities_Sector">Government facilities</option>
+                <option value="Healthcare_And_Public_Health_Sector">Healthcare and public health</option>
+                <option value="Information_Technology_Sector">Information technology</option>
+                <option value="Nuclear_Reactors_Materials_And_Waste_Sector">Nuclear reactors, materials, waste</option>
+                <option value="Transportation_Systems_Sector">Transportation systems</option>
+                <option value="Water_And_Wastewater_Systems_Sector">Water and wastewater</option>
+              </select>
+
+              <div class="config-note">
+                Shows critical infrastructure density across the selected region, coloured by count per county.
+              </div>
+
+              <label class="bg-check">
+                <input type="checkbox" name="show_background" value="true" checked>
+                <span>Show OpenStreetMap basemap</span>
+              </label>
+
+              <div class="submit-row">
+                <button type="submit" class="submit-btn">
+                  <span>Render the map</span>
+                  <span class="arrow">&rarr;</span>
+                </button>
+                <div class="submit-note">Plate II &middot; Infrastructure density</div>
+              </div>
+            </div>
+
+            <!-- HAZARD -->
+            <div class="detail-opts" id="hazard-options">
+              <h3>Hazard risk</h3>
+              <div class="sub">Hazard risk levels by county, derived from federal historical models.</div>
+
+              <label class="field">Hazard type</label>
+              <select name="hazard_type" id="hazard-type-select">
+                <option value="flood">Flood hazard</option>
+                <option value="wildfire">Wildfire historical</option>
+                <option value="drought">Drought monitor</option>
+                <option value="earthquake">Earthquake</option>
+              </select>
+
+              <div class="config-note">
+                Hazard risk surface across the selected region, based on historical data and standard return periods.
+              </div>
+
+              <label class="bg-check">
+                <input type="checkbox" name="show_background" value="true" checked>
+                <span>Show OpenStreetMap basemap</span>
+              </label>
+
+              <div class="submit-row">
+                <button type="submit" class="submit-btn">
+                  <span>Render the map</span>
+                  <span class="arrow">&rarr;</span>
+                </button>
+                <div class="submit-note">Plate III &middot; Hazard risk</div>
+              </div>
+            </div>
+
+            <!-- IMPACT -->
+            <div class="detail-opts" id="impact-options">
+              <h3>Power outage impact</h3>
+              <div class="sub">EAGLE-I customer-hours affected, aggregated to county.</div>
+
+              <label class="field">Data source</label>
+              <select name="impact_type" id="impact-type-select">
+                <option value="poweroutage_2022">Power outage &middot; 2022</option>
+                <option value="poweroutage_2024">Power outage &middot; 2024</option>
+              </select>
+
+              <label class="field">Metric</label>
+              <select name="impact_metric" id="impact-metric-select">
+                <option value="total_customers">Total customers affected</option>
+                <option value="event_count">Number of outage events</option>
+                <option value="avg_per_event">Average customers per event</option>
+              </select>
+
+              <div class="config-note">
+                EAGLE-I outage impact at 15-minute resolution, aggregated to county-level totals.
+              </div>
+
+              <label class="bg-check">
+                <input type="checkbox" name="show_background" value="true" checked>
+                <span>Show OpenStreetMap basemap</span>
+              </label>
+
+              <div class="submit-row">
+                <button type="submit" class="submit-btn">
+                  <span>Render the map</span>
+                  <span class="arrow">&rarr;</span>
+                </button>
+                <div class="submit-note">Plate IV &middot; Power outage impact</div>
+              </div>
+            </div>
+
+            <!-- ENERGY VULNERABILITY -->
+            <div class="detail-opts" id="energy-vulnerability-options">
+              <h3>Grid vulnerability</h3>
+              <div class="sub">Network criticality of transmission nodes by betweenness centrality.</div>
+
+              <input type="hidden" name="energy_vulnerability_type" value="energy_vulnerability">
+
+              <div class="config-note">
+                <b>Analysis inputs</b>
+                <ul>
+                  <li>Betweenness centrality &mdash; network flow criticality</li>
+                  <li>Voltage levels and power output</li>
+                  <li>Grid connectivity patterns</li>
+                </ul>
+              </div>
+
+              <div class="config-legend">
+                <b>Criticality levels</b><br>
+                <span class="sw" style="background:#7d1621"></span>High (&gt; 0.75) &nbsp;
+                <span class="sw" style="background:#c23b3b"></span>Medium (0.50 &ndash; 0.75)<br>
+                <span class="sw" style="background:#c8a93a"></span>Low (0.25 &ndash; 0.50) &nbsp;
+                <span class="sw" style="background:#5a7a3a"></span>Minimal (&lt; 0.25)
+              </div>
+
+              <label class="bg-check">
+                <input type="checkbox" name="show_background" value="true" checked>
+                <span>Show OpenStreetMap basemap</span>
+              </label>
+
+              <div class="submit-row">
+                <button type="submit" class="submit-btn">
+                  <span>Render the map</span>
+                  <span class="arrow">&rarr;</span>
+                </button>
+                <div class="submit-note">Plate V &middot; Grid vulnerability</div>
+              </div>
+            </div>
+
+            <!-- EXPOSURE -->
+            <div class="detail-opts" id="exposure-options">
+              <h3>Hazard exposure</h3>
+              <div class="sub">Asset-level exposure scores against a selected hazard model.</div>
+
+              <label class="field">Hazard</label>
+              <select name="exposure_type" id="exposure-type-select">
+                <option value="flood_fema">Flood &mdash; FEMA NFHL SFHA</option>
+                <option value="earthquake_psha">Earthquake &mdash; USGS PSHA 2023</option>
+                <option value="wildfire_wfpi">Wildfire &mdash; USGS WFPI P95</option>
+                <option value="hurricane">Hurricane &mdash; IBTrACS &ge; 64 kt</option>
+                <option value="winter_storm">Winter storm &mdash; SNODAS SWE P95</option>
+              </select>
+
+              <label class="field">Asset types</label>
+              <div class="asset-list">
+                <label><input type="checkbox" name="exposure_asset" value="plant" checked> Plant</label>
+                <label><input type="checkbox" name="exposure_asset" value="substation" checked> Substation</label>
+                <label><input type="checkbox" name="exposure_asset" value="line" checked> Line</label>
+                <label><input type="checkbox" name="exposure_asset" value="tower"> Tower</label>
+                <label><input type="checkbox" name="exposure_asset" value="generator" checked> Generator</label>
+                <label><input type="checkbox" name="exposure_asset" value="pipeline" checked> Pipeline</label>
+                <label><input type="checkbox" name="exposure_asset" value="fuel" checked> Fuel station</label>
+                <label><input type="checkbox" name="exposure_asset" value="other" checked> Other</label>
+              </div>
+
+              <div class="config-note">
+                Per-asset exposure scores for the selected hazard. <b>Towers hidden by default</b> &mdash; they constitute roughly 90% of indexed assets.
+              </div>
+
+              <label class="bg-check">
+                <input type="checkbox" name="show_background" value="true" checked>
+                <span>Show OpenStreetMap basemap</span>
+              </label>
+
+              <div class="submit-row">
+                <button type="submit" class="submit-btn">
+                  <span>Render the map</span>
+                  <span class="arrow">&rarr;</span>
+                </button>
+                <div class="submit-note">Plate VI &middot; Hazard exposure</div>
+              </div>
+            </div>
+
+            <!-- ENERGY DETAIL -->
+            <div class="detail-opts" id="energy-detail-options">
+              <h3>Energy assets atlas</h3>
+              <div class="sub">Detailed, layered view of the energy infrastructure stack.</div>
+
+              <div class="config-note">
+                <b>Layers rendered</b>
+                <ul>
+                  <li>Power plants and generators</li>
+                  <li>Transmission lines</li>
+                  <li>Substations and transformers</li>
+                  <li>Fuel &amp; pipeline facilities</li>
+                </ul>
+              </div>
+
+              <label class="bg-check">
+                <input type="checkbox" name="show_background" value="true" checked>
+                <span>Show OpenStreetMap basemap</span>
+              </label>
+
+              <div class="submit-row">
+                <button type="submit" class="submit-btn">
+                  <span>Render the map</span>
+                  <span class="arrow">&rarr;</span>
+                </button>
+                <div class="submit-note">Plate VII &middot; Energy assets atlas</div>
+              </div>
+            </div>
+
+            <!-- SOCIAL VULNERABILITY -->
+            <div class="detail-opts" id="social-vulnerability-options">
+              <h3>Social vulnerability</h3>
+              <div class="sub">CDC/ATSDR SVI 2022 by county &mdash; four thematic dimensions.</div>
+
+              <label class="field">Theme</label>
+              <select name="svi_metric" id="svi-metric-select">
+                <option value="RPL_THEMES">Overall SVI</option>
+                <option value="RPL_THEME1">Socioeconomic status</option>
+                <option value="RPL_THEME2">Household characteristics</option>
+                <option value="RPL_THEME3">Racial and ethnic minority</option>
+                <option value="RPL_THEME4">Housing type and transportation</option>
+              </select>
+
+              <div class="config-note">
+                <b>CDC/ATSDR Social Vulnerability Index (SVI 2022)</b><br>
+                County-level vulnerability built from socioeconomic status, household composition, racial and ethnic minority status, and housing type. Covers 3,125 counties.
+              </div>
+
+              <div class="config-legend">
+                <b>Vulnerability strata</b><br>
+                <span class="sw" style="background:#7d1621"></span>Very high (0.75 &ndash; 1.00) &nbsp;
+                <span class="sw" style="background:#c23b3b"></span>High (0.50 &ndash; 0.75)<br>
+                <span class="sw" style="background:#c8a93a"></span>Moderate (0.25 &ndash; 0.50) &nbsp;
+                <span class="sw" style="background:#5a7a3a"></span>Low (0.00 &ndash; 0.25)
+              </div>
+
+              <label class="bg-check">
+                <input type="checkbox" name="show_background" value="true" checked>
+                <span>Show OpenStreetMap basemap</span>
+              </label>
+
+              <div class="submit-row">
+                <button type="submit" class="submit-btn">
+                  <span>Render the map</span>
+                  <span class="arrow">&rarr;</span>
+                </button>
+                <div class="submit-note">Plate VIII &middot; Social vulnerability</div>
+              </div>
+            </div>
+
+            <!-- ANALYTICS -->
+            <div class="detail-opts" id="analytics-options">
+              <h3>Analytics summary</h3>
+              <div class="sub">Pre-computed statistical analysis &amp; trend summaries across views.</div>
+
+              <div class="config-note">
+                Cross-view analytical rollups &mdash; exposure distributions, outage trends, risk concentration indices, and time-series snapshots.
+              </div>
+
+              <div class="submit-row">
+                <button type="submit" class="submit-btn">
+                  <span>Open analytics</span>
+                  <span class="arrow">&rarr;</span>
+                </button>
+                <div class="submit-note">Plate IX &middot; Analytics</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- COLOPHON — sources                                              -->
+  <!-- ============================================================= -->
+  <section class="colophon" id="methods">
+    <div class="section-tag"><span class="num">04</span><span>Colophon &amp; sources</span></div>
+    <h2>Where the data comes from.</h2>
+    <p class="lede">Every layer in this atlas is traceable to a U.S. federal agency or peer-reviewed open-data platform. Nothing is inferred, simulated, or averaged across sources.</p>
+
+    <div class="colophon-grid">
+      <div class="source-cell">
+        <div class="ag">USGS &middot; Earthquake</div>
+        <div class="nm"><a href="https://doi.org/10.5066/P9GNPCOD" target="_blank" rel="noopener">NSHM 2023</a></div>
+        <div class="mt">475-yr PGA · 50 states · site class BC</div>
+      </div>
+      <div class="source-cell">
+        <div class="ag">FEMA &middot; Flood</div>
+        <div class="nm"><a href="https://www.fema.gov/flood-maps/national-flood-hazard-layer" target="_blank" rel="noopener">NFHL SFHA</a></div>
+        <div class="mt">1% annual chance · parcel polygons</div>
+      </div>
+      <div class="source-cell">
+        <div class="ag">USGS &middot; Wildfire</div>
+        <div class="nm"><a href="https://www.usgs.gov/fire-danger-forecast/wildland-fire-potential-index-wfpi" target="_blank" rel="noopener">WFPI P95</a></div>
+        <div class="mt">2008 &ndash; 2025 daily · 1 km</div>
+      </div>
+      <div class="source-cell">
+        <div class="ag">NOAA &middot; Hurricane</div>
+        <div class="nm"><a href="https://www.ncei.noaa.gov/products/international-best-track-archive" target="_blank" rel="noopener">IBTrACS v04r01</a></div>
+        <div class="mt">1842 &ndash; 2024 · 6-hourly tracks</div>
+      </div>
+      <div class="source-cell">
+        <div class="ag">NOAA &middot; Winter storm</div>
+        <div class="nm"><a href="https://nsidc.org/data/g02158" target="_blank" rel="noopener">SNODAS SWE P95</a></div>
+        <div class="mt">2003 &ndash; 2025 daily · 1 km CONUS</div>
+      </div>
+      <div class="source-cell">
+        <div class="ag">CDC/ATSDR &middot; Social</div>
+        <div class="nm"><a href="https://www.atsdr.cdc.gov/placeandhealth/svi/" target="_blank" rel="noopener">SVI 2022</a></div>
+        <div class="mt">3,125 counties · four themes</div>
+      </div>
+      <div class="source-cell">
+        <div class="ag">DOE ORNL &middot; Power</div>
+        <div class="nm"><a href="https://doi.org/10.13139/OLCF/2500278" target="_blank" rel="noopener">EAGLE-I</a></div>
+        <div class="mt">2022 &amp; 2024 · 15-minute intervals</div>
+      </div>
+      <div class="source-cell">
+        <div class="ag">OpenStreetMap &middot; Assets</div>
+        <div class="nm"><a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OSM 2024 extract</a></div>
+        <div class="mt">Indexed energy assets · ODbL</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div>&copy; 2026 Energy Critical Infrastructure</div>
+    <div class="rules">
+      <a href="data-sources.html">Full citations</a>
+      <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
+      <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </footer>
+
+  <!-- ============================================================= -->
+  <!-- SCRIPTS                                                         -->
+  <!-- ============================================================= -->
+  <script>
+  (function() {
+    // --- Area mode (entire vs specific states) ---
+    const modeEntire = document.getElementById('mode-entire');
+    const modeSelect = document.getElementById('mode-select');
+    const statesContainer = document.getElementById('states-container');
+    const stateSearch = document.getElementById('state-search');
+    const stateOpts = document.querySelectorAll('.state-opt');
+    const selectedCount = document.getElementById('selected-count');
+    const areaOpts = document.querySelectorAll('.area-opt');
+
+    function updateModeDisplay() {
+      const isEntire = modeEntire.checked;
+      statesContainer.style.display = isEntire ? 'none' : 'block';
+      if (isEntire) {
+        document.querySelectorAll('input[name="region"]').forEach(cb => cb.checked = false);
+        updateSelectedCount();
+      }
+      areaOpts.forEach(o => o.classList.toggle('sel', o.dataset.mode === (isEntire ? 'entire' : 'select')));
+    }
+    modeEntire.addEventListener('change', updateModeDisplay);
+    modeSelect.addEventListener('change', updateModeDisplay);
+
+    // Area opt click: also toggle the radio
+    areaOpts.forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        const radio = opt.querySelector('input[type="radio"]');
+        radio.checked = true;
+        radio.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    });
+
+    // --- State search ---
+    if (stateSearch) {
+      stateSearch.addEventListener('input', function() {
+        const q = this.value.toLowerCase();
+        stateOpts.forEach(opt => {
+          const label = opt.querySelector('span').textContent.toLowerCase();
+          opt.style.display = label.includes(q) ? '' : 'none';
         });
-        
-        // Show detail panel based on view type
-        function showDetailPanel(viewType) {
-            // Hide all panels
-            allDetailPanels.forEach(panel => {
-                if (panel) panel.classList.remove('active');
-            });
-            
-            // Show the appropriate panel
-            switch(viewType) {
-                case 'heatmap':
-                    heatmapOptions.classList.add('active');
-                    break;
-                case 'hazard':
-                    hazardOptions.classList.add('active');
-                    break;
-                case 'impact':
-                    impactOptions.classList.add('active');
-                    break;
-                case 'energy_vulnerability':
-                    energyVulnerabilityOptions.classList.add('active');
-                    break;
-                case 'exposure':
-                    exposureOptions.classList.add('active');
-                    break;
-                case 'energy_detail':
-                    energyDetailOptions.classList.add('active');
-                    break;
-                case 'social_vulnerability':
-                    socialVulnerabilityOptions.classList.add('active');
-                    break;
-                default:
-                    placeholderOptions.classList.add('active');
-            }
-        }
-        
-        // Handle mode change (Entire US vs Select)
-        function updateModeDisplay() {
-            const isEntire = modeEntire.checked;
-            
-            if (isEntire) {
-                statesContainer.style.display = 'none';
-                document.querySelectorAll('input[name="region"]').forEach(cb => cb.checked = false);
-            } else {
-                statesContainer.style.display = 'block';
-            }
-        }
-        
-        // Search functionality for states
-        stateSearch.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            stateOptions.forEach(option => {
-                const text = option.textContent.toLowerCase();
-                option.style.display = text.includes(searchTerm) ? 'block' : 'none';
-            });
-        });
-        
-        // Event listeners for mode
-        modeEntire.addEventListener('change', updateModeDisplay);
-        modeSelect.addEventListener('change', updateModeDisplay);
-        
-        // Initial state
-        updateModeDisplay();
-        
-        // Show heatmap options by default (since heatmap is selected)
-        showDetailPanel('heatmap');
+      });
+    }
 
-    </script>
+    // --- Selected state count ---
+    function updateSelectedCount() {
+      const n = document.querySelectorAll('input[name="region"]:checked').length;
+      if (!selectedCount) return;
+      selectedCount.textContent = n === 0 ? 'None selected' : n + (n === 1 ? ' state selected' : ' states selected');
+    }
+    document.querySelectorAll('input[name="region"]').forEach(cb => {
+      cb.addEventListener('change', updateSelectedCount);
+    });
 
+    // --- View cards ---
+    const viewCards = document.querySelectorAll('.view-card');
+    const detailPanels = document.querySelectorAll('.detail-opts');
+    const panelMap = {
+      heatmap: 'heatmap-options',
+      hazard: 'hazard-options',
+      impact: 'impact-options',
+      energy_vulnerability: 'energy-vulnerability-options',
+      exposure: 'exposure-options',
+      energy_detail: 'energy-detail-options',
+      social_vulnerability: 'social-vulnerability-options',
+      analytics: 'analytics-options'
+    };
+    const viewMap = {
+      heatmap: 'map_heatmap.html',
+      hazard: 'map_hazard.html',
+      impact: 'map_impact.html',
+      energy_vulnerability: 'map_energy_vulnerability.html',
+      exposure: 'map_exposure.html',
+      energy_detail: 'map_energy_detail.html',
+      social_vulnerability: 'map_social_vulnerability.html',
+      analytics: 'map_analytics.html'
+    };
+    const form = document.getElementById('main-form');
+
+    function selectView(value) {
+      viewCards.forEach(c => c.classList.toggle('sel', c.dataset.value === value));
+      const radio = document.querySelector('input[name="view_type"][value="'+value+'"]');
+      if (radio) radio.checked = true;
+      detailPanels.forEach(p => p.classList.remove('active'));
+      const panelId = panelMap[value];
+      if (panelId) {
+        const p = document.getElementById(panelId);
+        if (p) p.classList.add('active');
+      }
+      if (form && viewMap[value]) form.action = viewMap[value];
+    }
+
+    viewCards.forEach(card => {
+      card.addEventListener('click', (e) => {
+        // let native label click handle the radio, but we explicitly set selection
+        selectView(card.dataset.value);
+      });
+    });
+
+    // Initial state
+    updateModeDisplay();
+    updateSelectedCount();
+    const initial = document.querySelector('input[name="view_type"]:checked');
+    if (initial) selectView(initial.value);
+  })();
+  </script>
 
     <script>
     // Static site: override view toggle to navigate to correct HTML file

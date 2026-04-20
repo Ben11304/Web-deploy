@@ -111,6 +111,9 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./static/css/map.css" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./static/css/map-atlas.css" />
     
     
 
@@ -243,6 +246,73 @@
     <div class="analytics-section-body" id="body-sensitivity">
         <div class="chart-container">
             <canvas id="chart-sensitivity" height="250"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Section 5: Composite Risk Index (INFORM-adapted) -->
+<div class="analytics-section" id="section-riskindex">
+    <div class="analytics-section-header" onclick="toggleSection('riskindex')">
+        <span class="section-toggle-icon">&#9660;</span> Composite Risk Index
+    </div>
+    <div class="analytics-section-body" id="body-riskindex">
+        <div class="methodology-note" style="font-size: 11px; color: #666; background: #f8f9fa; padding: 8px; border-radius: 4px; margin-bottom: 10px;">
+            <strong>INFORM-adapted</strong> (EU JRC): Risk = Hazard<sup>1/3</sup> &times; SVI<sup>1/3</sup> &times; InfraVuln<sup>1/3</sup>
+            &mdash; geometric mean, equal weight, scale 0&ndash;10
+        </div>
+        <div class="stat-cards" id="risk-stat-cards"></div>
+        <div style="margin-bottom: 8px; margin-top: 8px;">
+            <label style="font-size: 12px; color: #666;">View:</label>
+            <select id="risk-view-select" style="font-size: 12px; padding: 4px 8px; border: 1px solid #ddd; border-radius: 3px;">
+                <option value="composite">Composite Risk Score</option>
+                <option value="decomposed">Decomposed (3 Dimensions)</option>
+            </select>
+        </div>
+        <div class="chart-container">
+            <canvas id="chart-risk-index" height="350"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Section 6: Recovery & Outage Analysis -->
+<div class="analytics-section" id="section-recovery">
+    <div class="analytics-section-header" onclick="toggleSection('recovery')">
+        <span class="section-toggle-icon">&#9660;</span> Recovery & Outage Analysis
+    </div>
+    <div class="analytics-section-body" id="body-recovery">
+        <div class="methodology-note" style="font-size: 11px; color: #666; background: #f8f9fa; padding: 8px; border-radius: 4px; margin-bottom: 10px;">
+            Outage intensity = total affected customers / energy assets per state (IEEE 1366 inspired)
+        </div>
+        <div style="margin-bottom: 8px;">
+            <label style="font-size: 12px; color: #666;">Year:</label>
+            <select id="recovery-year-select" style="font-size: 12px; padding: 4px 8px; border: 1px solid #ddd; border-radius: 3px;">
+                <option value="2024">2024</option>
+                <option value="2022">2022</option>
+            </select>
+        </div>
+        <div class="chart-container">
+            <canvas id="chart-recovery" height="350"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Section 7: Temporal Trend (2022 vs 2024) -->
+<div class="analytics-section" id="section-temporal">
+    <div class="analytics-section-header" onclick="toggleSection('temporal')">
+        <span class="section-toggle-icon">&#9660;</span> Temporal Trend (2022 &rarr; 2024)
+    </div>
+    <div class="analytics-section-body" id="body-temporal">
+        <div class="stat-cards" id="temporal-stat-cards"></div>
+        <div style="margin-bottom: 8px; margin-top: 8px;">
+            <label style="font-size: 12px; color: #666;">Metric:</label>
+            <select id="temporal-metric-select" style="font-size: 12px; padding: 4px 8px; border: 1px solid #ddd; border-radius: 3px;">
+                <option value="cust_change_pct">Customer Impact Change %</option>
+                <option value="event_change_pct">Event Count Change %</option>
+                <option value="intensity_change">Intensity Change</option>
+            </select>
+        </div>
+        <div class="chart-container">
+            <canvas id="chart-temporal" height="350"></canvas>
         </div>
     </div>
 </div>
@@ -518,6 +588,9 @@
         renderComparison();
         renderCorrelations();
         renderSensitivity();
+        renderRiskIndex();
+        renderRecovery();
+        renderTemporal();
         renderChoropleth();
     }
 
@@ -714,6 +787,221 @@
                     y: { min: 0, max: 100, title: { display: true, text: 'Exposure (%)' } }
                 }
             }
+        });
+    }
+
+    // === Section 5: Composite Risk Index ===
+    function renderRiskIndex(viewMode) {
+        viewMode = viewMode || 'composite';
+        var ri = ANALYTICS_DATA.risk_index;
+        if (!ri) return;
+
+        // Summary cards
+        var nat = ri.national;
+        var cardsHTML = '<div class="stat-card"><div class="stat-value">' + nat.mean + '</div><div class="stat-label">Mean Risk (0-10)</div></div>';
+        cardsHTML += '<div class="stat-card"><div class="stat-value">' + nat.max + '</div><div class="stat-label">Highest Risk</div></div>';
+        cardsHTML += '<div class="stat-card"><div class="stat-value">' + nat.top5[0].replace(/_/g, ' ') + '</div><div class="stat-label">#1 Risk State</div></div>';
+        document.getElementById('risk-stat-cards').innerHTML = cardsHTML;
+
+        var top20 = ri.states.slice(0, 20);
+        var labels = top20.map(function(r) { return r.state.replace(/_/g, ' '); });
+
+        if (charts.riskIndex) charts.riskIndex.destroy();
+        var ctx = document.getElementById('chart-risk-index').getContext('2d');
+
+        if (viewMode === 'decomposed') {
+            charts.riskIndex = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Hazard Exposure', data: top20.map(function(r) { return r.hazard_score; }), backgroundColor: '#e74c3c' },
+                        { label: 'Social Vulnerability', data: top20.map(function(r) { return r.svi_score; }), backgroundColor: '#f39c12' },
+                        { label: 'Infra Vulnerability', data: top20.map(function(r) { return r.infra_vuln_score; }), backgroundColor: '#3498db' },
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                        title: { display: true, text: 'Risk Decomposition — Top 20 States', font: { size: 12 } }
+                    },
+                    scales: {
+                        x: { ticks: { font: { size: 9 }, maxRotation: 45 } },
+                        y: { min: 0, max: 10, title: { display: true, text: 'Score (0-10)' } }
+                    }
+                }
+            });
+        } else {
+            charts.riskIndex = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Composite Risk Score',
+                        data: top20.map(function(r) { return r.risk_score; }),
+                        backgroundColor: top20.map(function(r) {
+                            if (r.risk_score >= 5) return '#c0392b';
+                            if (r.risk_score >= 3) return '#e67e22';
+                            return '#27ae60';
+                        }),
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'INFORM Risk Index — Top 20 States', font: { size: 12 } }
+                    },
+                    scales: {
+                        x: { ticks: { font: { size: 9 }, maxRotation: 45 } },
+                        y: { min: 0, max: 10, title: { display: true, text: 'Risk Score (0-10)' } }
+                    }
+                }
+            });
+        }
+    }
+
+    var riskViewSelect = document.getElementById('risk-view-select');
+    if (riskViewSelect) {
+        riskViewSelect.addEventListener('change', function() {
+            if (ANALYTICS_DATA) renderRiskIndex(this.value);
+        });
+    }
+
+    // === Section 6: Recovery & Outage Analysis ===
+    function renderRecovery(year) {
+        year = year || '2024';
+        var recovery = ANALYTICS_DATA.recovery;
+        if (!recovery) return;
+
+        var intensityKey = 'intensity_' + year;
+        var eventsKey = 'events_' + year;
+        var custKey = 'customers_' + year;
+
+        var sorted = recovery.slice().filter(function(r) {
+            return r[intensityKey] > 0 && r.state !== 'district_of_columbia';
+        });
+        sorted.sort(function(a, b) { return b[intensityKey] - a[intensityKey]; });
+        var top20 = sorted.slice(0, 20);
+
+        if (charts.recovery) charts.recovery.destroy();
+        var ctx = document.getElementById('chart-recovery').getContext('2d');
+
+        charts.recovery = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: top20.map(function(r) { return r.state.replace(/_/g, ' '); }),
+                datasets: [{
+                    label: 'Outage Intensity (' + year + ')',
+                    data: top20.map(function(r) { return Math.round(r[intensityKey]); }),
+                    backgroundColor: top20.map(function(r) {
+                        var v = r[intensityKey];
+                        if (v >= 5000) return '#c0392b';
+                        if (v >= 1000) return '#e67e22';
+                        return '#3498db';
+                    }),
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Outage Intensity — Top 20 States (' + year + ')', font: { size: 12 } },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(ctx) {
+                                var r = top20[ctx.dataIndex];
+                                return 'Events: ' + r[eventsKey].toLocaleString() + '\nCustomers: ' + r[custKey].toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { ticks: { font: { size: 9 }, maxRotation: 45 } },
+                    y: { title: { display: true, text: 'Customers / Energy Asset' } }
+                }
+            }
+        });
+    }
+
+    var recoveryYearSelect = document.getElementById('recovery-year-select');
+    if (recoveryYearSelect) {
+        recoveryYearSelect.addEventListener('change', function() {
+            if (ANALYTICS_DATA) renderRecovery(this.value);
+        });
+    }
+
+    // === Section 7: Temporal Trend ===
+    function renderTemporal(metric) {
+        metric = metric || 'cust_change_pct';
+        var temporal = ANALYTICS_DATA.temporal;
+        if (!temporal) return;
+
+        var improving = temporal.filter(function(t) { return t.trend === 'improving'; }).length;
+        var worsening = temporal.filter(function(t) { return t.trend === 'worsening'; }).length;
+        var stable = temporal.filter(function(t) { return t.trend === 'stable'; }).length;
+
+        var cardsHTML = '<div class="stat-card" style="border-left: 3px solid #c0392b;"><div class="stat-value">' + worsening + '</div><div class="stat-label">Worsening</div></div>';
+        cardsHTML += '<div class="stat-card" style="border-left: 3px solid #f39c12;"><div class="stat-value">' + stable + '</div><div class="stat-label">Stable</div></div>';
+        cardsHTML += '<div class="stat-card" style="border-left: 3px solid #27ae60;"><div class="stat-value">' + improving + '</div><div class="stat-label">Improving</div></div>';
+        document.getElementById('temporal-stat-cards').innerHTML = cardsHTML;
+
+        var sorted = temporal.slice().sort(function(a, b) { return b[metric] - a[metric]; });
+        // Show top 10 worst + top 10 best
+        var topWorst = sorted.slice(0, 10);
+        var topBest = sorted.slice(-10).reverse();
+        var combined = topWorst.concat(topBest);
+
+        // Remove duplicates
+        var seen = {};
+        combined = combined.filter(function(t) {
+            if (seen[t.state]) return false;
+            seen[t.state] = true;
+            return true;
+        });
+
+        var metricLabels = {
+            cust_change_pct: 'Customer Impact Change (%)',
+            event_change_pct: 'Event Count Change (%)',
+            intensity_change: 'Intensity Change'
+        };
+
+        if (charts.temporal) charts.temporal.destroy();
+        var ctx = document.getElementById('chart-temporal').getContext('2d');
+
+        charts.temporal = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: combined.map(function(t) { return t.state.replace(/_/g, ' '); }),
+                datasets: [{
+                    label: metricLabels[metric] || metric,
+                    data: combined.map(function(t) { return Math.round(t[metric] * 10) / 10; }),
+                    backgroundColor: combined.map(function(t) {
+                        if (t[metric] > 10) return '#c0392b';
+                        if (t[metric] < -10) return '#27ae60';
+                        return '#f39c12';
+                    }),
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: '2022 → 2024: ' + (metricLabels[metric] || metric), font: { size: 12 } }
+                },
+                scales: {
+                    x: { ticks: { font: { size: 9 }, maxRotation: 45 } },
+                    y: { title: { display: true, text: metricLabels[metric] || '' } }
+                }
+            }
+        });
+    }
+
+    var temporalMetricSelect = document.getElementById('temporal-metric-select');
+    if (temporalMetricSelect) {
+        temporalMetricSelect.addEventListener('change', function() {
+            if (ANALYTICS_DATA) renderTemporal(this.value);
         });
     }
 

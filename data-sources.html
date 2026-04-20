@@ -219,6 +219,8 @@
 
     </style>
     
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./static/css/map-atlas.css">
 </head>
 <body>
     <!-- Header -->
@@ -341,6 +343,45 @@
         <div>&copy; 2026 Energy Critical Infrastructure &middot; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></div>
     </footer>
 
+    
+
+    <script>
+    // Static site: override view toggle to navigate to correct HTML file
+    (function() {
+        var viewMap = {
+            'btn-heatmap': 'map_heatmap.html',
+            'btn-hazard': 'map_hazard.html',
+            'btn-impact': 'map_impact.html',
+            'btn-energy-vulnerability': 'map_energy_vulnerability.html',
+            'btn-exposure': 'map_exposure.html',
+            'btn-energy-detail': 'map_energy_detail.html',
+            'btn-social-vulnerability': 'map_social_vulnerability.html',
+            'btn-analytics': 'map_analytics.html'
+        };
+        Object.keys(viewMap).forEach(function(btnId) {
+            var btn = document.getElementById(btnId);
+            if (btn) {
+                // Remove ALL existing click listeners by cloning
+                var newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                // Add static site navigation
+                newBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var url = new URL(window.location);
+                    var params = new URLSearchParams(url.search);
+                    // Keep region and mode params, remove view-specific ones
+                    var keep = ['region', 'mode', 'division_type', 'show_background'];
+                    var newParams = new URLSearchParams();
+                    keep.forEach(function(k) {
+                        params.getAll(k).forEach(function(v) { newParams.append(k, v); });
+                    });
+                    window.location.href = viewMap[btnId] + '?' + newParams.toString();
+                });
+            }
+        });
+    })();
+    </script>
     
 
     <script>

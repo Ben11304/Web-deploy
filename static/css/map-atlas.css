@@ -1,0 +1,280 @@
+/**
+ * Map Page Styles — Atlas Journal palette override
+ * Applies cream / ink / gold editorial theme to all map_*.html pages.
+ * Include AFTER map.css to override the legacy monochrome/navy styles.
+ */
+
+:root {
+  --cream: #f4efe6;
+  --cream-2: #ece4d0;
+  --cream-3: #e8e0d0;
+  --paper: #faf6ed;
+  --ink: #1a1815;
+  --ink-2: #3a342a;
+  --ink-3: #5a5246;
+  --muted: #8a7a5a;
+  --rule: #d4cbb5;
+  --gold: #8a6a2a;
+  --gold-bright: #c8a93a;
+  --crimson: #7d1621;
+}
+
+/* ---------- Page shell ---------- */
+body {
+  background: var(--cream) !important;
+  color: var(--ink) !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+/* Re-theme the navy masthead if present on map pages */
+.main-header {
+  background: var(--cream) !important;
+  color: var(--ink) !important;
+  border-bottom: 1px solid var(--ink) !important;
+  padding: 18px 40px !important;
+}
+.main-header .header-title {
+  color: var(--ink) !important;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+.main-header .header-subtitle {
+  color: var(--muted) !important;
+  letter-spacing: 0.14em !important;
+}
+
+/* ---------- Map canvas ---------- */
+#map { background-color: var(--cream-3) !important; }
+
+/* ---------- Panel toggle ---------- */
+.panel-toggle-btn {
+  background: var(--ink) !important;
+  color: var(--cream) !important;
+  border-radius: 0 !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 11px !important;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 10px 14px !important;
+}
+.panel-toggle-btn:hover { background: #000 !important; }
+
+/* ---------- Left sidebar panel ---------- */
+#sector-panel {
+  background: var(--paper) !important;
+  border: 1px solid var(--ink) !important;
+  border-radius: 0 !important;
+  padding: 18px !important;
+  font-family: 'Inter', sans-serif !important;
+}
+#sector-panel table th,
+#sector-panel table td {
+  border: 1px solid var(--rule) !important;
+  padding: 8px 10px !important;
+  font-size: 12.5px !important;
+}
+#sector-panel table th {
+  background: var(--cream-2) !important;
+  color: var(--ink) !important;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 10.5px !important;
+}
+
+/* ---------- View toggle ---------- */
+.view-toggle {
+  border-bottom: 1px solid var(--ink) !important;
+  gap: 0 !important;
+  padding-bottom: 10px !important;
+}
+.view-toggle button {
+  background: var(--paper) !important;
+  border: 1px solid var(--rule) !important;
+  border-radius: 0 !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 10.5px !important;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2) !important;
+  padding: 9px 6px !important;
+}
+.view-toggle button.active {
+  background: var(--ink) !important;
+  color: var(--cream) !important;
+  border-color: var(--ink) !important;
+}
+.view-toggle button:not(.active):hover {
+  background: var(--cream-2) !important;
+  border-color: var(--ink-3) !important;
+}
+
+/* ---------- Division info chip ---------- */
+.division-info {
+  background: var(--cream-2) !important;
+  border: 1px solid var(--rule) !important;
+  border-radius: 0 !important;
+  color: var(--ink-2) !important;
+  font-family: 'Source Serif 4', Georgia, serif !important;
+  font-style: italic;
+  font-size: 13px !important;
+}
+
+/* ---------- Heatmap legend ---------- */
+#heatmap-legend {
+  background: var(--paper) !important;
+  border: 1px solid var(--ink) !important;
+  border-radius: 0 !important;
+  font-family: 'Inter', sans-serif !important;
+  padding: 12px 14px !important;
+}
+#heatmap-legend strong {
+  color: var(--gold) !important;
+  font-size: 10.5px !important;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.legend-gradient {
+  background: linear-gradient(to right, #f4efe6, #e0c878, #c8a93a, #8a6a2a, #5a4a2a, #1a1815) !important;
+  border-radius: 0 !important;
+  border: 1px solid var(--ink) !important;
+}
+.legend-labels {
+  color: var(--muted) !important;
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 10px !important;
+  letter-spacing: 0.06em;
+}
+
+/* ---------- Back button ---------- */
+.back-button {
+  background: var(--ink) !important;
+  color: var(--cream) !important;
+  border-radius: 0 !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 11px !important;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 10px 18px !important;
+}
+.back-button:hover { background: #000 !important; }
+.back-button::before { content: "← "; font-family: 'IBM Plex Mono', monospace; }
+
+/* ---------- LOD control ---------- */
+.heatmap-lod-control {
+  background: var(--cream-2) !important;
+  border: 1px solid var(--rule) !important;
+  border-radius: 0 !important;
+}
+.heatmap-lod-control h5 {
+  color: var(--gold) !important;
+  font-size: 10.5px !important;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.lod-slider {
+  background: linear-gradient(to right, var(--rule), var(--gold)) !important;
+  border-radius: 0 !important;
+}
+.lod-slider::-webkit-slider-thumb { background: var(--ink) !important; border-color: var(--cream) !important; }
+.lod-slider::-moz-range-thumb { background: var(--ink) !important; border-color: var(--cream) !important; }
+
+.lod-value-display {
+  color: var(--ink) !important;
+  font-family: 'IBM Plex Mono', monospace !important;
+}
+.lod-info, .lod-stats {
+  color: var(--ink-3) !important;
+  font-family: 'Inter', sans-serif !important;
+}
+.lod-stats { border-top-color: var(--rule) !important; }
+
+.lod-compact { border-left-color: var(--rule) !important; }
+.lod-compact-label { color: var(--muted) !important; }
+.lod-compact-bar { background: var(--rule) !important; border-radius: 0 !important; }
+.lod-compact-fill { background: linear-gradient(to right, var(--gold-bright), var(--ink)) !important; border-radius: 0 !important; }
+.lod-compact-text { color: var(--ink) !important; font-family: 'IBM Plex Mono', monospace !important; }
+
+/* ---------- Coordinates readout ---------- */
+#coords {
+  background: var(--paper) !important;
+  border: 1px solid var(--ink) !important;
+  border-radius: 0 !important;
+  color: var(--ink) !important;
+  font-family: 'IBM Plex Mono', monospace !important;
+}
+
+/* ---------- Analytics split view ---------- */
+.analytics-panel {
+  background: var(--cream) !important;
+  border-left: 1px solid var(--ink) !important;
+  padding: 20px !important;
+}
+.analytics-section {
+  border: 1px solid var(--rule) !important;
+  border-radius: 0 !important;
+  background: var(--paper);
+  margin-bottom: 14px !important;
+}
+.analytics-section-header {
+  background: var(--cream-2) !important;
+  color: var(--gold) !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 10.5px !important;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 11px 14px !important;
+}
+.analytics-section-header:hover { background: var(--cream-3) !important; }
+.section-toggle-icon { color: var(--muted) !important; }
+
+.stat-card {
+  background: var(--cream) !important;
+  border: 1px solid var(--rule) !important;
+  border-radius: 0 !important;
+}
+.stat-value {
+  color: var(--ink) !important;
+  font-family: 'Source Serif 4', Georgia, serif !important;
+  font-weight: 500;
+  font-size: 24px !important;
+  letter-spacing: -0.02em;
+}
+.stat-label {
+  color: var(--muted) !important;
+  font-family: 'Inter', sans-serif !important;
+  letter-spacing: 0.14em;
+}
+
+.corr-card {
+  background: var(--cream) !important;
+  border: 1px solid var(--rule) !important;
+  border-radius: 0 !important;
+  color: var(--ink-2) !important;
+}
+.corr-card.significant {
+  background: var(--cream-2) !important;
+  border-color: var(--ink) !important;
+}
+.corr-card strong {
+  color: var(--ink) !important;
+  font-family: 'Source Serif 4', Georgia, serif !important;
+  font-size: 13px !important;
+}
+
+/* ---------- Site footer (if shown on map pages) ---------- */
+.site-footer {
+  background: var(--cream) !important;
+  color: var(--muted) !important;
+  border-top: 1px solid var(--ink) !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 11px !important;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 20px 40px !important;
+}
+.site-footer a { color: var(--ink) !important; border-bottom: 1px solid transparent; }
+.site-footer a:hover { color: var(--gold) !important; border-bottom-color: var(--gold); }
