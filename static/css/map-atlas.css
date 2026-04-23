@@ -5,15 +5,15 @@
  */
 
 :root {
-  --cream: #f4efe6;
-  --cream-2: #ece4d0;
-  --cream-3: #e8e0d0;
-  --paper: #faf6ed;
+  --cream: #ffffff;
+  --cream-2: #f2f2f2;
+  --cream-3: #e8e8e8;
+  --paper: #ffffff;
   --ink: #1a1815;
   --ink-2: #3a342a;
   --ink-3: #5a5246;
-  --muted: #8a7a5a;
-  --rule: #d4cbb5;
+  --muted: #7a7a7a;
+  --rule: #d0d0d0;
   --gold: #8a6a2a;
   --gold-bright: #c8a93a;
   --crimson: #7d1621;
@@ -136,7 +136,7 @@ body {
   text-transform: uppercase;
 }
 .legend-gradient {
-  background: linear-gradient(to right, #f4efe6, #e0c878, #c8a93a, #8a6a2a, #5a4a2a, #1a1815) !important;
+  background: linear-gradient(to right, #ffffff, #e0c878, #c8a93a, #8a6a2a, #5a4a2a, #1a1815) !important;
   border-radius: 0 !important;
   border: 1px solid var(--ink) !important;
 }

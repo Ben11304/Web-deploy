@@ -5,21 +5,21 @@
    ========================================================= */
 
 :root {
-  --cream: #f4efe6;
-  --cream-2: #ece4d0;
-  --cream-3: #e8e0d0;
+  --cream: #ffffff;
+  --cream-2: #f2f2f2;
+  --cream-3: #e8e8e8;
   --ink: #1a1815;
   --ink-2: #3a342a;
   --ink-3: #5a5246;
-  --muted: #8a7a5a;
-  --rule: #d4cbb5;
-  --rule-soft: #e2d9c4;
+  --muted: #7a7a7a;
+  --rule: #d0d0d0;
+  --rule-soft: #e4e4e4;
   --gold: #8a6a2a;
   --gold-bright: #c8a93a;
   --crimson: #7d1621;
   --red: #c23b3b;
   --olive: #5a7a3a;
-  --paper: #faf6ed;
+  --paper: #ffffff;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -39,15 +39,7 @@ a { color: inherit; text-decoration: none; }
 a:hover { color: var(--gold); }
 button { font-family: inherit; cursor: pointer; }
 
-/* Baseline grid hint on body — very subtle vertical rules */
-body {
-  background-image: linear-gradient(to right,
-    transparent 0,
-    transparent calc(50% - 1px),
-    rgba(138, 122, 90, 0.035) calc(50% - 1px),
-    rgba(138, 122, 90, 0.035) 50%,
-    transparent 50%);
-}
+/* Pure white body — no baseline rule */
 
 /* ---------- Masthead ---------- */
 .mast {
