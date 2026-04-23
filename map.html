@@ -1,8 +1,279 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8">
-<script>
-var params = window.location.search;
-var vt = new URLSearchParams(params).get('view_type') || 'heatmap';
-window.location.replace('map_' + vt + '.html' + params);
-</script>
-</head><body>Redirecting...</body></html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Map — Choose a view · Energy Critical Infrastructure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/atlas.css?v=20260423-map">
+</head>
+<body>
+
+  <header class="mast">
+    <div class="mast-brand">
+      <img src="./static/images/kent-logo.png" alt="Kent State University" style="height:36px;width:auto;margin-right:4px;">
+      <span class="title">Energy Critical Infrastructure</span>
+      <span class="rule"></span>
+      <span class="edition">Map selector</span>
+    </div>
+    <nav class="mast-nav">
+      <a href="index.html">Home</a>
+      <a href="map.html" class="active">Map</a>
+      <a href="index.html#project">Project</a>
+      <a href="data-sources.html">Sources</a>
+      <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">Repository</a>
+    </nav>
+    <div class="mast-meta">
+      <span>Vol. II &middot; Edition 2.4</span>
+      <span class="live">Live</span>
+    </div>
+  </header>
+
+  <section class="console" id="console">
+    <div class="section-tag"><span class="num">01</span><span>Choose a map</span></div>
+    <h2>Select a region. Choose a view. Render the map.</h2>
+    <p class="lede">Pick which hazard, asset, or vulnerability layer you want to see &mdash; then render it over the whole country or a selection of states.</p>
+
+    <form action="#" id="main-form" method="GET">
+      <div class="console-grid">
+
+        <!-- AREA -->
+        <div class="col-area">
+          <div class="col-head">
+            <span>I &middot; Area</span>
+            <span class="req">required</span>
+          </div>
+
+          <div class="area-opts" id="area-opts">
+            <label class="area-opt sel" data-mode="entire">
+              <input type="radio" name="mode" value="entire" id="mode-entire" checked>
+              <span class="dot"></span>
+              <span>Entire United States</span>
+              <span class="desc">50 states</span>
+            </label>
+            <label class="area-opt" data-mode="select">
+              <input type="radio" name="mode" value="select" id="mode-select">
+              <span class="dot"></span>
+              <span>Specific states</span>
+              <span class="desc">Multi-select</span>
+            </label>
+          </div>
+
+          <div class="state-picker" id="states-container" style="display:none;">
+            <input type="text" id="state-search" placeholder="Search states&hellip;" autocomplete="off">
+            <div class="state-list" id="state-list"></div>
+            <div class="state-count">
+              <span id="selected-count">None selected</span>
+              <span>50 available</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW TYPE -->
+        <div class="col-view">
+          <div class="col-head">
+            <span>II &middot; Analytical view</span>
+            <span>08 plates</span>
+          </div>
+
+          <div class="views-grid" id="views-grid">
+            <label class="view-card sel" data-value="heatmap" data-target="map_heatmap.html">
+              <input type="radio" name="view_type" value="heatmap" checked>
+              <div class="plate"><span>PLATE I</span><span class="sel-mark">selected</span></div>
+              <div class="vt">Infrastructure density</div>
+              <div class="vd">Where do the assets cluster?</div>
+            </label>
+
+            <label class="view-card" data-value="hazard" data-target="map_hazard.html">
+              <input type="radio" name="view_type" value="hazard">
+              <div class="plate"><span>PLATE II</span><span class="sel-mark">selected</span></div>
+              <div class="vt">Hazard risk</div>
+              <div class="vd">Where is the danger highest?</div>
+            </label>
+
+            <label class="view-card" data-value="impact" data-target="map_impact.html">
+              <input type="radio" name="view_type" value="impact">
+              <div class="plate"><span>PLATE III</span><span class="sel-mark">selected</span></div>
+              <div class="vt">Power outage impact</div>
+              <div class="vd">Who has lost power, for how long?</div>
+            </label>
+
+            <label class="view-card" data-value="energy_vulnerability" data-target="map_energy_vulnerability.html">
+              <input type="radio" name="view_type" value="energy_vulnerability">
+              <div class="plate"><span>PLATE IV</span><span class="sel-mark">selected</span></div>
+              <div class="vt">Grid vulnerability</div>
+              <div class="vd">Which nodes are load-bearing?</div>
+            </label>
+
+            <label class="view-card" data-value="exposure" data-target="map_exposure.html">
+              <input type="radio" name="view_type" value="exposure">
+              <div class="plate"><span>PLATE V</span><span class="sel-mark">selected</span></div>
+              <div class="vt">Hazard exposure</div>
+              <div class="vd">Which assets are at risk, and from what?</div>
+            </label>
+
+            <label class="view-card" data-value="energy_detail" data-target="map_energy_detail.html">
+              <input type="radio" name="view_type" value="energy_detail">
+              <div class="plate"><span>PLATE VI</span><span class="sel-mark">selected</span></div>
+              <div class="vt">Energy assets atlas</div>
+              <div class="vd">What is where?</div>
+            </label>
+
+            <label class="view-card" data-value="social_vulnerability" data-target="map_social_vulnerability.html">
+              <input type="radio" name="view_type" value="social_vulnerability">
+              <div class="plate"><span>PLATE VII</span><span class="sel-mark">selected</span></div>
+              <div class="vt">Social vulnerability</div>
+              <div class="vd">Who bears the burden when systems fail?</div>
+            </label>
+
+            <label class="view-card" data-value="analytics" data-target="map_analytics.html">
+              <input type="radio" name="view_type" value="analytics">
+              <div class="plate"><span>PLATE VIII</span><span class="sel-mark">selected</span></div>
+              <div class="vt">Analytics summary</div>
+              <div class="vd">What do the numbers say at a glance?</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- SUBMIT -->
+        <div class="col-config">
+          <div class="col-head">
+            <span>III &middot; Render</span>
+            <span class="req">ready</span>
+          </div>
+
+          <div class="config-panel">
+            <div class="detail-opts active">
+              <h3 id="selected-title">Infrastructure density</h3>
+              <div class="sub" id="selected-sub">Where do the assets cluster?</div>
+
+              <div class="config-note">
+                Additional filters &mdash; sector, hazard type, asset types, color scale &mdash; are available on each map&rsquo;s side panel after it loads.
+              </div>
+
+              <div class="submit-row">
+                <button type="submit" class="submit-btn">
+                  <span>Render the map</span>
+                  <span class="arrow">&rarr;</span>
+                </button>
+                <div class="submit-note" id="submit-note">Plate I &middot; Infrastructure density</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </section>
+
+  <footer class="foot">
+    <div>&copy; 2026 Energy Critical Infrastructure</div>
+    <div class="rules">
+      <a href="index.html">Home</a>
+      <a href="data-sources.html">Full citations</a>
+      <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
+      <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </footer>
+
+  <script>
+  (function(){
+    var STATES = ["alabama","alaska","arizona","arkansas","california","colorado","connecticut","delaware","florida","georgia","hawaii","idaho","illinois","indiana","iowa","kansas","kentucky","louisiana","maine","maryland","massachusetts","michigan","minnesota","mississippi","missouri","montana","nebraska","nevada","new_hampshire","new_jersey","new_mexico","new_york","north_carolina","north_dakota","ohio","oklahoma","oregon","pennsylvania","rhode_island","south_carolina","south_dakota","tennessee","texas","utah","vermont","virginia","washington","west_virginia","wisconsin","wyoming"];
+
+    var list = document.getElementById('state-list');
+    STATES.forEach(function(s){
+      var label = s.split('_').map(function(w){return w.charAt(0).toUpperCase()+w.slice(1);}).join(' ');
+      var el = document.createElement('label');
+      el.className = 'state-opt';
+      el.innerHTML = '<input type="checkbox" name="region" value="'+s+'"> <span>'+label+'</span>';
+      list.appendChild(el);
+    });
+
+    var modeEntire = document.getElementById('mode-entire');
+    var modeSelect = document.getElementById('mode-select');
+    var container = document.getElementById('states-container');
+    var areaOpts = document.querySelectorAll('.area-opt');
+    var selectedCount = document.getElementById('selected-count');
+
+    function updateMode(){
+      var isEntire = modeEntire.checked;
+      container.style.display = isEntire ? 'none' : 'block';
+      areaOpts.forEach(function(o){
+        o.classList.toggle('sel', o.dataset.mode === (isEntire ? 'entire' : 'select'));
+      });
+      if(isEntire){
+        document.querySelectorAll('input[name="region"]').forEach(function(cb){cb.checked=false;});
+        updateCount();
+      }
+    }
+    modeEntire.addEventListener('change', updateMode);
+    modeSelect.addEventListener('change', updateMode);
+    areaOpts.forEach(function(opt){
+      opt.addEventListener('click', function(){
+        var r = opt.querySelector('input[type="radio"]');
+        r.checked = true;
+        r.dispatchEvent(new Event('change'));
+      });
+    });
+
+    function updateCount(){
+      var n = document.querySelectorAll('input[name="region"]:checked').length;
+      selectedCount.textContent = n === 0 ? 'None selected' : (n + (n===1?' state selected':' states selected'));
+    }
+    document.addEventListener('change', function(e){
+      if(e.target && e.target.name === 'region') updateCount();
+    });
+
+    var search = document.getElementById('state-search');
+    search.addEventListener('input', function(){
+      var q = this.value.toLowerCase();
+      document.querySelectorAll('.state-opt').forEach(function(o){
+        var t = o.querySelector('span').textContent.toLowerCase();
+        o.style.display = t.indexOf(q) >= 0 ? '' : 'none';
+      });
+    });
+
+    var cards = document.querySelectorAll('.view-card');
+    var selTitle = document.getElementById('selected-title');
+    var selSub = document.getElementById('selected-sub');
+    var submitNote = document.getElementById('submit-note');
+    function selectCard(c){
+      cards.forEach(function(x){x.classList.remove('sel');});
+      c.classList.add('sel');
+      c.querySelector('input[type="radio"]').checked = true;
+      selTitle.textContent = c.querySelector('.vt').textContent;
+      selSub.textContent = c.querySelector('.vd').textContent;
+      submitNote.textContent = c.querySelector('.plate span').textContent + ' · ' + c.querySelector('.vt').textContent;
+    }
+    cards.forEach(function(c){
+      c.addEventListener('click', function(){ selectCard(c); });
+    });
+
+    var form = document.getElementById('main-form');
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var picked = document.querySelector('.view-card.sel');
+      var target = picked.dataset.target;
+      var params = new URLSearchParams();
+      params.set('mode', modeEntire.checked ? 'entire' : 'select');
+      params.set('view_type', picked.dataset.value);
+      if(!modeEntire.checked){
+        document.querySelectorAll('input[name="region"]:checked').forEach(function(cb){
+          params.append('region', cb.value);
+        });
+      }
+      window.location.href = target + '?' + params.toString();
+    });
+
+    // Pre-select view from URL if provided
+    var urlVt = new URLSearchParams(window.location.search).get('view_type');
+    if(urlVt){
+      var match = document.querySelector('.view-card[data-value="'+urlVt+'"]');
+      if(match) selectCard(match);
+    }
+  })();
+  </script>
+</body>
+</html>
