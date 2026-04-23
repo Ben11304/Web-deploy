@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Insights — Energy Critical Infrastructure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/atlas.css?v=20260423-insights">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    .ins-sec { padding: 48px 56px; border-bottom: 1px solid var(--rule); }
+    .ins-sec h3 {
+      font-family: 'Source Serif 4', serif;
+      font-weight: 500;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+      max-width: 32ch;
+    }
+    .ins-sec .ded {
+      font-size: 15.5px;
+      color: var(--ink-2);
+      max-width: 72ch;
+      margin-bottom: 24px;
+      line-height: 1.55;
+    }
+    .ins-row { display: grid; gap: 32px; }
+    .ins-row.c2 { grid-template-columns: 1.4fr 1fr; }
+    .ins-row.c3 { grid-template-columns: 1fr 1fr 1fr; }
+    .chart-box {
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      padding: 20px;
+      position: relative;
+    }
+    .chart-box h4 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold-bright);
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .chart-box canvas { max-width: 100%; }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      margin-bottom: 32px;
+    }
+    .kpi {
+      background: var(--paper);
+      padding: 22px 20px;
+    }
+    .kpi .lbl {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .kpi .val {
+      font-family: 'Source Serif 4', serif;
+      font-weight: 500;
+      font-size: 36px;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .kpi .sub {
+      font-size: 12.5px;
+      color: var(--ink-3);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    /* Toolbar / controls */
+    .toolbar {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .toolbar button {
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      padding: 6px 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 11.5px;
+      letter-spacing: 0.05em;
+      color: var(--ink-2);
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .toolbar button:hover { border-color: var(--ink); color: var(--ink); }
+    .toolbar button.active {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: #fff;
+    }
+
+    /* Table */
+    .lead-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+    }
+    .lead-table thead th {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--ink);
+      font-size: 10.5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      cursor: pointer;
+      user-select: none;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .lead-table thead th:hover { color: var(--ink); }
+    .lead-table thead th.sorted { color: var(--ink); }
+    .lead-table tbody td {
+      padding: 9px 12px;
+      border-bottom: 1px dashed var(--rule);
+      color: var(--ink-2);
+    }
+    .lead-table tbody tr:hover td { background: var(--cream-2); }
+    .lead-table td.st { font-family: 'Source Serif 4', serif; font-weight: 500; color: var(--ink); }
+    .lead-table td.num { font-family: 'IBM Plex Mono', monospace; text-align: right; }
+    .bar-inline {
+      display: inline-block;
+      height: 8px;
+      background: var(--ink);
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    /* Correlation pills */
+    .corr-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .corr-pill {
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      padding: 14px 16px;
+    }
+    .corr-pill.sig { border-color: var(--ink); background: var(--cream-2); }
+    .corr-pill .lab {
+      font-family: 'Inter', sans-serif;
+      font-size: 12.5px;
+      color: var(--ink-2);
+      margin-bottom: 6px;
+    }
+    .corr-pill .r {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .corr-pill .p {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10.5px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+    }
+    .corr-pill.sig .r { color: var(--crimson); }
+    .corr-pill.sig::after {
+      content: "SIGNIFICANT";
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      color: var(--crimson);
+      float: right;
+      margin-top: -28px;
+    }
+
+    /* Slider */
+    .slider-ctrl {
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .slider-ctrl label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .slider-ctrl .val-display {
+      font-family: 'Source Serif 4', serif;
+      font-size: 22px;
+      color: var(--ink);
+      margin: 4px 0 14px;
+      font-weight: 500;
+    }
+    .slider-ctrl input[type="range"] {
+      width: 100%;
+      accent-color: var(--ink);
+    }
+    .slider-out {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px dashed var(--rule);
+    }
+    .slider-out div .k {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .slider-out div .v {
+      font-family: 'Source Serif 4', serif;
+      font-size: 26px;
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    /* Trend list */
+    .trend-list {
+      list-style: none;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 13.5px;
+    }
+    .trend-list li {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 2fr;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px dashed var(--rule);
+      align-items: center;
+    }
+    .trend-list .st {
+      font-family: 'Source Serif 4', serif;
+      font-weight: 500;
+      color: var(--ink);
+    }
+    .trend-list .delta {
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--crimson);
+      font-weight: 600;
+    }
+    .trend-list .delta.neg { color: var(--olive); }
+    .trend-list .bar {
+      height: 6px;
+      background: var(--rule-soft);
+      position: relative;
+    }
+    .trend-list .bar span {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      background: var(--crimson);
+    }
+
+    @media (max-width: 900px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .ins-row.c2, .ins-row.c3 { grid-template-columns: 1fr; }
+      .ins-sec { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="mast">
+    <div class="mast-brand">
+      <img src="./static/images/kent-logo.png" alt="Kent State University" style="height:36px;width:auto;margin-right:4px;">
+      <span class="title">Energy Critical Infrastructure</span>
+      <span class="rule"></span>
+      <span class="edition">Insights</span>
+    </div>
+    <nav class="mast-nav">
+      <a href="index.html">Home</a>
+      <a href="map.html">Map</a>
+      <a href="insights.html" class="active">Insights</a>
+      <a href="data-sources.html">Sources</a>
+      <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">Repository</a>
+    </nav>
+    <div class="mast-meta">
+      <span>Vol. II &middot; Edition 2.4</span>
+      <span class="live">Live</span>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div>
+      <div class="section-tag"><span class="num">01</span><span>Findings</span></div>
+      <h1>Nearly <em>half</em> the grid meets at least <em>one</em> hazard.</h1>
+      <p class="deck">Eleven interactive charts &mdash; from per-state rankings to threshold sensitivity &mdash; drawn from the same federal open-data pipeline that feeds the atlas. Hover, filter, and sort to trace your own conclusions.</p>
+    </div>
+    <aside class="hero-side">
+      <div class="caption">Data window</div>
+      <div class="byline">
+        Per-asset exposure computed across <b>2.83&nbsp;million OSM assets</b>. Correlations use state-level rollups (<i>n=50</i>). All thresholds are literature-backed &mdash; see the sensitivity panel below.
+      </div>
+    </aside>
+  </section>
+
+  <!-- KPI -->
+  <section class="ins-sec">
+    <div class="section-tag"><span class="num">02</span><span>National headlines</span></div>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="lbl">Any hazard</div><div class="val" id="kpi-any">&mdash;</div><div class="sub">of 2.83M assets exposed to ≥1 hazard</div></div>
+      <div class="kpi"><div class="lbl">Multi-hazard</div><div class="val" id="kpi-multi">&mdash;</div><div class="sub">exposed to ≥2 hazards simultaneously</div></div>
+      <div class="kpi"><div class="lbl">Top single hazard</div><div class="val" id="kpi-top">&mdash;</div><div class="sub" id="kpi-top-sub">leading hazard nationally</div></div>
+      <div class="kpi"><div class="lbl">Risk leader</div><div class="val" id="kpi-leader">&mdash;</div><div class="sub">highest composite INFORM-adapted risk</div></div>
+    </div>
+
+    <div class="ins-row c2">
+      <div class="chart-box">
+        <h4>National exposure by hazard</h4>
+        <canvas id="ch-national" height="220"></canvas>
+      </div>
+      <div class="chart-box">
+        <h4>How many hazards touch an asset?</h4>
+        <canvas id="ch-multi" height="220"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATE LEADERBOARD -->
+  <section class="ins-sec">
+    <div class="section-tag"><span class="num">03</span><span>State leaderboard</span></div>
+    <h3>Where does the exposure concentrate?</h3>
+    <p class="ded">Ten states leading each hazard. Switch the metric, sort by any column, or compare shares against the national average.</p>
+    <div class="toolbar" id="lead-toolbar">
+      <button data-metric="any_pct" class="active">Any hazard</button>
+      <button data-metric="eq_pct">Earthquake</button>
+      <button data-metric="flood_pct">Flood</button>
+      <button data-metric="wfpi_pct">Wildfire</button>
+      <button data-metric="hurr_pct">Hurricane</button>
+      <button data-metric="winter_pct">Winter storm</button>
+      <button data-metric="multi_pct">Multi-hazard</button>
+    </div>
+    <div class="chart-box">
+      <table class="lead-table" id="lead-tbl">
+        <thead>
+          <tr>
+            <th data-col="rank">#</th>
+            <th data-col="state">State</th>
+            <th data-col="region">Region</th>
+            <th data-col="metric" class="sorted">Exposure</th>
+            <th data-col="total_assets">Assets</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- REGIONAL -->
+  <section class="ins-sec">
+    <div class="section-tag"><span class="num">04</span><span>Regional signature</span></div>
+    <h3>Each region owns a different hazard profile.</h3>
+    <p class="ded">Radar of five hazards over the four Census regions. The Northeast is hurricane- and winter-dominated; the West, wildfire; the South carries the hurricane load with little winter exposure.</p>
+    <div class="chart-box">
+      <canvas id="ch-region" height="320"></canvas>
+    </div>
+  </section>
+
+  <!-- CORRELATIONS -->
+  <section class="ins-sec">
+    <div class="section-tag"><span class="num">05</span><span>What moves with what</span></div>
+    <h3>Three correlations stand out. Most do not.</h3>
+    <p class="ded">State-level Pearson <i>r</i>, <i>n=50</i>. Significance at <i>p&lt;0.05</i>. Flood and hurricane exposure co-locate tightly on the coasts (<i>r=0.75</i>). Multi-hazard load tracks power outages (<i>r=0.46</i>). Single-hazard outage signals, including earthquake and hurricane, are noisier than usually reported.</p>
+
+    <div class="ins-row c2">
+      <div class="chart-box">
+        <h4>Hazard &harr; power outage (customer-hours, 2022)</h4>
+        <div class="corr-grid" id="cg-outage"></div>
+      </div>
+      <div class="chart-box">
+        <h4>Hazard pair co-occurrence</h4>
+        <div class="corr-grid" id="cg-pairs"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SVI -->
+  <section class="ins-sec">
+    <div class="section-tag"><span class="num">06</span><span>Social amplification</span></div>
+    <h3>Multi-hazard burden tracks social vulnerability.</h3>
+    <p class="ded">Hazard exposure pooled with CDC/ATSDR SVI 2022 at the county level. Multi-hazard exposure shows the strongest coupling (<i>r=0.51, p&lt;0.001</i>) &mdash; counties that already score high on social vulnerability carry a disproportionate share of the multi-hazard load.</p>
+    <div class="ins-row c2">
+      <div class="chart-box">
+        <h4>Hazard &harr; SVI (county level)</h4>
+        <canvas id="ch-hsvi" height="260"></canvas>
+      </div>
+      <div class="chart-box">
+        <h4>SVI theme &harr; outage (county level)</h4>
+        <canvas id="ch-svio" height="260"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- RISK INDEX -->
+  <section class="ins-sec">
+    <div class="section-tag"><span class="num">07</span><span>Composite risk</span></div>
+    <h3>INFORM-adapted risk &mdash; top ten.</h3>
+    <p class="ded">Geometric mean of three dimensions (hazard exposure, social vulnerability, infrastructure vulnerability), each 0&ndash;10 min-max. Methodology follows EU&nbsp;JRC INFORM.</p>
+    <div class="chart-box">
+      <canvas id="ch-risk" height="280"></canvas>
+    </div>
+  </section>
+
+  <!-- TEMPORAL -->
+  <section class="ins-sec">
+    <div class="section-tag"><span class="num">08</span><span>2022 &rarr; 2024</span></div>
+    <h3>Most states saw outage intensity worsen.</h3>
+    <p class="ded"><b>42 of 50</b> states recorded a larger customer-hours footprint in 2024 than 2022; only 8 improved. The top of the worsening list is dominated by southern and coastal states. Click any bar in Section&nbsp;03 to cross-reference.</p>
+    <div class="ins-row c2">
+      <div class="chart-box">
+        <h4>Top ten worsening states (customer-hours change %)</h4>
+        <ul class="trend-list" id="tl-worse"></ul>
+      </div>
+      <div class="chart-box">
+        <h4>States that improved</h4>
+        <ul class="trend-list" id="tl-improve"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SENSITIVITY -->
+  <section class="ins-sec">
+    <div class="section-tag"><span class="num">09</span><span>Threshold sensitivity</span></div>
+    <h3>Move the earthquake threshold and watch the picture swing.</h3>
+    <p class="ded">Reported figures use <b>PGA &ge; 0.092g</b> (MMI &ge; VI, IEEE 693-qualification floor). Lowering the threshold to the USGS <i>any-perception</i> floor (0.014g) pushes earthquake exposure to <b>97%</b> &mdash; a reminder that headline numbers are meaningful only paired with their threshold.</p>
+
+    <div class="slider-ctrl">
+      <label>PGA threshold (g)</label>
+      <div class="val-display" id="pga-val">0.092</div>
+      <input type="range" id="pga-slider" min="0" max="6" step="1" value="2">
+      <div class="slider-out">
+        <div><div class="k">Earthquake exposure</div><div class="v" id="pga-eq">&mdash;</div></div>
+        <div><div class="k">Any-hazard exposure</div><div class="v" id="pga-any">&mdash;</div></div>
+        <div><div class="k">Multi-hazard exposure</div><div class="v" id="pga-multi">&mdash;</div></div>
+      </div>
+    </div>
+    <div class="chart-box">
+      <h4>Earthquake exposure vs PGA threshold (all 7 thresholds)</h4>
+      <canvas id="ch-sens" height="240"></canvas>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div>&copy; 2026 Energy Critical Infrastructure</div>
+    <div class="rules">
+      <a href="index.html">Home</a>
+      <a href="map.html">Map</a>
+      <a href="data-sources.html">Full citations</a>
+      <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </footer>
+
+  <script>
+  (async function(){
+    const res = await fetch('./data/analytics-data.json');
+    const D = await res.json();
+
+    const FMT = n => (n==null||isNaN(n))?'—':(Math.round(n*10)/10).toFixed(1);
+    const PCT = n => (n==null||isNaN(n))?'—':FMT(n)+'%';
+    const CAP = s => s.split('_').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+
+    const COLORS = {
+      eq: '#7d1621', flood: '#2a5a8a', wfpi: '#c23b3b',
+      hurr: '#8a6a2a', winter: '#5a7a3a',
+      any: '#1a1815', multi: '#c8a93a',
+      ink: '#1a1815', muted: '#8a7a5a', rule: '#d0d0d0'
+    };
+
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.font.size = 11.5;
+    Chart.defaults.color = '#3a342a';
+    Chart.defaults.borderColor = '#e4e4e4';
+
+    // ────────────── KPIs ──────────────
+    document.getElementById('kpi-any').textContent = PCT(D.national.any_pct);
+    document.getElementById('kpi-multi').textContent = PCT(D.national.multi_pct);
+    const pairs = [['Earthquake',D.national.eq_pct],['Flood',D.national.flood_pct],['Wildfire',D.national.wfpi_pct],['Hurricane',D.national.hurr_pct],['Winter storm',D.national.winter_pct]];
+    pairs.sort((a,b)=>b[1]-a[1]);
+    document.getElementById('kpi-top').textContent = PCT(pairs[0][1]);
+    document.getElementById('kpi-top-sub').textContent = pairs[0][0]+' leads nationally';
+    const leader = (D.risk_index.states||[])[0];
+    if(leader){
+      document.getElementById('kpi-leader').textContent = CAP(leader.state);
+      document.querySelectorAll('.kpi')[3].querySelector('.sub').textContent = 'risk score '+FMT(leader.risk_score)+' / 10';
+    }
+
+    // ────────────── 1. National bar ──────────────
+    new Chart(document.getElementById('ch-national'), {
+      type: 'bar',
+      data: {
+        labels: ['Earthquake','Flood','Wildfire','Hurricane','Winter storm','Any hazard','Multi-hazard'],
+        datasets: [{
+          data: [D.national.eq_pct, D.national.flood_pct, D.national.wfpi_pct, D.national.hurr_pct, D.national.winter_pct, D.national.any_pct, D.national.multi_pct],
+          backgroundColor: [COLORS.eq, COLORS.flood, COLORS.wfpi, COLORS.hurr, COLORS.winter, COLORS.ink, COLORS.multi],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.x.toFixed(1)+'% of assets' } } },
+        scales: { x: { beginAtZero: true, max: 60, ticks: { callback: v => v+'%' } }, y: { grid: { display: false } } }
+      }
+    });
+
+    // ────────────── 2. Multi-hazard count doughnut ──────────────
+    const anyP = D.national.any_pct, multiP = D.national.multi_pct;
+    new Chart(document.getElementById('ch-multi'), {
+      type: 'doughnut',
+      data: {
+        labels: ['No hazard', 'Exactly one hazard', 'Two or more'],
+        datasets: [{
+          data: [100-anyP, anyP-multiP, multiP],
+          backgroundColor: [COLORS.rule, COLORS.hurr, COLORS.eq],
+          borderColor: '#fff', borderWidth: 2
+        }]
+      },
+      options: {
+        cutout: '55%',
+        plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: c => c.label+': '+c.parsed.toFixed(1)+'%' } } }
+      }
+    });
+
+    // ────────────── 3. State leaderboard ──────────────
+    const tbody = document.querySelector('#lead-tbl tbody');
+    let leadMetric = 'any_pct';
+    function renderLead(){
+      const sorted = [...D.states].sort((a,b)=>b[leadMetric]-a[leadMetric]).slice(0,10);
+      const max = Math.max(...sorted.map(s=>s[leadMetric]));
+      tbody.innerHTML = sorted.map((s,i)=>`
+        <tr>
+          <td class="num">${i+1}</td>
+          <td class="st">${CAP(s.state)}</td>
+          <td>${s.region}</td>
+          <td class="num"><span class="bar-inline" style="width:${(s[leadMetric]/max*140).toFixed(0)}px;background:${COLORS.eq}"></span>${FMT(s[leadMetric])}%</td>
+          <td class="num">${s.total_assets.toLocaleString()}</td>
+        </tr>`).join('');
+    }
+    document.querySelectorAll('#lead-toolbar button').forEach(b => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('#lead-toolbar button').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        leadMetric = b.dataset.metric;
+        renderLead();
+      });
+    });
+    renderLead();
+
+    // ────────────── 4. Regional radar ──────────────
+    new Chart(document.getElementById('ch-region'), {
+      type: 'radar',
+      data: {
+        labels: ['Earthquake','Flood','Wildfire','Hurricane','Winter storm'],
+        datasets: D.regions.map((r,i) => ({
+          label: r.region,
+          data: [r.eq_pct, r.flood_pct, r.wfpi_pct, r.hurr_pct, r.winter_pct],
+          backgroundColor: [COLORS.eq, COLORS.flood, COLORS.hurr, COLORS.winter][i] + '30',
+          borderColor: [COLORS.eq, COLORS.flood, COLORS.hurr, COLORS.winter][i],
+          borderWidth: 2,
+          pointBackgroundColor: [COLORS.eq, COLORS.flood, COLORS.hurr, COLORS.winter][i]
+        }))
+      },
+      options: {
+        plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: c => c.dataset.label+': '+c.parsed.r.toFixed(1)+'%' } } },
+        scales: { r: { beginAtZero: true, suggestedMax: 70, ticks: { callback: v => v+'%' } } }
+      }
+    });
+
+    // ────────────── 5. Correlation pills ──────────────
+    function pill(c, hazLabel){
+      const r = c.pearson_r;
+      const sig = c.significant ? ' sig' : '';
+      const rTxt = (r>=0?'+':'') + r.toFixed(3);
+      const pTxt = c.p_value < 0.001 ? 'p < 0.001' : 'p = '+c.p_value.toFixed(3);
+      return `<div class="corr-pill${sig}"><div class="lab">${c.label||c.pair}</div><div class="r">r = ${rTxt}</div><div class="p">${pTxt}</div></div>`;
+    }
+    document.getElementById('cg-outage').innerHTML = D.correlations.hazard_outage.map(c=>pill(c)).join('');
+    document.getElementById('cg-pairs').innerHTML = D.correlations.hazard_pairs.map(c=>pill(c)).join('');
+
+    // ────────────── 6. Hazard × SVI ──────────────
+    new Chart(document.getElementById('ch-hsvi'), {
+      type: 'bar',
+      data: {
+        labels: D.correlations.hazard_svi.map(c=>c.label),
+        datasets: [{
+          label: 'Pearson r',
+          data: D.correlations.hazard_svi.map(c=>c.pearson_r),
+          backgroundColor: D.correlations.hazard_svi.map(c=>c.significant?COLORS.crimson||COLORS.eq:COLORS.muted),
+          borderWidth: 0
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => {
+          const d = D.correlations.hazard_svi[c.dataIndex];
+          return ['r = '+(d.pearson_r>=0?'+':'')+d.pearson_r.toFixed(3), 'p = '+(d.p_value<0.001?'<0.001':d.p_value.toFixed(3)), d.significant?'Significant':'Not significant'];
+        } } } },
+        scales: { y: { beginAtZero: true, max: 0.7, ticks: { callback: v => v.toFixed(1) } } }
+      }
+    });
+
+    // ────────────── 7. SVI × Outage ──────────────
+    new Chart(document.getElementById('ch-svio'), {
+      type: 'bar',
+      data: {
+        labels: D.correlations.svi_outage.map(c=>c.label),
+        datasets: [{
+          data: D.correlations.svi_outage.map(c=>c.pearson_r),
+          backgroundColor: D.correlations.svi_outage.map(c=>c.significant?COLORS.eq:COLORS.muted),
+          borderWidth: 0
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => {
+          const d = D.correlations.svi_outage[c.dataIndex];
+          return ['r = '+(d.pearson_r>=0?'+':'')+d.pearson_r.toFixed(3), 'p = '+(d.p_value<0.001?'<0.001':d.p_value.toFixed(3))];
+        } } } },
+        scales: { y: { suggestedMin: -0.1, suggestedMax: 0.1, ticks: { callback: v => v.toFixed(2) } } }
+      }
+    });
+
+    // ────────────── 8. Risk index top 10 ──────────────
+    const topRisk = (D.risk_index.states||[]).slice(0,10);
+    new Chart(document.getElementById('ch-risk'), {
+      type: 'bar',
+      data: {
+        labels: topRisk.map(s=>CAP(s.state)),
+        datasets: [
+          { label: 'Hazard', data: topRisk.map(s=>s.hazard_score), backgroundColor: COLORS.eq },
+          { label: 'Social vuln.', data: topRisk.map(s=>s.svi_score), backgroundColor: COLORS.hurr },
+          { label: 'Infra vuln.', data: topRisk.map(s=>s.infra_vuln_score), backgroundColor: COLORS.winter },
+          { label: 'Composite', data: topRisk.map(s=>s.risk_score), backgroundColor: COLORS.ink, type: 'line', borderColor: COLORS.ink, borderWidth: 2, pointRadius: 3, yAxisID: 'y' }
+        ]
+      },
+      options: {
+        plugins: { legend: { position: 'bottom' }, tooltip: { mode: 'index' } },
+        scales: { y: { beginAtZero: true, max: 10, title: { display: true, text: 'Score (0–10)' } } }
+      }
+    });
+
+    // ────────────── 9. Temporal trends ──────────────
+    const temporal = D.temporal||[];
+    const worsening = temporal.filter(t=>t.trend==='worsening').sort((a,b)=>b.cust_change_pct-a.cust_change_pct).slice(0,10);
+    const improving = temporal.filter(t=>t.trend==='improving').sort((a,b)=>a.cust_change_pct-b.cust_change_pct).slice(0,10);
+    const wMax = Math.max(...worsening.map(t=>t.cust_change_pct));
+    const iMax = Math.max(...improving.map(t=>Math.abs(t.cust_change_pct)));
+    document.getElementById('tl-worse').innerHTML = worsening.map(t=>`
+      <li>
+        <span class="st">${CAP(t.state)}</span>
+        <span class="delta">+${t.cust_change_pct.toFixed(0)}%</span>
+        <span class="bar"><span style="width:${(t.cust_change_pct/wMax*100).toFixed(0)}%"></span></span>
+      </li>`).join('');
+    document.getElementById('tl-improve').innerHTML = improving.map(t=>`
+      <li>
+        <span class="st">${CAP(t.state)}</span>
+        <span class="delta neg">${t.cust_change_pct.toFixed(0)}%</span>
+        <span class="bar"><span style="width:${(Math.abs(t.cust_change_pct)/iMax*100).toFixed(0)}%;background:${COLORS.winter}"></span></span>
+      </li>`).join('');
+
+    // ────────────── 10. Threshold sensitivity ──────────────
+    const pgaSweeps = D.sensitivity.filter(s=>s.sweep==='pga');
+    const thresholds = pgaSweeps.map(s=>s.pga_threshold);
+    const slider = document.getElementById('pga-slider');
+    slider.max = pgaSweeps.length - 1;
+    // find index of 0.092 as default
+    const defaultIdx = pgaSweeps.findIndex(s=>Math.abs(s.pga_threshold-0.092)<0.001);
+    slider.value = defaultIdx >= 0 ? defaultIdx : 2;
+
+    function renderSens(){
+      const i = +slider.value;
+      const s = pgaSweeps[i];
+      document.getElementById('pga-val').textContent = s.pga_threshold.toFixed(3)+' g';
+      document.getElementById('pga-eq').textContent = s.eq_pct.toFixed(1)+'%';
+      document.getElementById('pga-any').textContent = s.any_pct.toFixed(1)+'%';
+      document.getElementById('pga-multi').textContent = s.multi_pct.toFixed(1)+'%';
+    }
+    slider.addEventListener('input', renderSens);
+    renderSens();
+
+    new Chart(document.getElementById('ch-sens'), {
+      type: 'line',
+      data: {
+        labels: thresholds.map(t=>t.toFixed(3)+'g'),
+        datasets: [
+          { label: 'Earthquake %', data: pgaSweeps.map(s=>s.eq_pct), borderColor: COLORS.eq, backgroundColor: COLORS.eq+'20', tension: 0.2, fill: false, pointRadius: 4 },
+          { label: 'Any-hazard %', data: pgaSweeps.map(s=>s.any_pct), borderColor: COLORS.ink, backgroundColor: COLORS.ink+'20', tension: 0.2, fill: false, pointRadius: 4 },
+          { label: 'Multi-hazard %', data: pgaSweeps.map(s=>s.multi_pct), borderColor: COLORS.multi, backgroundColor: COLORS.multi+'20', tension: 0.2, fill: false, pointRadius: 4 }
+        ]
+      },
+      options: {
+        plugins: { legend: { position: 'bottom' }, tooltip: { mode: 'index' } },
+        scales: { y: { beginAtZero: true, max: 100, ticks: { callback: v => v+'%' } }, x: { title: { display: true, text: 'PGA threshold (g)' } } }
+      }
+    });
+  })();
+  </script>
+
+</body>
+</html>
