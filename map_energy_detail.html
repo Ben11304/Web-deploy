@@ -18,7 +18,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background: #fafafa;
+            background: #ffffff;
             color: #1a1a1a;
             font-weight: 400;
             letter-spacing: -0.01em;
@@ -108,10 +108,10 @@
     
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="./static/css/map.css?v=20260422-white" />
+    <link rel="stylesheet" href="./static/css/map.css" />
 
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./static/css/map-atlas.css?v=20260422-white" />
+    <link rel="stylesheet" href="./static/css/map-atlas.css" />
     
     
 
@@ -712,41 +712,58 @@ async function loadEnergyDetailData() {
     
     var loadedCount = 0;
     var totalStates = selectedStates.length;
-    
-    for (var i = 0; i < selectedStates.length; i++) {
-        var state = selectedStates[i];
-        var stateCode = state.toLowerCase().replace(/ /g, '_');
-        var url = window.DATA_BASE_URL + '/states/' + stateCode + '/Energy_Sector.geojson';
-        
-        updateEnergyDetailLoadingProgress(
-            10 + (loadedCount / totalStates) * 70,
-            'Loading ' + state + ' (' + (loadedCount + 1) + '/' + totalStates + ')...'
-        );
-        
-        try {
-            var response = await fetch(url);
-            if (response.ok) {
-                var data = await response.json();
-                energyDetailData[stateCode] = data;
-                
-                // Add state info to each feature and collect
-                if (data.features) {
-                    data.features.forEach(function(feature) {
-                        feature.properties._state = stateCode;
-                        feature.properties._asset_type = getEnergyAssetType(feature.properties);
-                        energyDetailAllFeatures.push(feature);
+
+    // ── Bounded parallel fetch (perf fix 2026-06-04) ─────────────────
+    // Was: serial for-await loop. Now: CONCURRENCY=6 inflight (browser
+    // HTTP/1.1 per-origin limit). Latency: N×T → ~ceil(N/6)×T.
+    var CONCURRENCY = 6;
+    var fetchQueue = selectedStates.slice();
+    var inflight = 0;
+
+    await new Promise(function(resolve) {
+        function startNext() {
+            while (inflight < CONCURRENCY && fetchQueue.length > 0) {
+                var state = fetchQueue.shift();
+                inflight++;
+                (function(state) {
+                    var stateCode = state.toLowerCase().replace(/ /g, '_');
+                    var url = window.DATA_BASE_URL + '/states/' + stateCode + '/Energy_Sector.geojson';
+                    fetch(url).then(function(response) {
+                        if (response.ok) return response.json();
+                        console.warn('⚡ No data for ' + state + ': ' + response.status);
+                        return null;
+                    }).then(function(data) {
+                        if (data) {
+                            energyDetailData[stateCode] = data;
+                            if (data.features) {
+                                data.features.forEach(function(feature) {
+                                    feature.properties._state = stateCode;
+                                    feature.properties._asset_type = getEnergyAssetType(feature.properties);
+                                    energyDetailAllFeatures.push(feature);
+                                });
+                            }
+                            console.log('⚡ Loaded ' + state + ': ' + (data.features ? data.features.length : 0) + ' assets');
+                        }
+                    }).catch(function(error) {
+                        console.error('⚡ Error loading ' + state + ':', error);
+                    }).then(function() {
+                        inflight--;
+                        loadedCount++;
+                        updateEnergyDetailLoadingProgress(
+                            10 + (loadedCount / totalStates) * 70,
+                            'Loaded ' + loadedCount + '/' + totalStates + ' states'
+                        );
+                        if (fetchQueue.length === 0 && inflight === 0) {
+                            resolve();
+                        } else {
+                            startNext();
+                        }
                     });
-                }
-                console.log('⚡ Loaded ' + state + ': ' + (data.features ? data.features.length : 0) + ' assets');
-            } else {
-                console.warn('⚡ No data for ' + state + ': ' + response.status);
+                })(state);
             }
-        } catch (error) {
-            console.error('⚡ Error loading ' + state + ':', error);
         }
-        
-        loadedCount++;
-    }
+        startNext();
+    });
     
     updateEnergyDetailLoadingProgress(85, 'Processing ' + energyDetailAllFeatures.length + ' assets...');
     
