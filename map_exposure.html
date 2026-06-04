@@ -788,10 +788,24 @@ function updateQuantileBreaks() {
     exposureQuantileBreaks = computeQuantileBreaks(scores, exposureColorScale.length);
 }
 
+// Check whether a result has truly no data (CONUS-only rasters: WFPI, Winter SWE
+// have null values for AK + HI assets, per Methods §2.1). Distinguished from
+// 0 exposure (CONUS asset measured but below threshold).
+function isNoData(result) {
+    if (!result) return false;
+    var config = getCurrentExposureConfig();
+    var v = result[config.scoreField];
+    return (v === null || v === undefined || (typeof v === 'number' && isNaN(v)));
+}
+
 // Get color based on normalized score using current color mode
-function getExposureColor(score) {
+// noData flag distinguishes CONUS-only no-data (AK/HI WFPI + Winter) from 0 exposure
+function getExposureColor(score, noData) {
+    if (noData === true) {
+        return '#888888';  // Darker gray with distinct shade — CONUS-only no-data (AK/HI WFPI + Winter SWE)
+    }
     if (score === null || score === undefined || isNaN(score) || score === 0) {
-        return '#CCCCCC';  // Gray for no exposure
+        return '#CCCCCC';  // Light gray for measured 0 exposure
     }
 
     var ratio;
@@ -860,14 +874,18 @@ async function loadExposureData() {
     var totalStates = selectedStates.length;
     var config = getCurrentExposureConfig();
 
-    // ── Bounded parallel fetch (perf fix 2026-06-04) ─────────────────
-    // Was: serial for-await loop, latency = N × T (death march on >5 states).
-    // Now: up to CONCURRENCY=6 inflight requests (matches browser HTTP/1.1 limit
-    // per origin), latency ≈ ceil(N/6) × T. Array.push is safe across
-    // Promise callbacks (JS is single-threaded).
+    // ── Bounded parallel fetch + primary-variant dispatch (perf 2026-06-04) ──
+    // Latency: serial N×T → parallel ceil(N/6)×T (≈5-10× faster).
+    // Bytes: full → primary (non-tower) variant if user has NOT toggled
+    //        'tower' asset visibility ON. Primary files strip power={tower,
+    //        pole, cable} and are ~90% smaller. Loader falls back to full
+    //        file if primary is 404 (e.g., not yet uploaded to R2 for a hazard).
     var CONCURRENCY = 6;
     var fetchQueue = selectedStates.slice();
     var inflight = 0;
+    var canUsePrimary = !exposureAssets.includes('tower');
+    var primarySuffix = config.fileSuffix.replace('.json', '_primary.json');
+    var primaryHits = 0, fullHits = 0;
 
     await new Promise(function(resolve) {
         function startNext() {
@@ -876,9 +894,24 @@ async function loadExposureData() {
                 inflight++;
                 (function(state) {
                     var stateCode = state.toLowerCase().replace(/ /g, '_');
-                    var url = window.DATA_BASE_URL + '/Exposure/' + config.subDir + '/' + stateCode + config.fileSuffix;
+                    var basePath = window.DATA_BASE_URL + '/Exposure/' + config.subDir + '/' + stateCode;
+                    var fullUrl = basePath + config.fileSuffix;
+                    var primaryUrl = basePath + primarySuffix;
+                    var url = canUsePrimary ? primaryUrl : fullUrl;
                     fetch(url).then(function(response) {
-                        if (response.ok) return response.json();
+                        if (response.ok) {
+                            if (canUsePrimary) primaryHits++; else fullHits++;
+                            return response.json();
+                        }
+                        // Primary missing → fall back to full
+                        if (canUsePrimary && response.status === 404) {
+                            console.warn('🎯 Primary not available for ' + state + ', falling back to full');
+                            return fetch(fullUrl).then(function(r) {
+                                if (r.ok) { fullHits++; return r.json(); }
+                                console.warn('🎯 No data for ' + state + ': ' + r.status);
+                                return null;
+                            });
+                        }
                         console.warn('🎯 No data for ' + state + ': ' + response.status);
                         return null;
                     }).then(function(data) {
@@ -1037,9 +1070,10 @@ function renderExposureLayer() {
         var assetType = getAssetType(result.properties);
         var score = getExposureScore(result);
         var normalizedScore = getNormalizedExposureScore(result);
-        var detailCount = result[config.detailField] ? 
+        var noData = isNoData(result);
+        var detailCount = result[config.detailField] ?
             (Array.isArray(result[config.detailField]) ? result[config.detailField].length : result[config.detailField]) : 0;
-        
+
         return {
             type: 'Feature',
             geometry: result.geometry,
@@ -1048,6 +1082,7 @@ function renderExposureLayer() {
                 _asset_type: assetType,
                 _exposure_score: score,
                 _exposure_normalized: normalizedScore,
+                _no_data: noData,
                 _calculation_method: result.calculation_method,
                 _detail_count: detailCount,
                 _state: result._state,
@@ -1065,23 +1100,27 @@ function renderExposureLayer() {
     exposureLayer = L.geoJSON(geojson, {
         pointToLayer: function(feature, latlng) {
             var normalizedScore = feature.properties._exposure_normalized || 0;
+            var noData = feature.properties._no_data === true;
             return L.circleMarker(latlng, {
                 radius: getExposureRadius(normalizedScore),
-                fillColor: getExposureColor(normalizedScore),
-                color: '#333',
-                weight: 1,
+                fillColor: getExposureColor(normalizedScore, noData),
+                color: noData ? '#c0392b' : '#333',
+                weight: noData ? 1.5 : 1,
                 opacity: 0.8,
-                fillOpacity: 0.7
+                fillOpacity: noData ? 0.5 : 0.7,
+                dashArray: noData ? '2,2' : null
             });
         },
         style: function(feature) {
             var normalizedScore = feature.properties._exposure_normalized || 0;
+            var noData = feature.properties._no_data === true;
             return {
-                color: getExposureColor(normalizedScore),
+                color: getExposureColor(normalizedScore, noData),
                 weight: feature.geometry.type === 'LineString' ? 3 : 2,
                 opacity: 0.8,
-                fillColor: getExposureColor(normalizedScore),
-                fillOpacity: 0.5
+                fillColor: getExposureColor(normalizedScore, noData),
+                fillOpacity: noData ? 0.35 : 0.5,
+                dashArray: noData ? '2,2' : null
             };
         },
         onEachFeature: function(feature, layer) {
@@ -1096,8 +1135,12 @@ function renderExposureLayer() {
             popup += '<h4 style="margin: 0 0 8px 0; color: #880e4f;">🎯 ' + exposureType.charAt(0).toUpperCase() + exposureType.slice(1) + ' Exposure</h4>';
             popup += '<table style="font-size: 12px; width: 100%;">';
             popup += '<tr><td><strong>Type:</strong></td><td>' + assetType + '</td></tr>';
-            popup += '<tr><td><strong>' + scoreLabel + ':</strong></td><td>' + formatScore(props._exposure_score) + '</td></tr>';
-            popup += '<tr><td><strong>Normalized:</strong></td><td>' + formatScore(props._exposure_normalized) + '</td></tr>';
+            if (props._no_data === true) {
+                popup += '<tr><td colspan="2" style="color:#c0392b;padding:6px 0;"><strong>No data</strong> &mdash; WFPI and Winter SWE rasters are CONUS-only (per Methods &sect;2.1)</td></tr>';
+            } else {
+                popup += '<tr><td><strong>' + scoreLabel + ':</strong></td><td>' + formatScore(props._exposure_score) + '</td></tr>';
+                popup += '<tr><td><strong>Normalized:</strong></td><td>' + formatScore(props._exposure_normalized) + '</td></tr>';
+            }
             popup += '<tr><td><strong>Method:</strong></td><td>' + (props._calculation_method || '--') + '</td></tr>';
             popup += '<tr><td><strong>' + detailLabel + ':</strong></td><td>' + (props._detail_count || 0) + '</td></tr>';
             popup += '<tr><td><strong>State:</strong></td><td>' + (props._state || '--') + '</td></tr>';

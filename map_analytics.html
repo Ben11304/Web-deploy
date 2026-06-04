@@ -18,7 +18,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background: #fafafa;
+            background: #ffffff;
             color: #1a1a1a;
             font-weight: 400;
             letter-spacing: -0.01em;
@@ -110,10 +110,10 @@
     
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="./static/css/map.css?v=20260422-white" />
+    <link rel="stylesheet" href="./static/css/map.css" />
 
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./static/css/map-atlas.css?v=20260422-white" />
+    <link rel="stylesheet" href="./static/css/map-atlas.css" />
     
     
 
@@ -228,6 +228,9 @@
         <span class="section-toggle-icon">&#9660;</span> Correlation Highlights
     </div>
     <div class="analytics-section-body" id="body-correlations">
+        <div class="alert alert-warning" role="alert" style="background:#fff8e1;border-left:4px solid #f59e0b;padding:0.75rem 1rem;margin:0.5rem 0;font-size:0.9rem;">
+          <strong>Statistical inference updated 2026-06-04.</strong> Spearman correlations shown below were the project's earlier outage inference anchor; they are superseded by spatial-lag autoregressive models (Multi-hazard × outage &beta; = 0.112, slm_p = 1.4&times;10<sup>-5</sup>; Flood × outage &beta; = 0.110, slm_p = 2&times;10<sup>-5</sup>) after the test family was expanded to <em>m</em> = 87. See <code>analytics-data.json &rarr; metadata.rule_7_corrections</code> + paper Methods &sect;2.3 for full provenance.
+        </div>
         <div class="correlation-cards" id="correlation-cards"></div>
         <div class="chart-container">
             <canvas id="chart-correlations" height="180"></canvas>
