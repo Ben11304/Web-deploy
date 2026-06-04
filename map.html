@@ -6,44 +6,41 @@
   <title>Map — Choose a view · Energy Critical Infrastructure</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./static/css/atlas.css?v=20260423-map">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/atlas-b.css?v=20260604-b">
 </head>
 <body>
 
-  <header class="mast">
-    <div class="mast-brand">
-      <img src="./static/images/kent-logo.png" alt="Kent State University" style="height:36px;width:auto;margin-right:4px;">
-      <span class="title">Energy Critical Infrastructure</span>
-      <span class="rule"></span>
-      <span class="edition">Map selector</span>
+  <header class="hdr">
+    <div class="brand">
+      <div class="mk"></div>
+      <div>
+        <div class="nm">Energy Critical Infrastructure</div>
+        <div class="sub">Kent State University · Open Data Initiative</div>
+      </div>
     </div>
-    <nav class="mast-nav">
-      <a href="index.html">Home</a>
+    <nav class="nav">
+      <a href="index.html">Overview</a>
       <a href="map.html" class="active">Map</a>
       <a href="insights.html">Insights</a>
-      <a href="index.html#project">Project</a>
       <a href="data-sources.html">Sources</a>
       <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">Repository</a>
     </nav>
-    <div class="mast-meta">
-      <span>Vol. II &middot; Edition 2.4</span>
-      <span class="live">Live</span>
-    </div>
+    <a href="index.html" class="cta">← Overview</a>
   </header>
 
-  <section class="console" id="console">
-    <div class="section-tag"><span class="num">01</span><span>Choose a map</span></div>
-    <h2>Select a region. Choose a view. Render the map.</h2>
-    <p class="lede">Pick which hazard, asset, or vulnerability layer you want to see &mdash; then render it over the whole country or a selection of states.</p>
+  <section id="console">
+    <div class="sec-eyebrow">Map selector · 01</div>
+    <h2 class="sec-title">Select a region, choose a view, render the map</h2>
+    <p class="sec-lede">Pick which hazard, asset, or vulnerability layer you want to see — then render it over the whole country or a selection of states. View-specific filters (sector, asset types, hazard subtype, color scale) live on each map's side panel after it loads.</p>
 
-    <form action="#" id="main-form" method="GET">
+    <form action="map_heatmap.html" id="main-form" method="GET">
       <div class="console-grid">
 
         <!-- AREA -->
         <div class="col-area">
           <div class="col-head">
-            <span>I &middot; Area</span>
+            <span>I · Area</span>
             <span class="req">required</span>
           </div>
 
@@ -63,11 +60,11 @@
           </div>
 
           <div class="state-picker" id="states-container" style="display:none;">
-            <input type="text" id="state-search" placeholder="Search states&hellip;" autocomplete="off">
+            <input type="text" id="state-search" placeholder="Search states…" autocomplete="off">
             <div class="state-list" id="state-list"></div>
             <div class="state-count">
               <span id="selected-count">None selected</span>
-              <span>50 available</span>
+              <span><span id="total-count">50</span> available</span>
             </div>
           </div>
         </div>
@@ -75,63 +72,63 @@
         <!-- VIEW TYPE -->
         <div class="col-view">
           <div class="col-head">
-            <span>II &middot; Analytical view</span>
-            <span>08 plates</span>
+            <span>II · Analytical view</span>
+            <span>08 views</span>
           </div>
 
           <div class="views-grid" id="views-grid">
             <label class="view-card sel" data-value="heatmap" data-target="map_heatmap.html">
               <input type="radio" name="view_type" value="heatmap" checked>
-              <div class="plate"><span>PLATE I</span><span class="sel-mark">selected</span></div>
+              <div class="plate"><span>View 01</span><span class="sel-mark">selected</span></div>
               <div class="vt">Infrastructure density</div>
               <div class="vd">Where do the assets cluster?</div>
             </label>
 
             <label class="view-card" data-value="hazard" data-target="map_hazard.html">
               <input type="radio" name="view_type" value="hazard">
-              <div class="plate"><span>PLATE II</span><span class="sel-mark">selected</span></div>
+              <div class="plate"><span>View 02</span><span class="sel-mark">selected</span></div>
               <div class="vt">Hazard risk</div>
               <div class="vd">Where is the danger highest?</div>
             </label>
 
             <label class="view-card" data-value="impact" data-target="map_impact.html">
               <input type="radio" name="view_type" value="impact">
-              <div class="plate"><span>PLATE III</span><span class="sel-mark">selected</span></div>
+              <div class="plate"><span>View 03</span><span class="sel-mark">selected</span></div>
               <div class="vt">Power outage impact</div>
               <div class="vd">Who has lost power, for how long?</div>
             </label>
 
             <label class="view-card" data-value="energy_vulnerability" data-target="map_energy_vulnerability.html">
               <input type="radio" name="view_type" value="energy_vulnerability">
-              <div class="plate"><span>PLATE IV</span><span class="sel-mark">selected</span></div>
+              <div class="plate"><span>View 04</span><span class="sel-mark">selected</span></div>
               <div class="vt">Grid vulnerability</div>
               <div class="vd">Which nodes are load-bearing?</div>
             </label>
 
             <label class="view-card" data-value="exposure" data-target="map_exposure.html">
               <input type="radio" name="view_type" value="exposure">
-              <div class="plate"><span>PLATE V</span><span class="sel-mark">selected</span></div>
+              <div class="plate"><span>View 05</span><span class="sel-mark">selected</span></div>
               <div class="vt">Hazard exposure</div>
               <div class="vd">Which assets are at risk, and from what?</div>
             </label>
 
             <label class="view-card" data-value="energy_detail" data-target="map_energy_detail.html">
               <input type="radio" name="view_type" value="energy_detail">
-              <div class="plate"><span>PLATE VI</span><span class="sel-mark">selected</span></div>
+              <div class="plate"><span>View 06</span><span class="sel-mark">selected</span></div>
               <div class="vt">Energy assets atlas</div>
               <div class="vd">What is where?</div>
             </label>
 
             <label class="view-card" data-value="social_vulnerability" data-target="map_social_vulnerability.html">
               <input type="radio" name="view_type" value="social_vulnerability">
-              <div class="plate"><span>PLATE VII</span><span class="sel-mark">selected</span></div>
+              <div class="plate"><span>View 07</span><span class="sel-mark">selected</span></div>
               <div class="vt">Social vulnerability</div>
               <div class="vd">Who bears the burden when systems fail?</div>
             </label>
 
             <label class="view-card" data-value="analytics" data-target="map_analytics.html">
               <input type="radio" name="view_type" value="analytics">
-              <div class="plate"><span>PLATE VIII</span><span class="sel-mark">selected</span></div>
+              <div class="plate"><span>View 08</span><span class="sel-mark">selected</span></div>
               <div class="vt">Analytics summary</div>
               <div class="vd">What do the numbers say at a glance?</div>
             </label>
@@ -141,7 +138,7 @@
         <!-- SUBMIT -->
         <div class="col-config">
           <div class="col-head">
-            <span>III &middot; Render</span>
+            <span>III · Render</span>
             <span class="req">ready</span>
           </div>
 
@@ -151,15 +148,15 @@
               <div class="sub" id="selected-sub">Where do the assets cluster?</div>
 
               <div class="config-note">
-                Additional filters &mdash; sector, hazard type, asset types, color scale &mdash; are available on each map&rsquo;s side panel after it loads.
+                Additional filters — sector, hazard type, asset types, color scale — are available on each map's side panel after it loads.
               </div>
 
               <div class="submit-row">
                 <button type="submit" class="submit-btn">
                   <span>Render the map</span>
-                  <span class="arrow">&rarr;</span>
+                  <span class="arrow">→</span>
                 </button>
-                <div class="submit-note" id="submit-note">Plate I &middot; Infrastructure density</div>
+                <div class="submit-note" id="submit-note">View 01 · Infrastructure density</div>
               </div>
             </div>
           </div>
@@ -170,9 +167,9 @@
   </section>
 
   <footer class="foot">
-    <div>&copy; 2026 Energy Critical Infrastructure</div>
-    <div class="rules">
-      <a href="index.html">Home</a>
+    <div>© 2026 ENERGY CRITICAL INFRASTRUCTURE · KENT STATE UNIVERSITY</div>
+    <div class="links">
+      <a href="index.html">Overview</a>
       <a href="data-sources.html">Full citations</a>
       <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
       <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">GitHub</a>
@@ -181,14 +178,43 @@
 
   <script>
   (function(){
-    var STATES = ["alabama","alaska","arizona","arkansas","california","colorado","connecticut","delaware","florida","georgia","hawaii","idaho","illinois","indiana","iowa","kansas","kentucky","louisiana","maine","maryland","massachusetts","michigan","minnesota","mississippi","missouri","montana","nebraska","nevada","new_hampshire","new_jersey","new_mexico","new_york","north_carolina","north_dakota","ohio","oklahoma","oregon","pennsylvania","rhode_island","south_carolina","south_dakota","tennessee","texas","utah","vermont","virginia","washington","west_virginia","wisconsin","wyoming"];
+    // States from server-side context (Jinja) — works in both Flask and build_static
+    var STATES = [{"display": "Alabama", "folder": "alabama", "value": "alabama"}, {"display": "Alaska", "folder": "alaska", "value": "alaska"}, {"display": "Arizona", "folder": "arizona", "value": "arizona"}, {"display": "Arkansas", "folder": "arkansas", "value": "arkansas"}, {"display": "California", "folder": "california", "value": "california"}, {"display": "Colorado", "folder": "colorado", "value": "colorado"}, {"display": "Connecticut", "folder": "connecticut", "value": "connecticut"}, {"display": "Delaware", "folder": "delaware", "value": "delaware"}, {"display": "Florida", "folder": "florida", "value": "florida"}, {"display": "Georgia", "folder": "georgia", "value": "georgia"}, {"display": "Hawaii", "folder": "hawaii", "value": "hawaii"}, {"display": "Idaho", "folder": "idaho", "value": "idaho"}, {"display": "Illinois", "folder": "illinois", "value": "illinois"}, {"display": "Indiana", "folder": "indiana", "value": "indiana"}, {"display": "Iowa", "folder": "iowa", "value": "iowa"}, {"display": "Kansas", "folder": "kansas", "value": "kansas"}, {"display": "Kentucky", "folder": "kentucky", "value": "kentucky"}, {"display": "Louisiana", "folder": "louisiana", "value": "louisiana"}, {"display": "Maine", "folder": "maine", "value": "maine"}, {"display": "Maryland", "folder": "maryland", "value": "maryland"}, {"display": "Massachusetts", "folder": "massachusetts", "value": "massachusetts"}, {"display": "Michigan", "folder": "michigan", "value": "michigan"}, {"display": "Minnesota", "folder": "minnesota", "value": "minnesota"}, {"display": "Mississippi", "folder": "mississippi", "value": "mississippi"}, {"display": "Missouri", "folder": "missouri", "value": "missouri"}, {"display": "Montana", "folder": "montana", "value": "montana"}, {"display": "Nebraska", "folder": "nebraska", "value": "nebraska"}, {"display": "Nevada", "folder": "nevada", "value": "nevada"}, {"display": "New Hampshire", "folder": "new_hampshire", "value": "new_hampshire"}, {"display": "New Jersey", "folder": "new_jersey", "value": "new_jersey"}, {"display": "New Mexico", "folder": "new_mexico", "value": "new_mexico"}, {"display": "New York", "folder": "new_york", "value": "new_york"}, {"display": "North Carolina", "folder": "north_carolina", "value": "north_carolina"}, {"display": "North Dakota", "folder": "north_dakota", "value": "north_dakota"}, {"display": "Ohio", "folder": "ohio", "value": "ohio"}, {"display": "Oklahoma", "folder": "oklahoma", "value": "oklahoma"}, {"display": "Oregon", "folder": "oregon", "value": "oregon"}, {"display": "Pennsylvania", "folder": "pennsylvania", "value": "pennsylvania"}, {"display": "Rhode Island", "folder": "rhode_island", "value": "rhode_island"}, {"display": "South Carolina", "folder": "south_carolina", "value": "south_carolina"}, {"display": "South Dakota", "folder": "south_dakota", "value": "south_dakota"}, {"display": "Tennessee", "folder": "tennessee", "value": "tennessee"}, {"display": "Texas", "folder": "texas", "value": "texas"}, {"display": "Utah", "folder": "utah", "value": "utah"}, {"display": "Vermont", "folder": "vermont", "value": "vermont"}, {"display": "Virginia", "folder": "virginia", "value": "virginia"}, {"display": "Washington", "folder": "washington", "value": "washington"}, {"display": "West Virginia", "folder": "west_virginia", "value": "west_virginia"}, {"display": "Wisconsin", "folder": "wisconsin", "value": "wisconsin"}, {"display": "Wyoming", "folder": "wyoming", "value": "wyoming"}];
+    // Fallback hardcoded list if context absent
+    if (!STATES || STATES.length === 0) {
+      STATES = [
+        {value:"alabama",display:"Alabama"},{value:"alaska",display:"Alaska"},{value:"arizona",display:"Arizona"},
+        {value:"arkansas",display:"Arkansas"},{value:"california",display:"California"},{value:"colorado",display:"Colorado"},
+        {value:"connecticut",display:"Connecticut"},{value:"delaware",display:"Delaware"},{value:"florida",display:"Florida"},
+        {value:"georgia",display:"Georgia"},{value:"hawaii",display:"Hawaii"},{value:"idaho",display:"Idaho"},
+        {value:"illinois",display:"Illinois"},{value:"indiana",display:"Indiana"},{value:"iowa",display:"Iowa"},
+        {value:"kansas",display:"Kansas"},{value:"kentucky",display:"Kentucky"},{value:"louisiana",display:"Louisiana"},
+        {value:"maine",display:"Maine"},{value:"maryland",display:"Maryland"},{value:"massachusetts",display:"Massachusetts"},
+        {value:"michigan",display:"Michigan"},{value:"minnesota",display:"Minnesota"},{value:"mississippi",display:"Mississippi"},
+        {value:"missouri",display:"Missouri"},{value:"montana",display:"Montana"},{value:"nebraska",display:"Nebraska"},
+        {value:"nevada",display:"Nevada"},{value:"new_hampshire",display:"New Hampshire"},{value:"new_jersey",display:"New Jersey"},
+        {value:"new_mexico",display:"New Mexico"},{value:"new_york",display:"New York"},{value:"north_carolina",display:"North Carolina"},
+        {value:"north_dakota",display:"North Dakota"},{value:"ohio",display:"Ohio"},{value:"oklahoma",display:"Oklahoma"},
+        {value:"oregon",display:"Oregon"},{value:"pennsylvania",display:"Pennsylvania"},{value:"rhode_island",display:"Rhode Island"},
+        {value:"south_carolina",display:"South Carolina"},{value:"south_dakota",display:"South Dakota"},{value:"tennessee",display:"Tennessee"},
+        {value:"texas",display:"Texas"},{value:"utah",display:"Utah"},{value:"vermont",display:"Vermont"},
+        {value:"virginia",display:"Virginia"},{value:"washington",display:"Washington"},{value:"west_virginia",display:"West Virginia"},
+        {value:"wisconsin",display:"Wisconsin"},{value:"wyoming",display:"Wyoming"}
+      ];
+    }
 
     var list = document.getElementById('state-list');
+    var totalCount = document.getElementById('total-count');
+    if (totalCount) totalCount.textContent = STATES.length;
+
     STATES.forEach(function(s){
-      var label = s.split('_').map(function(w){return w.charAt(0).toUpperCase()+w.slice(1);}).join(' ');
+      var value = (typeof s === 'string') ? s : s.value;
+      var label = (typeof s === 'string')
+        ? s.split('_').map(function(w){return w.charAt(0).toUpperCase()+w.slice(1);}).join(' ')
+        : (s.display || value);
       var el = document.createElement('label');
       el.className = 'state-opt';
-      el.innerHTML = '<input type="checkbox" name="region" value="'+s+'"> <span>'+label+'</span>';
+      el.innerHTML = '<input type="checkbox" name="region" value="'+value+'"> <span>'+label+'</span>';
       list.appendChild(el);
     });
 
@@ -240,6 +266,8 @@
     var selTitle = document.getElementById('selected-title');
     var selSub = document.getElementById('selected-sub');
     var submitNote = document.getElementById('submit-note');
+    var form = document.getElementById('main-form');
+
     function selectCard(c){
       cards.forEach(function(x){x.classList.remove('sel');});
       c.classList.add('sel');
@@ -247,12 +275,12 @@
       selTitle.textContent = c.querySelector('.vt').textContent;
       selSub.textContent = c.querySelector('.vd').textContent;
       submitNote.textContent = c.querySelector('.plate span').textContent + ' · ' + c.querySelector('.vt').textContent;
+      form.action = c.dataset.target;
     }
     cards.forEach(function(c){
       c.addEventListener('click', function(){ selectCard(c); });
     });
 
-    var form = document.getElementById('main-form');
     form.addEventListener('submit', function(e){
       e.preventDefault();
       var picked = document.querySelector('.view-card.sel');
@@ -268,7 +296,6 @@
       window.location.href = target + '?' + params.toString();
     });
 
-    // Pre-select view from URL if provided
     var urlVt = new URLSearchParams(window.location.search).get('view_type');
     if(urlVt){
       var match = document.querySelector('.view-card[data-value="'+urlVt+'"]');
@@ -276,5 +303,44 @@
     }
   })();
   </script>
+
+    <script>
+    // Static site: override view toggle to navigate to correct HTML file
+    (function() {
+        var viewMap = {
+            'btn-heatmap': 'map_heatmap.html',
+            'btn-hazard': 'map_hazard.html',
+            'btn-impact': 'map_impact.html',
+            'btn-energy-vulnerability': 'map_energy_vulnerability.html',
+            'btn-exposure': 'map_exposure.html',
+            'btn-energy-detail': 'map_energy_detail.html',
+            'btn-social-vulnerability': 'map_social_vulnerability.html',
+            'btn-analytics': 'map_analytics.html'
+        };
+        Object.keys(viewMap).forEach(function(btnId) {
+            var btn = document.getElementById(btnId);
+            if (btn) {
+                // Remove ALL existing click listeners by cloning
+                var newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                // Add static site navigation
+                newBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var url = new URL(window.location);
+                    var params = new URLSearchParams(url.search);
+                    // Keep region and mode params, remove view-specific ones
+                    var keep = ['region', 'mode', 'division_type', 'show_background'];
+                    var newParams = new URLSearchParams();
+                    keep.forEach(function(k) {
+                        params.getAll(k).forEach(function(v) { newParams.append(k, v); });
+                    });
+                    window.location.href = viewMap[btnId] + '?' + newParams.toString();
+                });
+            }
+        });
+    })();
+    </script>
+    
 </body>
 </html>

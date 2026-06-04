@@ -3,198 +3,234 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Energy Critical Infrastructure — An atlas</title>
+  <title>Energy Critical Infrastructure — Multi-hazard exposure assessment</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./static/css/atlas.css?v=20260422-white">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/atlas-b.css?v=20260604-b">
+  <style>
+    .approach{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;}
+    .approach .ap{border-top:2px solid var(--ink);padding-top:18px;}
+    .approach .ap .k{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+    .approach .ap .t{font-size:18px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px;}
+    .approach .ap .d{font-size:13.5px;color:var(--ink-3);line-height:1.55;}
+    @media (max-width:1100px){.approach{grid-template-columns:1fr;gap:24px;}}
+
+    /* Card 1: Five-hazard mini-grid inside a single find card */
+    .or-mini{display:grid;grid-template-columns:1fr auto auto;gap:6px 14px;font-size:12.5px;margin-top:6px;align-items:baseline;}
+    .or-mini .lab{color:var(--ink-2);}
+    .or-mini .val{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;}
+    .or-mini .ci{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--muted);}
+    .or-mini .inv{color:var(--ink);font-weight:600;text-decoration:underline;}
+    .or-mini .ns{color:var(--muted);}
+    .find .note{font-size:11.5px;color:var(--muted);margin-top:12px;font-family:"IBM Plex Mono",monospace;letter-spacing:.04em;}
+    .ci-inline{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);font-weight:400;margin-left:6px;}
+  </style>
 </head>
 <body>
 
-  <!-- ============================================================= -->
-  <!-- MASTHEAD                                                        -->
-  <!-- ============================================================= -->
-  <header class="mast">
-    <div class="mast-brand">
-      <img src="./static/images/kent-logo.png" alt="Kent State University" style="height:36px;width:auto;margin-right:4px;">
-      <span class="title">Energy Critical Infrastructure</span>
-      <span class="rule"></span>
-      <span class="edition">An atlas &middot; April 2026</span>
+  <header class="hdr">
+    <div class="brand">
+      <div class="mk"></div>
+      <div>
+        <div class="nm">Energy Critical Infrastructure</div>
+        <div class="sub">Kent State University · Open Data Initiative</div>
+      </div>
     </div>
-    <nav class="mast-nav">
-      <a href="index.html" class="active">Home</a>
+    <nav class="nav">
+      <a href="index.html" class="active">Overview</a>
       <a href="map.html">Map</a>
       <a href="insights.html">Insights</a>
-      <a href="#project">Project</a>
-      <a href="#methods">Sources</a>
+      <a href="data-sources.html">Sources</a>
       <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">Repository</a>
     </nav>
-    <div class="mast-meta">
-      <span>Vol. II &middot; Edition 2.4</span>
-      <span class="live">Live</span>
-    </div>
+    <a href="map.html" class="cta">Open the map →</a>
   </header>
 
-  <!-- ============================================================= -->
-  <!-- HERO                                                            -->
-  <!-- ============================================================= -->
   <section class="hero">
     <div>
-      <div class="section-tag"><span class="num">01</span><span>Introduction</span></div>
-      <h1>Where the grid meets <em>the storm</em>, <em>the fire</em>, <em>the flood</em>.</h1>
-      <p class="deck">A working atlas for policy makers and emergency planners. Trace the exposure of energy infrastructure to five modeled hazards across all fifty states &mdash; built from federal open data and peer-reviewed hazard models.</p>
-      <div style="margin-top:32px;display:flex;gap:16px;flex-wrap:wrap;">
-        <a href="map.html" style="display:inline-block;background:var(--ink);color:#fff;padding:14px 28px;font-family:'Inter',sans-serif;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;border:1px solid var(--ink);transition:all .15s;">Open the map &rarr;</a>
-        <a href="#project" style="display:inline-block;background:transparent;color:var(--ink);padding:14px 28px;font-family:'Inter',sans-serif;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;border:1px solid var(--ink);transition:all .15s;">About the project</a>
+      <div class="eyebrow">Multi-Hazard Exposure Assessment · v3-PSHA-FEMA · 2026-06-04</div>
+      <h1>How exposed is the U.S. energy grid to natural hazards?</h1>
+      <p class="deck">A reproducible, open-data assessment of <b>2.83 million energy assets</b> against five modeled hazards — earthquake, flood, wildfire, hurricane, and winter storm — joined with social vulnerability and observed power-outage records. Built for policy makers, emergency planners, and researchers.</p>
+      <div class="hero-actions">
+        <a href="map.html" class="btn primary">Open the interactive map</a>
+        <a href="#methods" class="btn ghost">Read the methodology</a>
       </div>
     </div>
     <aside class="hero-side">
-      <div class="caption">Edition notes</div>
-      <div class="byline">
-        <b>Volume II, Edition 2.4</b> &mdash; prepared for policy brief.<br>
-        Hazard models refreshed quarterly; asset index refreshed monthly from federal releases and OSM.
+      <div class="cap">At a glance · non-tower primary</div>
+      <div class="kpi-side">
+        <div class="row"><span class="v tnum">64.4%</span><span class="lbl">of non-tower assets exposed to at least one of 5 hazards</span></div>
+        <div class="row"><span class="v tnum">2.83M</span><span class="lbl">energy assets indexed (n=205,783 excl. towers)</span></div>
+        <div class="row"><span class="v tnum">5</span><span class="lbl">hazards modeled across 50 states</span></div>
+        <div class="row"><span class="v tnum">3,072</span><span class="lbl">counties with social vulnerability data (CDC SVI 2022)</span></div>
       </div>
-      <dl>
-        <div><dt>Coverage</dt><dd>50 states &middot; 3,125 counties</dd></div>
-        <div><dt>Hazards modeled</dt><dd><b>Five</b></dd></div>
-        <div><dt>Assets indexed</dt><dd><b>2.8M</b></dd></div>
-        <div><dt>License</dt><dd>CC BY 4.0</dd></div>
-      </dl>
     </aside>
   </section>
 
-  <!-- ============================================================= -->
-  <!-- PROJECT OVERVIEW                                                -->
-  <!-- ============================================================= -->
-  <section class="colophon" id="project">
-    <div class="section-tag"><span class="num">02</span><span>About the project</span></div>
-    <h2>A data-driven framework for multi-hazard exposure of US energy infrastructure.</h2>
-    <p class="lede">This atlas integrates 2.8&nbsp;million energy assets with five hazard models, social vulnerability indices, and observed impact data &mdash; producing per-asset exposure scores and county-level risk surfaces across all fifty states.</p>
-
-    <div class="colophon-grid" style="margin-top:40px;">
-      <div class="source-cell">
-        <div class="ag">Scope</div>
-        <div class="nm">Multi-hazard exposure</div>
-        <div class="mt">Earthquake, flood, wildfire, hurricane, winter storm &middot; 50 states, 3,125 counties</div>
+  <section id="methods">
+    <div class="sec-eyebrow">Approach · 00</div>
+    <h2 class="sec-title">A data-driven framework, fully traceable to source</h2>
+    <p class="sec-lede">The assessment integrates federal hazard models, social vulnerability indices, and observed impact data — producing per-asset exposure classifications and county-level risk surfaces. Every threshold cites a U.S. federal agency or peer-reviewed paper; nothing is inferred, simulated, or averaged across sources. Headline numbers report the <b>non-tower primary</b> stratum (n=205,783); all-assets sensitivity (n=2,827,591) is reported in parallel.</p>
+    <div class="approach">
+      <div class="ap">
+        <div class="k">Scope</div>
+        <div class="t">Multi-hazard exposure</div>
+        <div class="d">Earthquake, flood, wildfire, hurricane, and winter storm — across 50 states and 3,072 SVI-eligible counties.</div>
       </div>
-      <div class="source-cell">
-        <div class="ag">Asset index</div>
-        <div class="nm">OpenStreetMap 2024</div>
-        <div class="mt">2.8M assets (205,783 excl. towers): plants, substations, lines, generators, pipelines, fuel</div>
+      <div class="ap">
+        <div class="k">Asset index</div>
+        <div class="t">OpenStreetMap 2024</div>
+        <div class="d">2.83M assets · 205,783 non-tower primary stratum: plants, substations, lines, generators, pipelines, and fuel.</div>
       </div>
-      <div class="source-cell">
-        <div class="ag">Approach</div>
-        <div class="nm">Literature-backed thresholds</div>
-        <div class="mt">All thresholds cite federal agencies or peer-reviewed papers &mdash; no averaging across sources</div>
-      </div>
-      <div class="source-cell">
-        <div class="ag">Earthquake exposure</div>
-        <div class="nm">16.0%</div>
-        <div class="mt">PGA &ge; 0.092g (MMI &ge; VI) per USGS NSHM 2023</div>
-      </div>
-      <div class="source-cell">
-        <div class="ag">Flood exposure</div>
-        <div class="nm">4.3%</div>
-        <div class="mt">FEMA NFHL Special Flood Hazard Area (1% annual chance)</div>
-      </div>
-      <div class="source-cell">
-        <div class="ag">Wildfire exposure</div>
-        <div class="nm">36.9%</div>
-        <div class="mt">USGS WFPI P95 &ge; 75 (large fire probability tier)</div>
-      </div>
-      <div class="source-cell">
-        <div class="ag">Hurricane exposure</div>
-        <div class="nm">6.7%</div>
-        <div class="mt">NOAA IBTrACS max sustained winds &ge; 64 kt (Cat 1+)</div>
-      </div>
-      <div class="source-cell">
-        <div class="ag">Winter storm</div>
-        <div class="nm">19.4%</div>
-        <div class="mt">NOAA SNODAS SWE P95 &ge; 100mm &middot; CONUS only (preliminary)</div>
-      </div>
-      <div class="source-cell">
-        <div class="ag">Any hazard</div>
-        <div class="nm"><b>48.2%</b></div>
-        <div class="mt">Multi-hazard (&ge;2): 8.7% &middot; nearly half of US energy assets exposed to at least one</div>
-      </div>
-      <div class="source-cell">
-        <div class="ag">Social vulnerability</div>
-        <div class="nm">CDC/ATSDR SVI 2022</div>
-        <div class="mt">High-SVI counties: 68.4% exposure rate vs 60.8% low-SVI &middot; OR=1.71, p&lt;0.001</div>
-      </div>
-      <div class="source-cell">
-        <div class="ag">Network vulnerability</div>
-        <div class="nm">Betweenness centrality</div>
-        <div class="mt">66.6% of high-vulnerability nodes exposed to at least one hazard</div>
-      </div>
-      <div class="source-cell">
-        <div class="ag">Observed impact</div>
-        <div class="nm">DOE EAGLE-I outages</div>
-        <div class="mt">Flood &larr;&rarr; outage &rho;=0.456, p=0.001 (2022 customer-hours)</div>
+      <div class="ap">
+        <div class="k">Method</div>
+        <div class="t">Literature-backed thresholds</div>
+        <div class="d">All exposure thresholds cite federal agencies or peer-reviewed sources. 95% CIs from asset-level stratified bootstrap (B=1000, stratify by state).</div>
       </div>
     </div>
   </section>
 
-  <!-- ============================================================= -->
-  <!-- COLOPHON — sources                                              -->
-  <!-- ============================================================= -->
-  <section class="colophon" id="methods">
-    <div class="section-tag"><span class="num">03</span><span>Colophon &amp; sources</span></div>
-    <h2>Where the data comes from.</h2>
-    <p class="lede">Every layer in this atlas is traceable to a U.S. federal agency or peer-reviewed open-data platform. Nothing is inferred, simulated, or averaged across sources.</p>
+  <section class="tint">
+    <div class="sec-eyebrow">Findings · 01</div>
+    <h2 class="sec-title">Exposure by hazard</h2>
+    <p class="sec-lede">Share of non-tower assets meeting each hazard's exposure threshold (n=205,783). 95% CIs shown in mono. Every threshold cites a federal agency or peer-reviewed source.</p>
+    <div class="exp-grid">
+      <div class="exp">
+        <div class="h"><span>Wildfire</span><span class="ag">USGS WFPI</span></div>
+        <div class="v tnum">36.9%</div>
+        <div class="track"><span style="width:73.8%"></span></div>
+        <div class="d">WFPI P95 ≥ 75 — large-fire probability tier · CI [36.74, 37.07]</div>
+      </div>
+      <div class="exp">
+        <div class="h"><span>Earthquake</span><span class="ag">USGS NSHM</span></div>
+        <div class="v tnum">16.0%</div>
+        <div class="track"><span style="width:32%"></span></div>
+        <div class="d">PGA ≥ 0.092 g (MMI ≥ VI) · NSHM 2023 · CI [15.88, 16.07]</div>
+      </div>
+      <div class="exp">
+        <div class="h"><span>Winter storm</span><span class="ag">NOAA SNODAS</span></div>
+        <div class="v tnum">13.5%</div>
+        <div class="track"><span style="width:27%"></span></div>
+        <div class="d">SWE P95 ≥ 100 mm · CONUS only (preliminary) · CI [13.36, 13.56]</div>
+      </div>
+      <div class="exp">
+        <div class="h"><span>Hurricane</span><span class="ag">NOAA IBTrACS</span></div>
+        <div class="v tnum">9.5%</div>
+        <div class="track"><span style="width:19%"></span></div>
+        <div class="d">Max sustained winds ≥ 64 kt (Cat 1+) · CI [9.36, 9.54]</div>
+      </div>
+      <div class="exp">
+        <div class="h"><span>Flood</span><span class="ag">FEMA NFHL</span></div>
+        <div class="v tnum">4.3%</div>
+        <div class="track"><span style="width:8.6%"></span></div>
+        <div class="d">Special Flood Hazard Area (1% annual chance) · CI [4.17, 4.34]</div>
+      </div>
+      <div class="exp summary">
+        <div class="h"><span>Any hazard</span><span class="ag">Combined</span></div>
+        <div class="v tnum">64.4%</div>
+        <div class="track"><span style="width:96.6%"></span></div>
+        <div class="d">≥ 2 hazards: 14.2% [14.11, 14.36] · CI [64.27, 64.59]</div>
+      </div>
+    </div>
+  </section>
 
-    <div class="colophon-grid">
-      <div class="source-cell">
-        <div class="ag">USGS &middot; Earthquake</div>
-        <div class="nm"><a href="https://doi.org/10.5066/P9GNPCOD" target="_blank" rel="noopener">NSHM 2023</a></div>
-        <div class="mt">475-yr PGA &middot; 50 states &middot; site class BC</div>
+  <section>
+    <div class="sec-eyebrow">Findings · 02</div>
+    <h2 class="sec-title">Three signals from the data</h2>
+    <p class="sec-lede">Per-hazard social vulnerability associations, network exposure, and outage relationships. All <i>p</i>-values evaluated against a Bonferroni-corrected family of <i>m</i>=87 tests (cutoff α/87 = 5.7×10⁻⁴).</p>
+    <div class="find-grid">
+
+      <div class="find">
+        <div class="stat tnum">Five hazards, five signals</div>
+        <div class="ttl">SVI × hazard exposure (per-hazard OR)</div>
+        <div class="txt">Disaggregating by hazard reveals heterogeneous direction. Hurricane is the strongest signal but carries a known coastal Southeast / Black Belt structural confound.</div>
+        <div class="or-mini">
+          <span class="lab">Hurricane</span><span class="val">OR 4.19</span><span class="ci">[3.11, 5.65]</span>
+          <span class="lab">Wildfire</span><span class="val">OR 1.98</span><span class="ci">[1.69, 2.31]</span>
+          <span class="lab">Flood</span><span class="val">OR 1.33</span><span class="ci">[1.15, 1.54]</span>
+          <span class="lab">Earthquake <span class="ns">(ns)</span></span><span class="val ns">OR 1.25</span><span class="ci">[1.04, 1.51]</span>
+          <span class="lab">Winter storm</span><span class="val inv">OR 0.24</span><span class="ci">[0.19, 0.29]</span>
+        </div>
+        <div class="note">4 / 5 survive Bonferroni m=87 · Winter is inverse</div>
       </div>
-      <div class="source-cell">
-        <div class="ag">FEMA &middot; Flood</div>
-        <div class="nm"><a href="https://www.fema.gov/flood-maps/national-flood-hazard-layer" target="_blank" rel="noopener">NFHL SFHA</a></div>
-        <div class="mt">1% annual chance &middot; parcel polygons</div>
+
+      <div class="find">
+        <div class="stat tnum">72.2%</div>
+        <div class="ttl">Network vulnerability × exposure</div>
+        <div class="txt">Of HIGH-vulnerability nodes (top 10% by betweenness centrality), <b>72.15%</b> are exposed to ≥1 modeled hazard. Permutation null mean <b>67.84%</b>, <i>z</i>=17.63, <i>p</i>≈0 — directional signal is significant; effect-size lift <b>+4.31 pp</b> is small because the 5H baseline is already high.</div>
+        <div class="note">Recomputed 2026-06-04 · supersedes retracted 66.6%</div>
       </div>
-      <div class="source-cell">
-        <div class="ag">USGS &middot; Wildfire</div>
-        <div class="nm"><a href="https://www.usgs.gov/fire-danger-forecast/wildland-fire-potential-index-wfpi" target="_blank" rel="noopener">WFPI P95</a></div>
-        <div class="mt">2008 &ndash; 2025 daily &middot; 1 km</div>
+
+      <div class="find">
+        <div class="stat tnum">β = 0.112</div>
+        <div class="ttl">Multi-hazard × outage (SLM)</div>
+        <div class="txt">Spatial lag model: multi-hazard exposure predicts county outage customer-hours after controlling for spatial autocorrelation. <b>slm_p = 1.4×10⁻⁵</b>, ρ_spatial = 0.6406; Moran's I residual dropped 0.396 → 0.011. <b>Survives Bonferroni m=87.</b></div>
+        <div class="note">Replaces Spearman ρ=0.456 (did not survive m=87)</div>
       </div>
-      <div class="source-cell">
-        <div class="ag">NOAA &middot; Hurricane</div>
-        <div class="nm"><a href="https://www.ncei.noaa.gov/products/international-best-track-archive" target="_blank" rel="noopener">IBTrACS v04r01</a></div>
-        <div class="mt">1842 &ndash; 2024 &middot; 6-hourly tracks</div>
-      </div>
-      <div class="source-cell">
-        <div class="ag">NOAA &middot; Winter storm</div>
-        <div class="nm"><a href="https://nsidc.org/data/g02158" target="_blank" rel="noopener">SNODAS SWE P95</a></div>
-        <div class="mt">2003 &ndash; 2025 daily &middot; 1 km CONUS</div>
-      </div>
-      <div class="source-cell">
-        <div class="ag">CDC/ATSDR &middot; Social</div>
-        <div class="nm"><a href="https://www.atsdr.cdc.gov/placeandhealth/svi/" target="_blank" rel="noopener">SVI 2022</a></div>
-        <div class="mt">3,125 counties &middot; four themes</div>
-      </div>
-      <div class="source-cell">
-        <div class="ag">DOE ORNL &middot; Power</div>
-        <div class="nm"><a href="https://doi.org/10.13139/OLCF/2500278" target="_blank" rel="noopener">EAGLE-I</a></div>
-        <div class="mt">2022 &amp; 2024 &middot; 15-minute intervals</div>
-      </div>
-      <div class="source-cell">
-        <div class="ag">OpenStreetMap &middot; Assets</div>
-        <div class="nm"><a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OSM 2024 extract</a></div>
-        <div class="mt">Indexed energy assets &middot; ODbL</div>
-      </div>
+
+    </div>
+  </section>
+
+  <section class="tint">
+    <div class="sec-eyebrow">Provenance · 03</div>
+    <h2 class="sec-title">Data sources</h2>
+    <p class="sec-lede">Every layer is traceable to a U.S. federal agency or peer-reviewed open-data platform. See the <a href="data-sources.html" style="border-bottom:1px solid var(--line)">full citations</a> for DOIs and methodology.</p>
+    <div class="src-grid">
+      <div class="src"><div class="ag">USGS · Earthquake</div><div class="ds"><a href="https://doi.org/10.5066/P9GNPCOD" target="_blank" rel="noopener">NSHM 2023</a></div><div class="mt">475-yr PGA · 50 states · site class BC</div></div>
+      <div class="src"><div class="ag">FEMA · Flood</div><div class="ds"><a href="https://www.fema.gov/flood-maps/national-flood-hazard-layer" target="_blank" rel="noopener">NFHL SFHA</a></div><div class="mt">1% annual chance · parcel polygons</div></div>
+      <div class="src"><div class="ag">USGS · Wildfire</div><div class="ds"><a href="https://www.usgs.gov/fire-danger-forecast/wildland-fire-potential-index-wfpi" target="_blank" rel="noopener">WFPI P95</a></div><div class="mt">2008–2025 daily · 1 km</div></div>
+      <div class="src"><div class="ag">NOAA · Hurricane</div><div class="ds"><a href="https://www.ncei.noaa.gov/products/international-best-track-archive" target="_blank" rel="noopener">IBTrACS v04r01</a></div><div class="mt">1842–2024 · 6-hourly tracks</div></div>
+      <div class="src"><div class="ag">NOAA · Winter storm</div><div class="ds"><a href="https://nsidc.org/data/g02158" target="_blank" rel="noopener">SNODAS SWE P95</a></div><div class="mt">2003–2025 daily · 1 km CONUS</div></div>
+      <div class="src"><div class="ag">CDC/ATSDR · Social</div><div class="ds"><a href="https://www.atsdr.cdc.gov/placeandhealth/svi/" target="_blank" rel="noopener">SVI 2022</a></div><div class="mt">3,072 SVI-eligible counties · four themes</div></div>
+      <div class="src"><div class="ag">DOE ORNL · Power</div><div class="ds"><a href="https://doi.org/10.13139/OLCF/2500278" target="_blank" rel="noopener">EAGLE-I</a></div><div class="mt">2022 &amp; 2024 · 15-min intervals</div></div>
+      <div class="src"><div class="ag">OpenStreetMap · Assets</div><div class="ds"><a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OSM 2024 extract</a></div><div class="mt">2.83M energy assets · ODbL</div></div>
     </div>
   </section>
 
   <footer class="foot">
-    <div>&copy; 2026 Energy Critical Infrastructure</div>
-    <div class="rules">
-      <a href="map.html">Open map</a>
-      <a href="data-sources.html">Full citations</a>
-      <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
-      <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">GitHub</a>
-    </div>
+    <div>© 2026 ENERGY CRITICAL INFRASTRUCTURE · KENT STATE UNIVERSITY</div>
+    <div class="links"><a href="map.html">Open map</a><a href="data-sources.html">Full citations</a><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a><a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">GitHub</a></div>
   </footer>
+
+
+    <script>
+    // Static site: override view toggle to navigate to correct HTML file
+    (function() {
+        var viewMap = {
+            'btn-heatmap': 'map_heatmap.html',
+            'btn-hazard': 'map_hazard.html',
+            'btn-impact': 'map_impact.html',
+            'btn-energy-vulnerability': 'map_energy_vulnerability.html',
+            'btn-exposure': 'map_exposure.html',
+            'btn-energy-detail': 'map_energy_detail.html',
+            'btn-social-vulnerability': 'map_social_vulnerability.html',
+            'btn-analytics': 'map_analytics.html'
+        };
+        Object.keys(viewMap).forEach(function(btnId) {
+            var btn = document.getElementById(btnId);
+            if (btn) {
+                // Remove ALL existing click listeners by cloning
+                var newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                // Add static site navigation
+                newBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var url = new URL(window.location);
+                    var params = new URLSearchParams(url.search);
+                    // Keep region and mode params, remove view-specific ones
+                    var keep = ['region', 'mode', 'division_type', 'show_background'];
+                    var newParams = new URLSearchParams();
+                    keep.forEach(function(k) {
+                        params.getAll(k).forEach(function(v) { newParams.append(k, v); });
+                    });
+                    window.location.href = viewMap[btnId] + '?' + newParams.toString();
+                });
+            }
+        });
+    })();
+    </script>
+    
 </body>
 </html>

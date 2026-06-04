@@ -1,388 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Data Sources — Energy Critical Infrastructure</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: #ffffff;
-            color: #1a1a1a;
-            font-weight: 400;
-            letter-spacing: -0.01em;
-        }
-        
-        /* Header Styles - Navy */
-        .main-header {
-            background: #1b3a5c;
-            color: #fff;
-            padding: 20px 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #15304d;
-        }
-        
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-        }
-        
-        .header-logo {
-            height: 70px;
-            width: auto;
-            border-radius: 4px;
-            /* No background - transparent PNG */
-        }
-        
-        .header-title {
-            font-size: 22px;
-            font-weight: 500;
-            letter-spacing: -0.02em;
-        }
-        
-        .header-subtitle {
-            font-size: 12px;
-            font-weight: 300;
-            opacity: 0.6;
-            margin-top: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-        
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            
-        }
-        
-        /* Footer */
-        .site-footer {
-            background: #1b3a5c;
-            color: #a8c4de;
-            padding: 20px 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 12px;
-            border-top: 1px solid #15304d;
-        }
-
-        .site-footer a {
-            color: #d0e0f0;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .site-footer a:hover {
-            color: #fff;
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 24px;
-        }
-
-        
-    .content-wrapper {
-        max-width: 960px;
-        margin: 0 auto;
-        padding: 48px 40px 60px;
-    }
-
-    .page-title {
-        font-size: 24px;
-        font-weight: 500;
-        color: #111;
-        margin-bottom: 4px;
-        text-align: center;
-    }
-
-    .page-subtitle {
-        font-size: 13px;
-        color: #888;
-        text-align: center;
-        margin-bottom: 32px;
-    }
-
-    .page-intro {
-        font-size: 13px;
-        color: #666;
-        margin-bottom: 24px;
-        border-bottom: 1px solid #e0e0e0;
-        padding-bottom: 16px;
-    }
-
-    .back-link {
-        display: inline-block;
-        font-size: 13px;
-        color: #666;
-        text-decoration: none;
-        margin-bottom: 32px;
-    }
-
-    .back-link:hover {
-        color: #111;
-    }
-
-    /* Data Table */
-    .data-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 13px;
-        margin-bottom: 48px;
-    }
-
-    .data-table thead th {
-        background: #1b3a5c;
-        color: #fff;
-        padding: 10px 14px;
-        text-align: left;
-        font-weight: 500;
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-
-    .data-table tbody td {
-        padding: 12px 14px;
-        border-bottom: 1px solid #e0e0e0;
-        vertical-align: top;
-        color: #333;
-        line-height: 1.5;
-    }
-
-    .data-table tbody tr:hover {
-        background: #f5f5f5;
-    }
-
-    .data-table .dataset-name {
-        font-weight: 500;
-        color: #111;
-        white-space: nowrap;
-    }
-
-    .data-table a {
-        color: #1a0dab;
-        text-decoration: none;
-    }
-
-    .data-table a:hover {
-        text-decoration: underline;
-    }
-
-    /* References */
-    .references-section h2 {
-        font-size: 16px;
-        font-weight: 500;
-        color: #111;
-        margin-bottom: 16px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid #e0e0e0;
-    }
-
-    .references-list {
-        list-style: none;
-        padding: 0;
-        font-size: 12.5px;
-        color: #444;
-        line-height: 1.7;
-    }
-
-    .references-list li {
-        margin-bottom: 8px;
-        padding-left: 28px;
-        text-indent: -28px;
-    }
-
-    .references-list a {
-        color: #1a0dab;
-        text-decoration: none;
-    }
-
-    .references-list a:hover {
-        text-decoration: underline;
-    }
-
-    </style>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./static/css/map-atlas.css?v=20260422-white">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data Sources — Energy Critical Infrastructure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/atlas-b.css?v=20260604-b">
+  <style>
+    .src-wrap{max-width:1080px;margin:0 auto;padding:56px;}
+    .src-head{border-bottom:1px solid var(--line);padding-bottom:26px;margin-bottom:32px;}
+    .src-head .eyebrow{margin-bottom:14px;}
+    .src-head h1{font-size:34px;font-weight:600;letter-spacing:-.025em;line-height:1.1;margin-bottom:12px;}
+    .src-head p{font-size:15.5px;color:var(--ink-2);max-width:70ch;line-height:1.6;}
+    .data-table{width:100%;border-collapse:collapse;font-size:13.5px;margin-bottom:52px;}
+    .data-table thead th{background:var(--ink);color:#fff;padding:11px 14px;text-align:left;font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;}
+    .data-table tbody td{padding:14px 14px;border-bottom:1px solid var(--line-2);vertical-align:top;color:var(--ink-2);line-height:1.55;}
+    .data-table tbody tr:hover{background:var(--paper-2);}
+    .data-table .dataset-name{font-weight:600;color:var(--ink);white-space:nowrap;}
+    .data-table .dataset-name .ag{display:block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:3px;}
+    .data-table a{color:var(--ink);border-bottom:1px solid var(--line);}
+    .data-table a:hover{border-bottom-color:var(--ink);}
+    .references-section h2{font-size:18px;font-weight:600;color:var(--ink);margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--line);}
+    .references-list{list-style:none;padding:0;font-size:13px;color:var(--ink-2);line-height:1.7;}
+    .references-list li{margin-bottom:10px;padding-left:30px;text-indent:-30px;}
+    .references-list .rn{font-family:"IBM Plex Mono",monospace;color:var(--muted);}
+    .references-list a{color:var(--ink);border-bottom:1px solid var(--line);}
+    .references-list a:hover{border-bottom-color:var(--ink);}
+    @media (max-width:760px){.src-wrap{padding:36px 22px;}.data-table{font-size:12.5px;}}
+  </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="main-header">
-        <div class="header-left">
-            <img src="./static/images/kent-logo.png" alt="Kent State University" class="header-logo">
-            <div>
-                <div class="header-title">Energy Critical Infrastructure</div>
-                <div class="header-subtitle">Geographic Information System</div>
-            </div>
-        </div>
-    </header>
-    
-    <!-- Main Content -->
-    <main class="main-content">
-        
-<div class="content-wrapper">
-    <a href="index.html" class="back-link">&larr; Back to Home</a>
 
-    <h1 class="page-title">Data Sources</h1>
-    <p class="page-subtitle">Multi-Hazard Energy Infrastructure Risk Analysis &mdash; April 2026</p>
+  <header class="hdr">
+    <div class="brand">
+      <div class="mk"></div>
+      <div>
+        <div class="nm">Energy Critical Infrastructure</div>
+        <div class="sub">Kent State University · Open Data Initiative</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Overview</a>
+      <a href="map.html">Map</a>
+      <a href="insights.html">Insights</a>
+      <a href="data-sources.html" class="active">Sources</a>
+      <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">Repository</a>
+    </nav>
+    <a href="map.html" class="cta">Open the map →</a>
+  </header>
 
-    <p class="page-intro">
-        All sources are publicly available from U.S. federal agencies or open-data platforms.
-    </p>
+  <main class="src-wrap">
+    <div class="src-head">
+      <div class="eyebrow">Provenance · Full citations · 2026-06-04</div>
+      <h1>Data sources</h1>
+      <p>All sources are publicly available from U.S. federal agencies or peer-reviewed open-data platforms. Multi-hazard energy infrastructure risk analysis — current revision integrates Job 1 (SAR/SLM), Job 2 (per-hazard OR), and Job 3 (Oaxaca-Blinder decomposition) per the 2026-06-03 / 2026-06-04 audit cycle.</p>
+    </div>
 
     <table class="data-table">
-        <thead>
-            <tr>
-                <th>Dataset</th>
-                <th>Description</th>
-                <th>Time Period</th>
-                <th>Resolution</th>
-                <th>Source / URL</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="dataset-name">Energy Assets<br>(OpenStreetMap)</td>
-                <td>2,827,591 energy infrastructure assets: towers, generators, substations, plants, lines, fuel stations.</td>
-                <td>Current (2024 extract)</td>
-                <td>Point / Line / Polygon</td>
-                <td><a href="https://www.openstreetmap.org" target="_blank" rel="noopener">openstreetmap.org</a>; ODbL license</td>
-            </tr>
-            <tr>
-                <td class="dataset-name">Earthquake<br>(USGS NSHM 2023)</td>
-                <td>Probabilistic PGA at 10% exceedance in 50 years (~475-yr return period), 50 states. Site class BC.</td>
-                <td>2023 model; 475-yr return period</td>
-                <td>0.2&deg; contours</td>
-                <td>Petersen et al. (2024) [1]; Data: <a href="https://doi.org/10.5066/P9GNPCOD" target="_blank" rel="noopener">10.5066/P9GNPCOD</a></td>
-            </tr>
-            <tr>
-                <td class="dataset-name">Flood<br>(FEMA NFHL)</td>
-                <td>National Flood Hazard Layer: SFHA zone polygons (1% annual chance flood). Binary point-in-polygon classification.</td>
-                <td>Regulatory; 1% annual chance (100-yr)</td>
-                <td>Polygon (parcel-level)</td>
-                <td><a href="https://www.fema.gov/flood-maps/national-flood-hazard-layer" target="_blank" rel="noopener">USA Flood Hazard Areas</a> [3]; 44 CFR &sect; 59.1</td>
-            </tr>
-            <tr>
-                <td class="dataset-name">Wildfire<br>(USGS WFPI)</td>
-                <td>Wildland Fire Potential Index: satellite-derived daily fire potential. P95 of daily rasters computed per pixel.</td>
-                <td>2008&ndash;2025 (daily)</td>
-                <td>1 km</td>
-                <td><a href="https://www.usgs.gov/fire-danger-forecast/wildland-fire-potential-index-wfpi" target="_blank" rel="noopener">USGS EROS data server</a>; Burgan et al. (1998) [4]</td>
-            </tr>
-            <tr>
-                <td class="dataset-name">Hurricane<br>(NOAA IBTrACS v04r01)</td>
-                <td>International Best Track Archive: tropical cyclone tracks, wind speed, wind radii. Wind swath reconstruction for exposure.</td>
-                <td>1842&ndash;2024 (183 years)</td>
-                <td>6-hourly track points; wind radii per quadrant</td>
-                <td>Knapp et al. (2010) [5]; <a href="https://www.ncei.noaa.gov/products/international-best-track-archive" target="_blank" rel="noopener">NCEI IBTrACS shapefile</a></td>
-            </tr>
-            <tr>
-                <td class="dataset-name">Winter Storm<br>(NOAA SNODAS)</td>
-                <td>Snow Data Assimilation System: daily gridded SWE. P95 of annual maximum SWE computed per pixel.</td>
-                <td>2003&ndash;2025 (daily)</td>
-                <td>1 km (CONUS)</td>
-                <td>Barrett (2003) [6]; <a href="https://nsidc.org/data/g02158" target="_blank" rel="noopener">NSIDC download</a>; DOI: <a href="https://doi.org/10.7265/N5TB14TC" target="_blank" rel="noopener">10.7265/N5TB14TC</a></td>
-            </tr>
-            <tr>
-                <td class="dataset-name">Social Vulnerability<br>(CDC/ATSDR SVI)</td>
-                <td>Social Vulnerability Index: county-level percentile ranking across 4 themes (socioeconomic, household, minority, housing).</td>
-                <td>2022</td>
-                <td>County-level</td>
-                <td><a href="https://www.atsdr.cdc.gov/placeandhealth/svi/" target="_blank" rel="noopener">CDC/ATSDR SVI 2022</a> [7]</td>
-            </tr>
-            <tr>
-                <td class="dataset-name">Power Outage<br>(DOE EAGLE-I)</td>
-                <td>County-level power outage event counts and customer impacts at 15-min intervals.</td>
-                <td>2022, 2024</td>
-                <td>County-level</td>
-                <td>Tansakul et al. (2025) [8]; DOI: <a href="https://doi.org/10.13139/OLCF/2500278" target="_blank" rel="noopener">10.13139/OLCF/2500278</a>; ORNL</td>
-            </tr>
-        </tbody>
+      <thead>
+        <tr>
+          <th>Dataset</th>
+          <th>Description</th>
+          <th>Time period</th>
+          <th>Resolution</th>
+          <th>Source / DOI</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="dataset-name">Energy Assets<span class="ag">OpenStreetMap</span></td>
+          <td>2,827,591 energy infrastructure assets (205,783 non-tower primary): towers, generators, substations, plants, lines, fuel stations.</td>
+          <td>Current (2024 extract)</td>
+          <td>Point / Line / Polygon</td>
+          <td><a href="https://www.openstreetmap.org" target="_blank" rel="noopener">openstreetmap.org</a> · ODbL license</td>
+        </tr>
+        <tr>
+          <td class="dataset-name">Earthquake<span class="ag">USGS NSHM 2023</span></td>
+          <td>Probabilistic PGA at 10% exceedance in 50 years (~475-yr return period), 50 states. Site class BC. Exposure threshold PGA ≥ 0.092 g (MMI ≥ VI, IEEE Std 693-2018).</td>
+          <td>2023 model · 475-yr return</td>
+          <td>0.2° contours</td>
+          <td>Petersen et al. (2024) [1]; <a href="https://doi.org/10.5066/P9GNPCOD" target="_blank" rel="noopener">10.5066/P9GNPCOD</a></td>
+        </tr>
+        <tr>
+          <td class="dataset-name">Flood<span class="ag">FEMA NFHL</span></td>
+          <td>National Flood Hazard Layer: SFHA zone polygons (1% annual chance flood). Binary point-in-polygon classification (44 CFR § 59.1).</td>
+          <td>Regulatory · 1% annual chance</td>
+          <td>Polygon (parcel-level)</td>
+          <td><a href="https://www.fema.gov/flood-maps/national-flood-hazard-layer" target="_blank" rel="noopener">USA Flood Hazard Areas</a> [3] · 44 CFR § 59.1</td>
+        </tr>
+        <tr>
+          <td class="dataset-name">Wildfire<span class="ag">USGS WFPI</span></td>
+          <td>Wildland Fire Potential Index: satellite-derived daily fire potential. P95 of daily rasters computed per pixel. Exposure threshold WFPI P95 ≥ 75.</td>
+          <td>2008–2025 (daily)</td>
+          <td>1 km</td>
+          <td><a href="https://www.usgs.gov/fire-danger-forecast/wildland-fire-potential-index-wfpi" target="_blank" rel="noopener">USGS EROS</a>; Burgan et al. (1998) [4]</td>
+        </tr>
+        <tr>
+          <td class="dataset-name">Hurricane<span class="ag">NOAA IBTrACS v04r01</span></td>
+          <td>International Best Track Archive: tropical cyclone tracks, wind speed, wind radii. Holland (1980) wind swath reconstruction. Exposure threshold ≥ 64 kt (Cat 1+).</td>
+          <td>1842–2024 (183 years)</td>
+          <td>6-hourly track points</td>
+          <td>Knapp et al. (2010) [5]; <a href="https://www.ncei.noaa.gov/products/international-best-track-archive" target="_blank" rel="noopener">NCEI IBTrACS</a></td>
+        </tr>
+        <tr>
+          <td class="dataset-name">Winter Storm<span class="ag">NOAA SNODAS</span></td>
+          <td>Snow Data Assimilation System: daily gridded SWE. P95 of annual maximum SWE computed per pixel. Preliminary threshold SWE P95 ≥ 100 mm (CONUS only — Alaska / Hawaii excluded).</td>
+          <td>2003–2025 (daily)</td>
+          <td>1 km (CONUS)</td>
+          <td>Barrett (2003) [6]; <a href="https://nsidc.org/data/g02158" target="_blank" rel="noopener">NSIDC</a>; <a href="https://doi.org/10.7265/N5TB14TC" target="_blank" rel="noopener">10.7265/N5TB14TC</a></td>
+        </tr>
+        <tr>
+          <td class="dataset-name">Social Vulnerability<span class="ag">CDC/ATSDR SVI</span></td>
+          <td>Social Vulnerability Index: county-level percentile ranking across 4 themes (socioeconomic, household, minority, housing). n_eligible=3,072 for per-hazard OR analysis.</td>
+          <td>2022</td>
+          <td>County-level</td>
+          <td><a href="https://www.atsdr.cdc.gov/placeandhealth/svi/" target="_blank" rel="noopener">CDC/ATSDR SVI 2022</a> [7]</td>
+        </tr>
+        <tr>
+          <td class="dataset-name">Power Outage<span class="ag">DOE EAGLE-I</span></td>
+          <td>County-level power outage event counts and customer impacts at 15-min intervals. 2022 + 2024 used as response in spatial lag model (SLM).</td>
+          <td>2022, 2024</td>
+          <td>County-level</td>
+          <td>Tansakul et al. (2025) [8]; <a href="https://doi.org/10.13139/OLCF/2500278" target="_blank" rel="noopener">10.13139/OLCF/2500278</a></td>
+        </tr>
+      </tbody>
     </table>
 
     <div class="references-section">
-        <h2>References</h2>
-        <ol class="references-list">
-            <li>[1] Petersen, M.D. et al. (2024). &ldquo;The 2023 US 50-State National Seismic Hazard Model.&rdquo; <em>Earthquake Spectra</em>. DOI: <a href="https://doi.org/10.1177/87552930231215428" target="_blank" rel="noopener">10.1177/87552930231215428</a></li>
-            <li>[2] Wald, D.J. et al. (1999). &ldquo;Relationships between Peak Ground Acceleration, Peak Ground Velocity, and Modified Mercalli Intensity in California.&rdquo; <em>Earthquake Spectra</em>, 15(3), 557&ndash;564. DOI: <a href="https://doi.org/10.1193/1.1586058" target="_blank" rel="noopener">10.1193/1.1586058</a></li>
-            <li>[3] FEMA. <em>USA Flood Hazard Areas (National Flood Hazard Layer)</em>. 44 CFR &sect; 59.1. Available at: <a href="https://www.fema.gov/flood-maps/national-flood-hazard-layer" target="_blank" rel="noopener">resilience.climate.gov</a></li>
-            <li>[4] Burgan, R.E., Klaver, R.W., Klaver, J.M. (1998). &ldquo;Fuel models and fire potential from satellite and surface observations.&rdquo; <em>Int. J. Wildland Fire</em>, 8(3), 159&ndash;170. DOI: <a href="https://doi.org/10.1071/WF9980159" target="_blank" rel="noopener">10.1071/WF9980159</a></li>
-            <li>[5] Knapp, K.R. et al. (2010). &ldquo;The International Best Track Archive for Climate Stewardship (IBTrACS).&rdquo; <em>Bull. Amer. Meteor. Soc.</em>, 91(3), 363&ndash;376. DOI: <a href="https://doi.org/10.1175/2009BAMS2755.1" target="_blank" rel="noopener">10.1175/2009BAMS2755.1</a></li>
-            <li>[6] Barrett, A.P. (2003). &ldquo;SNODAS Products at NSIDC.&rdquo; <em>NSIDC Special Report 11</em>. DOI: <a href="https://doi.org/10.7265/N5TB14TC" target="_blank" rel="noopener">10.7265/N5TB14TC</a></li>
-            <li>[7] CDC/ATSDR (2022). <em>Social Vulnerability Index Documentation</em>. <a href="https://www.atsdr.cdc.gov/placeandhealth/svi/" target="_blank" rel="noopener">https://www.atsdr.cdc.gov/placeandhealth/svi/</a></li>
-            <li>[8] Tansakul, V. et al. (2025). &ldquo;EAGLE-I Power Outage Data 2024.&rdquo; Oak Ridge National Laboratory. DOI: <a href="https://doi.org/10.13139/OLCF/2500278" target="_blank" rel="noopener">10.13139/OLCF/2500278</a></li>
-        </ol>
+      <h2>References</h2>
+      <ol class="references-list">
+        <li><span class="rn">[1]</span> Petersen, M.D. et al. (2024). "The 2023 US 50-State National Seismic Hazard Model." <em>Earthquake Spectra</em>. DOI: <a href="https://doi.org/10.1177/87552930231215428" target="_blank" rel="noopener">10.1177/87552930231215428</a></li>
+        <li><span class="rn">[2]</span> Wald, D.J. et al. (1999). "Relationships between Peak Ground Acceleration, Peak Ground Velocity, and Modified Mercalli Intensity in California." <em>Earthquake Spectra</em>, 15(3), 557–564. DOI: <a href="https://doi.org/10.1193/1.1586058" target="_blank" rel="noopener">10.1193/1.1586058</a></li>
+        <li><span class="rn">[3]</span> FEMA. <em>USA Flood Hazard Areas (National Flood Hazard Layer)</em>. 44 CFR § 59.1. Available at: <a href="https://www.fema.gov/flood-maps/national-flood-hazard-layer" target="_blank" rel="noopener">fema.gov</a></li>
+        <li><span class="rn">[4]</span> Burgan, R.E., Klaver, R.W., Klaver, J.M. (1998). "Fuel models and fire potential from satellite and surface observations." <em>Int. J. Wildland Fire</em>, 8(3), 159–170. DOI: <a href="https://doi.org/10.1071/WF9980159" target="_blank" rel="noopener">10.1071/WF9980159</a></li>
+        <li><span class="rn">[5]</span> Knapp, K.R. et al. (2010). "The International Best Track Archive for Climate Stewardship (IBTrACS)." <em>Bull. Amer. Meteor. Soc.</em>, 91(3), 363–376. DOI: <a href="https://doi.org/10.1175/2009BAMS2755.1" target="_blank" rel="noopener">10.1175/2009BAMS2755.1</a></li>
+        <li><span class="rn">[6]</span> Barrett, A.P. (2003). "SNODAS Products at NSIDC." <em>NSIDC Special Report 11</em>. DOI: <a href="https://doi.org/10.7265/N5TB14TC" target="_blank" rel="noopener">10.7265/N5TB14TC</a></li>
+        <li><span class="rn">[7]</span> CDC/ATSDR (2022). <em>Social Vulnerability Index Documentation</em>. <a href="https://www.atsdr.cdc.gov/placeandhealth/svi/" target="_blank" rel="noopener">atsdr.cdc.gov</a></li>
+        <li><span class="rn">[8]</span> Tansakul, V. et al. (2025). "EAGLE-I Power Outage Data 2024." Oak Ridge National Laboratory. DOI: <a href="https://doi.org/10.13139/OLCF/2500278" target="_blank" rel="noopener">10.13139/OLCF/2500278</a></li>
+      </ol>
     </div>
-</div>
+  </main>
 
-    </main>
+  <footer class="foot">
+    <div>© 2026 ENERGY CRITICAL INFRASTRUCTURE · KENT STATE UNIVERSITY</div>
+    <div class="links">
+      <a href="index.html">Overview</a>
+      <a href="map.html">Map</a>
+      <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
+      <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </footer>
 
-    <!-- Footer -->
-    <footer class="site-footer">
-        <div class="footer-links">
-            <a href="data-sources.html">Data Sources</a>
-            <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">GitHub</a>
-        </div>
-        <div>&copy; 2026 Energy Critical Infrastructure &middot; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></div>
-    </footer>
-
-    
-
-    <script>
-    // Static site: override view toggle to navigate to correct HTML file
-    (function() {
-        var viewMap = {
-            'btn-heatmap': 'map_heatmap.html',
-            'btn-hazard': 'map_hazard.html',
-            'btn-impact': 'map_impact.html',
-            'btn-energy-vulnerability': 'map_energy_vulnerability.html',
-            'btn-exposure': 'map_exposure.html',
-            'btn-energy-detail': 'map_energy_detail.html',
-            'btn-social-vulnerability': 'map_social_vulnerability.html',
-            'btn-analytics': 'map_analytics.html'
-        };
-        Object.keys(viewMap).forEach(function(btnId) {
-            var btn = document.getElementById(btnId);
-            if (btn) {
-                // Remove ALL existing click listeners by cloning
-                var newBtn = btn.cloneNode(true);
-                btn.parentNode.replaceChild(newBtn, btn);
-                // Add static site navigation
-                newBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    var url = new URL(window.location);
-                    var params = new URLSearchParams(url.search);
-                    // Keep region and mode params, remove view-specific ones
-                    var keep = ['region', 'mode', 'division_type', 'show_background'];
-                    var newParams = new URLSearchParams();
-                    keep.forEach(function(k) {
-                        params.getAll(k).forEach(function(v) { newParams.append(k, v); });
-                    });
-                    window.location.href = viewMap[btnId] + '?' + newParams.toString();
-                });
-            }
-        });
-    })();
-    </script>
-    
 
     <script>
     // Static site: override view toggle to navigate to correct HTML file
