@@ -51,7 +51,7 @@
     <div>
       <div class="eyebrow">Multi-Hazard Exposure Assessment · v3-PSHA-FEMA · 2026-06-04</div>
       <h1>How exposed is the U.S. energy grid to natural hazards?</h1>
-      <p class="deck">A reproducible, open-data assessment of <b>2.83 million energy assets</b> against five modeled hazards — earthquake, flood, wildfire, hurricane, and winter storm — joined with social vulnerability and observed power-outage records. Built for policy makers, emergency planners, and researchers.</p>
+      <p class="deck">A reproducible, open-data assessment of <b><span data-hl="total-m-num">—</span> million energy assets</b> against five modeled hazards — earthquake, flood, wildfire, hurricane, and winter storm — joined with social vulnerability and observed power-outage records. Built for policy makers, emergency planners, and researchers.</p>
       <div class="hero-actions">
         <a href="map.html" class="btn primary">Open the interactive map</a>
         <a href="#methods" class="btn ghost">Read the methodology</a>
@@ -60,10 +60,10 @@
     <aside class="hero-side">
       <div class="cap">At a glance · non-tower primary</div>
       <div class="kpi-side">
-        <div class="row"><span class="v tnum">64.4%</span><span class="lbl">of non-tower assets exposed to at least one of 5 hazards</span></div>
-        <div class="row"><span class="v tnum">2.83M</span><span class="lbl">energy assets indexed (n=205,783 excl. towers)</span></div>
+        <div class="row"><span class="v tnum" data-hl="any-pct">—</span><span class="lbl">of non-tower assets exposed to at least one of 5 hazards</span></div>
+        <div class="row"><span class="v tnum" data-hl="total-m">—</span><span class="lbl">energy assets indexed (n=<span data-hl="nontower">—</span> excl. towers)</span></div>
         <div class="row"><span class="v tnum">5</span><span class="lbl">hazards modeled across 50 states (Wildfire &amp; Winter CONUS only)</span></div>
-        <div class="row"><span class="v tnum">3,072</span><span class="lbl">counties in per-hazard OR analysis (SVI &times; OSM &ge;1 asset)</span></div>
+        <div class="row"><span class="v tnum" data-hl="counties">—</span><span class="lbl">counties in per-hazard OR analysis (SVI &times; OSM &ge;1 asset)</span></div>
       </div>
     </aside>
   </section>
@@ -71,17 +71,17 @@
   <section id="methods">
     <div class="sec-eyebrow">Approach · 00</div>
     <h2 class="sec-title">A data-driven framework, fully traceable to source</h2>
-    <p class="sec-lede">The assessment integrates federal hazard models, social vulnerability indices, and observed impact data — producing per-asset exposure classifications and county-level risk surfaces. Every threshold cites a U.S. federal agency or peer-reviewed paper; nothing is inferred, simulated, or averaged across sources. Headline numbers report the <b>non-tower primary</b> stratum (n=205,783); all-assets sensitivity (n=2,827,591) is reported in parallel.</p>
+    <p class="sec-lede">The assessment integrates federal hazard models, social vulnerability indices, and observed impact data — producing per-asset exposure classifications and county-level risk surfaces. Every threshold cites a U.S. federal agency or peer-reviewed paper; nothing is inferred, simulated, or averaged across sources. Headline numbers report the <b>non-tower primary</b> stratum (n=<span data-hl="nontower">—</span>); all-assets sensitivity (n=<span data-hl="total">—</span>) is reported in parallel.</p>
     <div class="approach">
       <div class="ap">
         <div class="k">Scope</div>
         <div class="t">Multi-hazard exposure</div>
-        <div class="d">Earthquake, flood, wildfire, hurricane, and winter storm — across 50 states and 3,072 SVI-eligible counties.</div>
+        <div class="d">Earthquake, flood, wildfire, hurricane, and winter storm — across 50 states and <span data-hl="counties">—</span> SVI-eligible counties.</div>
       </div>
       <div class="ap">
         <div class="k">Asset index</div>
         <div class="t">OpenStreetMap 2024</div>
-        <div class="d">2.83M assets · 205,783 non-tower primary stratum: plants, substations, lines, generators, pipelines, and fuel.</div>
+        <div class="d"><span data-hl="total-m">—</span> assets · <span data-hl="nontower">—</span> non-tower primary stratum: plants, substations, lines, generators, pipelines, and fuel.</div>
       </div>
       <div class="ap">
         <div class="k">Method</div>
@@ -94,43 +94,43 @@
   <section class="tint">
     <div class="sec-eyebrow">Findings · 01</div>
     <h2 class="sec-title">Exposure by hazard</h2>
-    <p class="sec-lede">Share of non-tower assets meeting each hazard's exposure threshold (n=205,783). 95% CIs shown in mono. Every threshold cites a federal agency or peer-reviewed source.</p>
+    <p class="sec-lede">Share of non-tower assets meeting each hazard's exposure threshold (n=<span data-hl="nontower">—</span>). 95% CIs shown in mono. Every threshold cites a federal agency or peer-reviewed source.</p>
     <div class="exp-grid">
       <div class="exp">
         <div class="h"><span>Wildfire</span><span class="ag">USGS WFPI</span></div>
-        <div class="v tnum">36.9%</div>
-        <div class="track"><span style="width:73.8%"></span></div>
-        <div class="d">WFPI P95 ≥ 75 — large-fire probability tier · CI [36.74, 37.07]</div>
+        <div class="v tnum" data-hl="wfpi">—</div>
+        <div class="track"><span data-hlw="wfpi" style="width:0%"></span></div>
+        <div class="d">WFPI P95 ≥ 75 — large-fire probability tier · CI <span data-hl="wfpi-ci">—</span></div>
       </div>
       <div class="exp">
         <div class="h"><span>Earthquake</span><span class="ag">USGS NSHM</span></div>
-        <div class="v tnum">16.0%</div>
-        <div class="track"><span style="width:32%"></span></div>
-        <div class="d">PGA ≥ 0.092 g (MMI ≥ VI) · NSHM 2023 · CI [15.88, 16.07]</div>
+        <div class="v tnum" data-hl="eq">—</div>
+        <div class="track"><span data-hlw="eq" style="width:0%"></span></div>
+        <div class="d">PGA ≥ 0.092 g (MMI ≥ VI) · NSHM 2023 · CI <span data-hl="eq-ci">—</span></div>
       </div>
       <div class="exp">
         <div class="h"><span>Winter storm</span><span class="ag">NOAA SNODAS</span></div>
-        <div class="v tnum">13.5%</div>
-        <div class="track"><span style="width:27%"></span></div>
-        <div class="d">SWE P95 ≥ 100 mm · CONUS only (preliminary) · CI [13.36, 13.56]</div>
+        <div class="v tnum" data-hl="winter">—</div>
+        <div class="track"><span data-hlw="winter" style="width:0%"></span></div>
+        <div class="d">SWE P95 ≥ 100 mm · CONUS only (preliminary) · CI <span data-hl="winter-ci">—</span></div>
       </div>
       <div class="exp">
         <div class="h"><span>Hurricane</span><span class="ag">NOAA IBTrACS</span></div>
-        <div class="v tnum">9.5%</div>
-        <div class="track"><span style="width:19%"></span></div>
-        <div class="d">Max sustained winds ≥ 64 kt (Cat 1+) · CI [9.36, 9.54]</div>
+        <div class="v tnum" data-hl="hurr">—</div>
+        <div class="track"><span data-hlw="hurr" style="width:0%"></span></div>
+        <div class="d">Max sustained winds ≥ 64 kt (Cat 1+) · CI <span data-hl="hurr-ci">—</span></div>
       </div>
       <div class="exp">
         <div class="h"><span>Flood</span><span class="ag">FEMA NFHL</span></div>
-        <div class="v tnum">4.3%</div>
-        <div class="track"><span style="width:8.6%"></span></div>
-        <div class="d">Special Flood Hazard Area (1% annual chance) · CI [4.17, 4.34]</div>
+        <div class="v tnum" data-hl="flood">—</div>
+        <div class="track"><span data-hlw="flood" style="width:0%"></span></div>
+        <div class="d">Special Flood Hazard Area (1% annual chance) · CI <span data-hl="flood-ci">—</span></div>
       </div>
       <div class="exp summary">
         <div class="h"><span>Any hazard</span><span class="ag">Combined</span></div>
-        <div class="v tnum">64.4%</div>
-        <div class="track"><span style="width:96.6%"></span></div>
-        <div class="d">≥ 2 hazards: 14.2% [14.11, 14.36] · CI [64.27, 64.59]</div>
+        <div class="v tnum" data-hl="any2">—</div>
+        <div class="track"><span data-hlw="any2" style="width:0%"></span></div>
+        <div class="d">≥ 2 hazards: <span data-hl="multi">—</span> <span data-hl="multi-ci">—</span> · CI <span data-hl="any-ci">—</span></div>
       </div>
     </div>
   </section>
@@ -138,7 +138,7 @@
   <section>
     <div class="sec-eyebrow">Findings · 02</div>
     <h2 class="sec-title">Three signals from the data</h2>
-    <p class="sec-lede">Per-hazard social vulnerability associations, network exposure, and outage relationships. All <i>p</i>-values evaluated against a Bonferroni-corrected family of <i>m</i>=87 tests (cutoff α/87 = 5.7×10⁻⁴).</p>
+    <p class="sec-lede">Per-hazard social vulnerability associations, network exposure, and outage relationships. All <i>p</i>-values evaluated against a Bonferroni-corrected family of <i>m</i>=<span data-hl="m">—</span> tests (cutoff α/<span data-hl="m">—</span> = <span data-hl="cutoff">—</span>).</p>
     <div class="find-grid">
 
       <div class="find">
@@ -146,26 +146,26 @@
         <div class="ttl">SVI × hazard exposure (per-hazard OR)</div>
         <div class="txt">Disaggregating by hazard reveals heterogeneous direction. Hurricane is the strongest signal but carries a known coastal Southeast / Black Belt structural confound.</div>
         <div class="or-mini">
-          <span class="lab">Hurricane</span><span class="val">OR 4.19</span><span class="ci">[3.11, 5.65]</span>
-          <span class="lab">Wildfire</span><span class="val">OR 1.98</span><span class="ci">[1.69, 2.31]</span>
-          <span class="lab">Flood</span><span class="val">OR 1.33</span><span class="ci">[1.15, 1.54]</span>
-          <span class="lab">Earthquake <span class="ns">(ns)</span></span><span class="val ns">OR 1.25</span><span class="ci">[1.04, 1.51]</span>
-          <span class="lab">Winter storm</span><span class="val inv">OR 0.24</span><span class="ci">[0.19, 0.29]</span>
+          <span class="lab">Hurricane</span><span class="val" data-hl="or-hurr">—</span><span class="ci" data-hl="or-hurr-ci">—</span>
+          <span class="lab">Wildfire</span><span class="val" data-hl="or-wf">—</span><span class="ci" data-hl="or-wf-ci">—</span>
+          <span class="lab">Flood</span><span class="val" data-hl="or-flood">—</span><span class="ci" data-hl="or-flood-ci">—</span>
+          <span class="lab">Earthquake <span class="ns">(ns)</span></span><span class="val ns" data-hl="or-eq">—</span><span class="ci" data-hl="or-eq-ci">—</span>
+          <span class="lab">Winter storm</span><span class="val inv" data-hl="or-winter">—</span><span class="ci" data-hl="or-winter-ci">—</span>
         </div>
         <div class="note">4 / 5 survive Bonferroni m=87 · Winter is inverse</div>
       </div>
 
       <div class="find">
-        <div class="stat tnum">72.2%</div>
+        <div class="stat tnum" data-hl="netv-stat">—</div>
         <div class="ttl">Network vulnerability × exposure</div>
-        <div class="txt">Of HIGH-vulnerability nodes (top-25%-minus-CRITICAL stratum by betweenness centrality), <b>72.15%</b> are exposed to ≥1 modeled hazard. Permutation null mean <b>67.84%</b>, <i>z</i>=17.63, <i>p</i>≈0 — directional signal is significant; effect-size lift <b>+4.31 pp</b> is small because the 5H baseline is already high.</div>
+        <div class="txt">Of HIGH-vulnerability nodes (top-25%-minus-CRITICAL stratum by betweenness centrality), <b data-hl="netv-pct">—</b> are exposed to ≥1 modeled hazard. Permutation null mean <b data-hl="netv-null">—</b>, <i>z</i>=<span data-hl="netv-z">—</span>, <i>p</i>≈0 — directional signal is significant; effect-size lift <b data-hl="netv-eff">—</b> is small because the 5H baseline is already high.</div>
         <div class="note">Recomputed 2026-06-04 · supersedes retracted 66.6%</div>
       </div>
 
       <div class="find">
-        <div class="stat tnum">β = 0.112</div>
+        <div class="stat tnum" data-hl="slm-beta">—</div>
         <div class="ttl">Multi-hazard × outage (SLM)</div>
-        <div class="txt">Spatial lag model: multi-hazard exposure predicts county outage customer-hours after controlling for spatial autocorrelation. <b>slm_p = 1.4×10⁻⁵</b>, ρ_spatial = 0.6406; Moran's I residual dropped 0.396 → 0.011. <b>Survives Bonferroni m=87.</b></div>
+        <div class="txt">Spatial lag model: multi-hazard exposure predicts county outage customer-hours after controlling for spatial autocorrelation. <b>slm_p = <span data-hl="slm-p">—</span></b>, ρ_spatial = <span data-hl="slm-rho">—</span>; Moran's I residual dropped <span data-hl="slm-moran-ols">—</span> → <span data-hl="slm-moran-slm">—</span>. <b>Survives Bonferroni m=<span data-hl="m">—</span>.</b></div>
         <div class="note">Replaces Spearman ρ=0.456 (did not survive m=87)</div>
       </div>
 
@@ -182,9 +182,9 @@
       <div class="src"><div class="ag">USGS · Wildfire</div><div class="ds"><a href="https://www.usgs.gov/fire-danger-forecast/wildland-fire-potential-index-wfpi" target="_blank" rel="noopener">WFPI P95</a></div><div class="mt">2008–2025 daily · 1 km</div></div>
       <div class="src"><div class="ag">NOAA · Hurricane</div><div class="ds"><a href="https://www.ncei.noaa.gov/products/international-best-track-archive" target="_blank" rel="noopener">IBTrACS v04r01</a></div><div class="mt">1842–2024 · 6-hourly tracks</div></div>
       <div class="src"><div class="ag">NOAA · Winter storm</div><div class="ds"><a href="https://nsidc.org/data/g02158" target="_blank" rel="noopener">SNODAS SWE P95</a></div><div class="mt">2003–2025 daily · 1 km CONUS</div></div>
-      <div class="src"><div class="ag">CDC/ATSDR · Social</div><div class="ds"><a href="https://www.atsdr.cdc.gov/placeandhealth/svi/" target="_blank" rel="noopener">SVI 2022</a></div><div class="mt">3,072 SVI-eligible counties · four themes</div></div>
+      <div class="src"><div class="ag">CDC/ATSDR · Social</div><div class="ds"><a href="https://www.atsdr.cdc.gov/placeandhealth/svi/" target="_blank" rel="noopener">SVI 2022</a></div><div class="mt"><span data-hl="counties">—</span> SVI-eligible counties · four themes</div></div>
       <div class="src"><div class="ag">DOE ORNL · Power</div><div class="ds"><a href="https://doi.org/10.13139/OLCF/2500278" target="_blank" rel="noopener">EAGLE-I</a></div><div class="mt">2022 &amp; 2024 · 15-min intervals</div></div>
-      <div class="src"><div class="ag">OpenStreetMap · Assets</div><div class="ds"><a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OSM 2024 extract</a></div><div class="mt">2.83M energy assets · ODbL</div></div>
+      <div class="src"><div class="ag">OpenStreetMap · Assets</div><div class="ds"><a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OSM 2024 extract</a></div><div class="mt"><span data-hl="total-m">—</span> energy assets · ODbL</div></div>
     </div>
   </section>
 
@@ -192,6 +192,92 @@
     <div>© 2026 ENERGY CRITICAL INFRASTRUCTURE · KENT STATE UNIVERSITY</div>
     <div class="links"><a href="map.html">Open map</a><a href="data-sources.html">Full citations</a><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a><a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">GitHub</a></div>
   </footer>
+
+  <!-- Headline hydration: all claim numbers render from analytics-data.json (single source of truth).
+       Static markup carries "—" placeholders only — no hardcoded statistics (drift-proof).
+       Scientific thresholds (≥75, ≥0.092 g, ≥100 mm, ≥64 kt), the hazard count "5", and bootstrap B=1000
+       are literature-fixed methodology constants and remain as literal text. -->
+  <script>
+  (function () {
+    var SUP = {'-':'\u207b','0':'\u2070','1':'\u00b9','2':'\u00b2','3':'\u00b3','4':'\u2074','5':'\u2075','6':'\u2076','7':'\u2077','8':'\u2078','9':'\u2079'};
+    function sup(s){ return String(s).split('').map(function(c){ return SUP[c] || c; }).join(''); }
+    function r1(v){ return (Math.round(v*10)/10).toFixed(1); }
+    function r2(v){ return (Math.round(v*100)/100).toFixed(2); }
+    function r3(v){ return (Math.round(v*1000)/1000).toFixed(3); }
+    function r4(v){ return (Math.round(v*10000)/10000).toFixed(4); }
+    function pct1(v){ return r1(v) + '%'; }
+    function intl(v){ return Number(v).toLocaleString('en-US'); }
+    function mil(v){ return (v/1e6).toFixed(2) + 'M'; }
+    function milNum(v){ return (v/1e6).toFixed(2); }
+    function ci2(a){ return '[' + r2(a[0]) + ', ' + r2(a[1]) + ']'; }
+    function width(v, s){ return parseFloat(r1(r1(v)*s)) + '%'; }
+    function expf(p){ var e = Math.floor(Math.log10(p)); var m = p / Math.pow(10, e); return r1(m) + '\u00d710' + sup(e); }
+
+    function setText(key, val){
+      var els = document.querySelectorAll('[data-hl="' + key + '"]');
+      for (var i = 0; i < els.length; i++) els[i].textContent = val;
+    }
+    function setWidth(key, val){
+      var els = document.querySelectorAll('[data-hlw="' + key + '"]');
+      for (var i = 0; i < els.length; i++) els[i].style.width = val;
+    }
+
+    function hydrate(d){
+      var n = d.national;
+      var orRows = d.hazard_svi_or || [];
+      function OR(h){ for (var i = 0; i < orRows.length; i++) if (orRows[i].hazard === h) return orRows[i]; return null; }
+      var slm = (d.slm_outage_models || [])[0];
+      var nv = d.network_vuln_permutation;
+      var tf = d.test_family_m87;
+
+      var text = {
+        'total-m-num': milNum(n.total_assets),
+        'total-m': mil(n.total_assets),
+        'total': intl(n.total_assets),
+        'nontower': intl(n.total_non_tower),
+        'counties': intl(OR('Hurricane').n_eligible_counties),
+        'any-pct': pct1(n.any_5h_pct_non_tower),
+        'wfpi': pct1(n.wfpi_pct_non_tower), 'wfpi-ci': ci2(n.wfpi_ci_non_tower),
+        'eq': pct1(n.eq_pct_non_tower), 'eq-ci': ci2(n.eq_ci_non_tower),
+        'winter': pct1(n.winter_pct_non_tower), 'winter-ci': ci2(n.winter_ci_non_tower),
+        'hurr': pct1(n.hurr_pct_non_tower), 'hurr-ci': ci2(n.hurr_ci_non_tower),
+        'flood': pct1(n.flood_pct_non_tower), 'flood-ci': ci2(n.flood_ci_non_tower),
+        'any2': pct1(n.any_5h_pct_non_tower), 'any-ci': ci2(n.any_5h_ci_non_tower),
+        'multi': pct1(n.multi_geq2_pct_non_tower), 'multi-ci': ci2(n.multi_geq2_ci_non_tower),
+        'or-hurr': 'OR ' + r2(OR('Hurricane').or_wald), 'or-hurr-ci': ci2(OR('Hurricane').ci),
+        'or-wf': 'OR ' + r2(OR('Wildfire').or_wald), 'or-wf-ci': ci2(OR('Wildfire').ci),
+        'or-flood': 'OR ' + r2(OR('Flood').or_wald), 'or-flood-ci': ci2(OR('Flood').ci),
+        'or-eq': 'OR ' + r2(OR('Earthquake').or_wald), 'or-eq-ci': ci2(OR('Earthquake').ci),
+        'or-winter': 'OR ' + r2(OR('Winter').or_wald), 'or-winter-ci': ci2(OR('Winter').ci),
+        'netv-stat': pct1(nv.high_only_pct), 'netv-pct': r2(nv.high_only_pct) + '%',
+        'netv-null': r2(nv.null_mean_pct) + '%', 'netv-z': r2(nv.high_only_z),
+        'netv-eff': '+' + r2(nv.effect_size_pp_high_only) + ' pp',
+        'slm-beta': '\u03b2 = ' + r3(slm.slm_beta), 'slm-p': expf(slm.slm_p),
+        'slm-rho': r4(slm.rho_spatial), 'slm-moran-ols': r3(slm.moran_i_ols),
+        'slm-moran-slm': r3(slm.moran_i_slm),
+        'm': String(tf.family_size), 'cutoff': expf(tf['bonferroni_cutoff_alpha_0.05'])
+      };
+      for (var k in text) if (text.hasOwnProperty(k)) setText(k, text[k]);
+
+      setWidth('wfpi', width(n.wfpi_pct_non_tower, 2));
+      setWidth('eq', width(n.eq_pct_non_tower, 2));
+      setWidth('winter', width(n.winter_pct_non_tower, 2));
+      setWidth('hurr', width(n.hurr_pct_non_tower, 2));
+      setWidth('flood', width(n.flood_pct_non_tower, 2));
+      setWidth('any2', width(n.any_5h_pct_non_tower, 1.5));
+    }
+
+    // Same fetch convention as map_analytics_loader.html: bundled first, then CDN.
+    fetch('./data/analytics-data.json')
+      .then(function (r) { if (r.ok) return r.json(); throw new Error('not bundled'); })
+      .catch(function () {
+        var u = window.DATA_BASE_URL ? window.DATA_BASE_URL + '/analytics-data.json' : './data/analytics-data.json';
+        return fetch(u).then(function (r) { return r.json(); });
+      })
+      .then(hydrate)
+      .catch(function () { /* fetch failed — leave "—" placeholders; never show a wrong number */ });
+  })();
+  </script>
 
 
     <script>
