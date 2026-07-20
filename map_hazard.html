@@ -263,26 +263,21 @@ function setGlobalLoadingError(message) {
 
 
 
-<!-- Hazard LOD Control (not applicable for drought - categorical data) -->
-
-
-
-
-
-<div class="heatmap-lod-control" id="hazard-lod-control" style="border-color: #1976d2;">
-    <h5 style="color: #0d47a1;">🔍 Level of Detail (Threshold)</h5>
-    
-    <!-- Threshold Slider -->
-    <div id="hazard-lod-threshold-container">
-        <div class="lod-slider-container">
-            <input type="range" id="hazard-threshold-slider" class="lod-slider" min="0" max="100" value="99" style="background: linear-gradient(to right, #64b5f6, #0d47a1);">
-            <span class="lod-value-display" id="hazard-threshold-value" style="color: #0d47a1;">0%</span>
-        </div>
-        <div class="lod-info">Show cells with hazard score ≥ threshold</div>
+<!-- Flood Sub-layer Selector -->
+<div class="flood-sublayer-panel" style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 8px; border-left: 4px solid #1976d2;">
+    <h5 style="color: #0d47a1; margin: 0 0 8px 0;">🌊 Flood Source Layer</h5>
+    <select id="flood-layer-selector" style="width: 100%; padding: 8px; font-size: 13px; border-radius: 4px; border: 1px solid #90caf9; background: white;">
+        <option value="any_flood_exposed" selected>Any Flood (FEMA + SLOSH + HTF + SLR)</option>
+        <option value="flood_exposed">FEMA SFHA only</option>
+        <option value="flood_slosh_exposed">SLOSH Cat1 Storm Surge</option>
+        <option value="flood_htf_exposed">HTF Minor Chronic</option>
+    </select>
+    <div id="flood-sublayer-stats" style="margin-top: 8px; font-size: 11px; color: #1565c0; text-align: center;">
+        Loading flood data...
     </div>
-    
-    <div class="lod-stats" id="hazard-lod-stats">Visible: -- / -- cells</div>
 </div>
+
+
 
 
 
@@ -508,92 +503,105 @@ function setGlobalLoadingError(message) {
 var hazardType = "flood";
 
 
-// ========== Regular hazard rendering (flood, etc.) ==========
-function renderHazardLayer(hazardData, regionName, hazardTypeParam) {
-    var scoreProperty = hazardTypeParam + '_score_normalized';
-    var hazardLabel = hazardTypeParam.charAt(0).toUpperCase() + hazardTypeParam.slice(1);
-    
-    var hazardLayer = L.geoJSON(hazardData, {
+// ========== Flood per-asset rendering with sub-layer toggle ==========
+var floodAssetLayer = null;
+var floodAllResults = [];
+var selectedFloodField = 'any_flood_exposed';
+
+var FLOOD_LABEL_MAP = {
+    'any_flood_exposed': 'Any Flood (FEMA+SLOSH+HTF+SLR)',
+    'flood_exposed': 'FEMA SFHA only',
+    'flood_slosh_exposed': 'SLOSH Cat1 Storm Surge',
+    'flood_htf_exposed': 'HTF Minor Chronic'
+};
+
+function updateFloodSublayerStats() {
+    var total = floodAllResults.length;
+    var exposed = floodAllResults.filter(function(r) {
+        return r[selectedFloodField] === true;
+    }).length;
+    var pct = total > 0 ? (exposed / total * 100).toFixed(1) : '0.0';
+    var statsEl = document.getElementById('flood-sublayer-stats');
+    if (statsEl) {
+        statsEl.textContent = exposed.toLocaleString() + ' / ' + total.toLocaleString() + ' assets exposed (' + pct + '%)';
+    }
+}
+
+function renderFloodAssets() {
+    if (floodAssetLayer) {
+        map.removeLayer(floodAssetLayer);
+        floodAssetLayer = null;
+    }
+    if (floodAllResults.length === 0) return;
+
+    var features = floodAllResults.map(function(r) {
+        return {
+            type: 'Feature',
+            geometry: r.geometry,
+            properties: r
+        };
+    });
+
+    floodAssetLayer = L.geoJSON({ type: 'FeatureCollection', features: features }, {
+        pointToLayer: function(feature, latlng) {
+            var exposed = feature.properties[selectedFloodField] === true;
+            return L.circleMarker(latlng, {
+                radius: 4,
+                color: exposed ? '#b71c1c' : '#9e9e9e',
+                fillColor: exposed ? '#ef5350' : '#e0e0e0',
+                fillOpacity: exposed ? 0.85 : 0.3,
+                weight: exposed ? 1 : 0.5
+            });
+        },
         style: function(feature) {
-            var score = feature.properties[scoreProperty] || 0;
+            var exposed = feature.properties[selectedFloodField] === true;
             return {
-                color: 'transparent',
-                weight: 0,
-                opacity: 0,
-                fillColor: getHazardColor(score, hazardTypeParam),
-                fillOpacity: 0.7
+                color: exposed ? '#b71c1c' : '#9e9e9e',
+                fillColor: exposed ? '#ef5350' : '#e0e0e0',
+                fillOpacity: exposed ? 0.5 : 0.15,
+                weight: exposed ? 1.5 : 0.5,
+                opacity: 0.9
             };
         },
         onEachFeature: function(feature, layer) {
-            var props = feature.properties;
-            var score = props[scoreProperty] || 0;
-            
-            var popup = '<strong>Region: ' + regionName + '</strong><br>';
-            popup += '<strong>Grid ID: ' + (props.grid_id || 'N/A') + '</strong><br>';
-            popup += hazardLabel + ' Risk: ' + (score * 100).toFixed(1) + '%';
-            
+            var p = feature.properties;
+            var exposed = p[selectedFloodField] === true;
+            var label = FLOOD_LABEL_MAP[selectedFloodField] || selectedFloodField;
+            var popup = '<strong>' + (p.name || p.asset_type || 'Asset') + '</strong><br>';
+            popup += label + ': <strong>' + (exposed ? '&#128308; Exposed' : '&#9898; Not Exposed') + '</strong><br>';
+            if (p.any_flood_exposed !== undefined) popup += 'Any Flood: ' + (p.any_flood_exposed ? 'Yes' : 'No') + '<br>';
+            if (p.flood_exposed !== undefined) popup += 'FEMA SFHA: ' + (p.flood_exposed ? 'Yes' : 'No') + '<br>';
+            if (p.flood_slosh_exposed !== undefined) popup += 'SLOSH Cat1: ' + (p.flood_slosh_exposed ? 'Yes' : 'No') + '<br>';
+            if (p.flood_htf_exposed !== undefined) popup += 'HTF Minor: ' + (p.flood_htf_exposed ? 'Yes' : 'No') + '<br>';
             layer.bindPopup(popup);
         }
     }).addTo(map);
+
+    updateFloodSublayerStats();
+}
+
+function loadFloodPerAsset() {
+    var loadTotal = 0;
+    var loadCount = 0;
+    floodAllResults = [];
+    showGlobalLoading('Loading flood asset data...', loadTotal);
+
     
-    HazardLOD.registerLayer(hazardLayer, hazardData.features || []);
-    return hazardLayer;
 }
 
-function loadHazardHeatmaps() {
-    console.log('=== Starting hazard heatmap loading ===');
-    var hazardLoadTotal = MAP_CONFIG.selectedRegions.length;
-    var hazardLoadCount = 0;
-    var hazardNames = {'flood': 'Flood', 'drought': 'Drought', 'wildfire': 'Wildfire', 'earthquake': 'Earthquake'};
-    showGlobalLoading('Loading ' + (hazardNames[hazardType] || hazardType) + ' data...', hazardLoadTotal);
-
-    MAP_CONFIG.selectedRegions.forEach(function(regionName) {
-        var regionFolders = findRegionFolder(regionName);
-        var gridSizeVariants = ['5.0km', '5km'];
-        var hazardUrls = [];
-        regionFolders.forEach(function(folder) {
-            gridSizeVariants.forEach(function(gridSize) {
-                hazardUrls.push(window.DATA_BASE_URL + '/heatmap_' + hazardType + '_lite/' + folder + '/' + hazardType + '_heatmap_' + gridSize + '.geojson');
-                hazardUrls.push(window.DATA_BASE_URL + '/heatmap_' + hazardType + '/' + folder + '/' + hazardType + '_heatmap_' + gridSize + '.geojson');
-            });
+// Dropdown change → re-render with new boolean field
+document.addEventListener('DOMContentLoaded', function() {
+    var sel = document.getElementById('flood-layer-selector');
+    if (sel) {
+        sel.addEventListener('change', function() {
+            selectedFloodField = this.value;
+            renderFloodAssets();
         });
+    }
+});
 
-        function tryLoadHazard(urls) {
-            if (urls.length === 0) {
-                console.warn('No hazard data found for ' + regionName);
-                hazardLoadCount++;
-                if (hazardLoadCount >= hazardLoadTotal) hideGlobalLoading(500);
-                return;
-            }
-            var url = urls.shift();
-            fetch(url).then(function(r) {
-                if (r.ok) return r.json();
-                throw new Error(r.status);
-            }).then(function(data) {
-                console.log('Loaded hazard for ' + regionName + ':', data.features ? data.features.length : 0, 'features');
-                var features = data.features || [];
-                HazardLOD.registerLayer(null, features);
-                var layer = L.geoJSON(data, {
-                    style: function(feature) {
-                        var score = feature.properties[hazardType + '_score_normalized'] || 0;
-                        return { color: 'transparent', weight: 0, fillColor: getHazardColor(score, hazardType), fillOpacity: 0.7 };
-                    },
-                    onEachFeature: function(feature, layer) {
-                        var score = feature.properties[hazardType + '_score_normalized'] || 0;
-                        layer.bindPopup('<strong>Grid</strong><br>' + hazardType + ' Risk: ' + (score * 100).toFixed(1) + '%');
-                    }
-                }).addTo(map);
-                HazardLOD.hazardLayers.push(layer);
-                hazardLoadCount++;
-                updateGlobalLoading('Loaded ' + regionName + ' (' + hazardLoadCount + '/' + hazardLoadTotal + ')', false);
-                if (hazardLoadCount >= hazardLoadTotal) hideGlobalLoading(500);
-            }).catch(function() { tryLoadHazard(urls); });
-        }
-        tryLoadHazard(hazardUrls);
-    });
-}
+loadFloodPerAsset();
 
-loadHazardHeatmaps();
 
                 
                 
