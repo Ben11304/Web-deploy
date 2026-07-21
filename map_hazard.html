@@ -581,12 +581,52 @@ function renderFloodAssets() {
 }
 
 function loadFloodPerAsset() {
-    var loadTotal = 0;
+    // Client-side region selection — works in BOTH Flask dev and the static build.
+    // The static build has no request context, so a server-side Jinja for-loop over
+    // selected_regions would emit zero iterations and leave the loader empty.
+    // MAP_CONFIG.selectedRegions is populated at runtime from ?region= params (or
+    // ALL_STATES by default) — same pattern as loadWildfireData / loadExposureData.
+    var regions = (MAP_CONFIG.selectedRegions || []).slice();
+    var loadTotal = regions.length;
     var loadCount = 0;
     floodAllResults = [];
+
+    if (loadTotal === 0) {
+        renderFloodAssets();
+        return;
+    }
+
+    // DATA_BASE_URL = R2 CDN in static build; undefined in Flask dev → fall back to
+    // the locally-served ./static/geojson tree (which holds the same anyflood files).
+    var base = window.DATA_BASE_URL ? window.DATA_BASE_URL : './static/geojson';
     showGlobalLoading('Loading flood asset data...', loadTotal);
 
-    
+    regions.forEach(function(regionName) {
+        var stateCode = regionName.toLowerCase().replace(/\s+/g, '_');
+        var urls = [
+            base + '/Exposure/flood_fema/' + stateCode + '_flood_results_primary.json',
+            base + '/Exposure/flood_fema/' + stateCode + '_flood_results.json'
+        ];
+        tryLoadGeoJSON(urls.slice(), function(data) {
+            if (data && data.results) {
+                data.results.forEach(function(r) { r._state = stateCode; });
+                floodAllResults = floodAllResults.concat(data.results);
+            }
+            loadCount++;
+            updateGlobalLoading('Loaded ' + regionName + ' (' + loadCount + '/' + loadTotal + ')', false);
+            if (loadCount >= loadTotal) {
+                renderFloodAssets();
+                hideGlobalLoading(500);
+            }
+        }, function() {
+            console.warn('No flood data for', regionName);
+            loadCount++;
+            if (loadCount >= loadTotal) {
+                renderFloodAssets();
+                hideGlobalLoading(500);
+            }
+        });
+    });
 }
 
 // Dropdown change → re-render with new boolean field
