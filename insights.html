@@ -4,9 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Insights — Energy Critical Infrastructure multi-hazard assessment</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./static/css/atlas-b.css?v=20260604-b">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <style>
@@ -19,10 +16,10 @@
 
     table.ins{width:100%;border-collapse:collapse;font-size:13px;}
     table.ins th,table.ins td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line-2);vertical-align:top;}
-    table.ins th{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;}
-    table.ins td.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;}
-    table.ins td.ci{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);text-align:right;white-space:nowrap;}
-    .tag{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.04em;padding:2px 7px;border:1px solid var(--line);border-radius:2px;color:var(--ink-3);white-space:nowrap;}
+    table.ins th{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;}
+    table.ins td.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;}
+    table.ins td.ci{font-family:var(--font-mono);font-size:11px;color:var(--muted);text-align:right;white-space:nowrap;}
+    .tag{font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;padding:2px 7px;border:1px solid var(--line);border-radius:2px;color:var(--ink-3);white-space:nowrap;}
     .tag.ok{color:#1a6b3a;border-color:#bfe0cc;}
     .tag.no{color:#8a5a10;border-color:#e6d3ac;}
     .tag.inv{color:#7a2ea6;border-color:#d9c1ea;}
@@ -34,17 +31,20 @@
     .assump{display:grid;grid-template-columns:1fr 1fr;gap:14px 32px;}
     @media(max-width:900px){.assump{grid-template-columns:1fr;}}
     .assump .a{border-top:2px solid var(--ink);padding-top:14px;}
-    .assump .a .k{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+    .assump .a .k{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
     .assump .a .t{font-size:14.5px;font-weight:600;margin-bottom:5px;letter-spacing:-.01em;}
     .assump .a .d{font-size:13px;color:var(--ink-3);line-height:1.55;}
 
     .matrix-wrap{overflow-x:auto;}
+    .climate-wrap{overflow-x:auto;}
+    .climate-note{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px;}
+    @media(max-width:900px){.climate-note{grid-template-columns:1fr;}}
     table.matrix{width:100%;border-collapse:collapse;font-size:11.5px;}
     table.matrix th,table.matrix td{padding:8px 10px;border:1px solid var(--line-2);white-space:nowrap;}
-    table.matrix th{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--paper-2);}
-    table.matrix td{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;color:var(--ink-2);}
-    table.matrix td.row-h{font-family:"IBM Plex Sans",sans-serif;font-weight:600;color:var(--ink);white-space:normal;}
-    .prov{font-size:11px;color:var(--muted);font-family:"IBM Plex Mono",monospace;letter-spacing:.03em;margin-top:14px;}
+    table.matrix th{font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--paper-2);}
+    table.matrix td{font-family:var(--font-mono);font-variant-numeric:tabular-nums;color:var(--ink-2);}
+    table.matrix td.row-h{font-family:var(--font-sans);font-weight:600;color:var(--ink);white-space:normal;}
+    .prov{font-size:11px;color:var(--muted);font-family:var(--font-mono);letter-spacing:.03em;margin-top:14px;}
   </style>
 </head>
 <body>
@@ -58,8 +58,7 @@
       </div>
     </div>
     <nav class="nav">
-      <a href="index.html">Overview</a>
-      <a href="map.html">Map</a>
+      <a href="index.html">Maps</a>
       <a href="insights.html" class="active">Insights</a>
       <a href="data-sources.html">Sources</a>
       <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">Repository</a>
@@ -130,9 +129,29 @@
     </div>
   </section>
 
-  <!-- ─────────────────────────────  BLOCK D — Assumptions & caveats  ───────────────────────────── -->
+  <!-- ─────────────────────────────  BLOCK D — Climate return  ───────────────────────────── -->
   <section>
     <div class="sec-eyebrow">Insight · D</div>
+    <h2 class="sec-title">Long-period climate diagnostics at asset locations</h2>
+    <p class="sec-lede">Comparison of 1961–1990 with 1991–2020 over the annual CONUS <b>asset-location-weighted</b> mean. The analysis covers <span data-climate="eligible">—</span> eligible non-tower assets; <span data-climate="excluded">—</span> are excluded (<span data-climate="outside">—</span> outside CONUS and <span data-climate="invalid">—</span> invalid land-mask). It is not a CONUS land-area average.</p>
+    <div class="climate-wrap">
+      <table class="ins">
+        <thead><tr><th>Metric</th><th style="text-align:right">Period difference</th><th style="text-align:right">95% interval</th><th style="text-align:right">HAC trend / decade</th><th style="text-align:right">Adjusted p</th><th>Interpretation</th></tr></thead>
+        <tbody id="tbl-climate"><tr><td colspan="6" style="color:var(--muted)">—</td></tr></tbody>
+      </table>
+    </div>
+    <div class="climate-note">
+      <div class="callout"><b>No multiplicity-controlled trend.</b> E1 and E2 do not survive Bonferroni m=2 (cutoff 0.025). Non-rejection does not establish that no change occurred.</div>
+      <div class="callout"><b>E2 is estimand-sensitive.</b> Its asset-weighted period difference is positive, but the equal-cell difference is <span data-climate="e2-equal">—</span> percentage points, reversing direction.</div>
+      <div class="callout"><b>E3 is diagnostic-only.</b> The period comparison is descriptive; no confidence interval, trend, p-value, or significance claim is authorized.</div>
+    </div>
+    <p class="disclaimer">These climate metrics do not support causal attribution or claims about infrastructure failure, damage, outage, vulnerability, or risk. C0–C3 are numerically identical for this run. C3 is a borrowed RClimDex-compatible design rule for E1/E2; no ETCCDI or WMO completeness prescription is claimed.</p>
+    <div class="prov" id="climate-prov">—</div>
+  </section>
+
+  <!-- ─────────────────────────────  BLOCK E — Assumptions & caveats  ───────────────────────────── -->
+  <section>
+    <div class="sec-eyebrow">Insight · E</div>
     <h2 class="sec-title">Assumptions &amp; caveats — stated in full</h2>
     <p class="sec-lede">These conditions shape every number above. They are reported openly so readers can judge the evidence directly.</p>
     <div class="assump">
@@ -170,9 +189,9 @@
     <div id="rule7-box" style="margin-top:22px;"></div>
   </section>
 
-  <!-- ─────────────────────────────  BLOCK E — Theme × hazard matrix (advanced)  ───────────────────────────── -->
+  <!-- ─────────────────────────────  BLOCK F — Theme × hazard matrix (advanced)  ───────────────────────────── -->
   <section class="tint">
-    <div class="sec-eyebrow">Insight · E</div>
+    <div class="sec-eyebrow">Insight · F</div>
     <h2 class="sec-title">SVI theme × hazard matrix</h2>
     <p class="sec-lede">Odds ratios disaggregated by each of the four SVI themes. Read alongside Block B: a positive OR here is still an association that geography largely explains. "yes/no" = survives Bonferroni m=45 (local family).</p>
     <div class="matrix-wrap">
@@ -210,6 +229,14 @@
     function setText(key, val){
       var els = document.querySelectorAll('[data-hl="' + key + '"]');
       for (var i = 0; i < els.length; i++) els[i].textContent = val;
+    }
+    function setClimate(key, val){
+      var els = document.querySelectorAll('[data-climate="' + key + '"]');
+      for (var i = 0; i < els.length; i++) els[i].textContent = val;
+    }
+    function signed(v, digits){
+      var n = Number(v), s = n >= 0 ? '+' : '';
+      return s + n.toFixed(digits);
     }
 
     // Muted, print-safe palette drawn from atlas-b ink tokens.
@@ -335,13 +362,44 @@
             var xa=chart.scales.x, ya=chart.scales.y, cx=xa.getPixelForValue(1);
             var g=chart.ctx; g.save(); g.strokeStyle=COL.muted; g.setLineDash([4,3]); g.lineWidth=1;
             g.beginPath(); g.moveTo(cx, ya.top); g.lineTo(cx, ya.bottom); g.stroke();
-            g.setLineDash([]); g.fillStyle=COL.muted; g.font='10px "IBM Plex Mono",monospace';
+            g.setLineDash([]); g.fillStyle=COL.muted; g.font='10px var(--font-mono)';
             g.fillText('OR = 1', cx+4, ya.top+10); g.restore();
           } }]
         });
       });
 
-      // ══════════ BLOCK D — Rule-7 corrections (retractions, transparency) ══════════
+      // ══════════ BLOCK D — climate return ══════════
+      var climate = d.climate_return || {};
+      var coverage = climate.coverage || {};
+      setClimate('eligible', intl(coverage.eligible));
+      setClimate('excluded', intl(coverage.excluded));
+      setClimate('outside', intl(coverage.outside_conus));
+      setClimate('invalid', intl(coverage.invalid_land_mask));
+      var climateMetrics = climate.metrics || [];
+      function metricUnit(m){ return m.id === 'E1' ? ' °C' : (m.id === 'E2' ? ' pp' : ' mm'); }
+      function climateCI(m){
+        return m.period_difference_ci95 ? '[' + signed(m.period_difference_ci95[0], 6) + ', ' + signed(m.period_difference_ci95[1], 6) + ']' + metricUnit(m) : 'not tested';
+      }
+      function climateTrend(m){
+        return m.trend_per_decade === undefined ? 'not estimated' : signed(m.trend_per_decade, 6) + metricUnit(m);
+      }
+      function climateStatus(m){
+        if (m.diagnostic_only) return '<span class="tag no">diagnostic-only</span>';
+        return '<span class="tag no">does not survive m=2</span>';
+      }
+      document.getElementById('tbl-climate').innerHTML = climateMetrics.map(function(m){
+        return '<tr><td><b>'+esc(m.id)+'</b><br><span style="color:var(--muted)">'+esc(m.meaning)+'</span></td>'
+          + '<td class="num">'+signed(m.period_difference, 6)+metricUnit(m)+'<br><span style="color:var(--muted)">'+signed(m.relative_change_pct, 4)+'%</span></td>'
+          + '<td class="ci">'+climateCI(m)+'</td><td class="num">'+climateTrend(m)+'</td>'
+          + '<td class="num">'+(m.adjusted_p === undefined ? 'not tested' : String(m.adjusted_p))+'</td>'
+          + '<td>'+climateStatus(m)+'</td></tr>';
+      }).join('') || '<tr><td colspan="6" style="color:var(--muted)">no data</td></tr>';
+      var e2 = climateMetrics.filter(function(m){ return m.id === 'E2'; })[0];
+      setClimate('e2-equal', e2 ? signed(e2.equal_cell_period_difference, 6) : '—');
+      document.getElementById('climate-prov').textContent =
+        'Source: ' + (climate.source || 'ANALYSIS input manifest') + ' · return SHA-256 ' + (climate.return_sha256 || '—');
+
+      // ══════════ BLOCK E — Rule-7 corrections (retractions, transparency) ══════════
       var meta = d.metadata || {};
       var r7 = meta.rule_7_corrections || [];
       if (r7.length){
@@ -350,7 +408,7 @@
         document.getElementById('rule7-box').innerHTML = html;
       }
 
-      // ══════════ BLOCK E — theme × hazard matrix ══════════
+      // ══════════ BLOCK F — theme × hazard matrix ══════════
       var mx = d.theme_hazard_matrix || [];
       var themeLabel = {RPL_THEME1:'Socioeconomic status', RPL_THEME2:'Household characteristics & disability',
                         RPL_THEME3:'Racial & ethnic minority', RPL_THEME4:'Housing type & transportation'};

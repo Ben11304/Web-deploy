@@ -3,29 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Energy Critical Infrastructure — Multi-hazard exposure assessment</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <title>Map Index · Energy Critical Infrastructure</title>
   <link rel="stylesheet" href="./static/css/atlas-b.css?v=20260604-b">
-  <style>
-    .approach{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;}
-    .approach .ap{border-top:2px solid var(--ink);padding-top:18px;}
-    .approach .ap .k{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
-    .approach .ap .t{font-size:18px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px;}
-    .approach .ap .d{font-size:13.5px;color:var(--ink-3);line-height:1.55;}
-    @media (max-width:1100px){.approach{grid-template-columns:1fr;gap:24px;}}
-
-    /* Card 1: Five-hazard mini-grid inside a single find card */
-    .or-mini{display:grid;grid-template-columns:1fr auto auto;gap:6px 14px;font-size:12.5px;margin-top:6px;align-items:baseline;}
-    .or-mini .lab{color:var(--ink-2);}
-    .or-mini .val{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;}
-    .or-mini .ci{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--muted);}
-    .or-mini .inv{color:var(--ink);font-weight:600;text-decoration:underline;}
-    .or-mini .ns{color:var(--muted);}
-    .find .note{font-size:11.5px;color:var(--muted);margin-top:12px;font-family:"IBM Plex Mono",monospace;letter-spacing:.04em;}
-    .ci-inline{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);font-weight:400;margin-left:6px;}
-  </style>
 </head>
 <body>
 
@@ -38,247 +17,297 @@
       </div>
     </div>
     <nav class="nav">
-      <a href="index.html" class="active">Overview</a>
-      <a href="map.html">Map</a>
+      <a href="index.html" class="active">Maps</a>
       <a href="insights.html">Insights</a>
       <a href="data-sources.html">Sources</a>
       <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">Repository</a>
     </nav>
-    <a href="map.html" class="cta">Open the map →</a>
+    <a href="#console" class="cta">Select a map ↓</a>
   </header>
 
-  <section class="hero">
-    <div>
-      <div class="eyebrow">Multi-Hazard Exposure Assessment · v3-PSHA-FEMA · 2026-06-04</div>
-      <h1>How exposed is the U.S. energy grid to natural hazards?</h1>
-      <p class="deck">A reproducible, open-data assessment of <b><span data-hl="total-m-num">—</span> million energy assets</b> against five modeled hazards — earthquake, flood, wildfire, hurricane, and winter storm — joined with social vulnerability and observed power-outage records. Built for policy makers, emergency planners, and researchers.</p>
-      <div class="hero-actions">
-        <a href="map.html" class="btn primary">Open the interactive map</a>
-        <a href="#methods" class="btn ghost">Read the methodology</a>
-      </div>
-    </div>
-    <aside class="hero-side">
-      <div class="cap">At a glance · non-tower primary</div>
-      <div class="kpi-side">
-        <div class="row"><span class="v tnum" data-hl="any-pct">—</span><span class="lbl">of non-tower assets exposed to at least one of 5 hazards</span></div>
-        <div class="row"><span class="v tnum" data-hl="total-m">—</span><span class="lbl">energy assets indexed (n=<span data-hl="nontower">—</span> excl. towers)</span></div>
-        <div class="row"><span class="v tnum">5</span><span class="lbl">hazards modeled across 50 states (Wildfire &amp; Winter CONUS only)</span></div>
-        <div class="row"><span class="v tnum" data-hl="counties">—</span><span class="lbl">counties in per-hazard OR analysis (SVI &times; OSM &ge;1 asset)</span></div>
-      </div>
-    </aside>
-  </section>
+  <section id="console">
+    <div class="sec-eyebrow">Research map index · 08 analytical views</div>
+    <h1 class="sec-title">Select an analytical map</h1>
+    <p class="sec-lede">Choose a research family, select a view, then set the geographic scope. Large GeoJSON layers load only after the map opens.</p>
 
-  <section id="methods">
-    <div class="sec-eyebrow">Approach · 00</div>
-    <h2 class="sec-title">A data-driven framework, fully traceable to source</h2>
-    <p class="sec-lede">The assessment integrates federal hazard models, social vulnerability indices, and observed impact data — producing per-asset exposure classifications and county-level risk surfaces. Every threshold cites a U.S. federal agency or peer-reviewed paper; nothing is inferred, simulated, or averaged across sources. Headline numbers report the <b>non-tower primary</b> stratum (n=<span data-hl="nontower">—</span>); all-assets sensitivity (n=<span data-hl="total">—</span>) is reported in parallel.</p>
-    <div class="approach">
-      <div class="ap">
-        <div class="k">Scope</div>
-        <div class="t">Multi-hazard exposure</div>
-        <div class="d">Earthquake, flood, wildfire, hurricane, and winter storm — across 50 states and <span data-hl="counties">—</span> SVI-eligible counties.</div>
-      </div>
-      <div class="ap">
-        <div class="k">Asset index</div>
-        <div class="t">OpenStreetMap 2024</div>
-        <div class="d"><span data-hl="total-m">—</span> assets · <span data-hl="nontower">—</span> non-tower primary stratum: plants, substations, lines, generators, pipelines, and fuel.</div>
-      </div>
-      <div class="ap">
-        <div class="k">Method</div>
-        <div class="t">Literature-backed thresholds</div>
-        <div class="d">All exposure thresholds cite federal agencies or peer-reviewed sources. 95% CIs from asset-level stratified bootstrap (B=1000, stratify by state).</div>
-      </div>
-    </div>
-  </section>
+    <form action="map_hazard.html" id="main-form" method="GET">
+      <div class="console-grid">
 
-  <section class="tint">
-    <div class="sec-eyebrow">Findings · 01</div>
-    <h2 class="sec-title">Exposure by hazard</h2>
-    <p class="sec-lede">Share of non-tower assets meeting each hazard's exposure threshold (n=<span data-hl="nontower">—</span>). 95% CIs shown in mono. Every threshold cites a federal agency or peer-reviewed source.</p>
-    <div class="exp-grid">
-      <div class="exp">
-        <div class="h"><span>Wildfire</span><span class="ag">USGS WFPI</span></div>
-        <div class="v tnum" data-hl="wfpi">—</div>
-        <div class="track"><span data-hlw="wfpi" style="width:0%"></span></div>
-        <div class="d">WFPI P95 ≥ 75 — large-fire probability tier · CI <span data-hl="wfpi-ci">—</span></div>
-      </div>
-      <div class="exp">
-        <div class="h"><span>Earthquake</span><span class="ag">USGS NSHM</span></div>
-        <div class="v tnum" data-hl="eq">—</div>
-        <div class="track"><span data-hlw="eq" style="width:0%"></span></div>
-        <div class="d">PGA ≥ 0.092 g (MMI ≥ VI) · NSHM 2023 · CI <span data-hl="eq-ci">—</span></div>
-      </div>
-      <div class="exp">
-        <div class="h"><span>Winter storm</span><span class="ag">NOAA SNODAS</span></div>
-        <div class="v tnum" data-hl="winter">—</div>
-        <div class="track"><span data-hlw="winter" style="width:0%"></span></div>
-        <div class="d">SWE P95 ≥ 100 mm · CONUS only (preliminary) · CI <span data-hl="winter-ci">—</span></div>
-      </div>
-      <div class="exp">
-        <div class="h"><span>Hurricane</span><span class="ag">NOAA IBTrACS</span></div>
-        <div class="v tnum" data-hl="hurr">—</div>
-        <div class="track"><span data-hlw="hurr" style="width:0%"></span></div>
-        <div class="d">Max sustained winds ≥ 64 kt (Cat 1+) · CI <span data-hl="hurr-ci">—</span></div>
-      </div>
-      <div class="exp">
-        <div class="h"><span>Flood</span><span class="ag">Multi-source</span></div>
-        <div class="v tnum" data-hl="flood">—</div>
-        <div class="track"><span data-hlw="flood" style="width:0%"></span></div>
-        <div class="d">FEMA SFHA ∪ SLOSH Cat1 ∪ HTF Minor ∪ SLR 2050 · CI <span data-hl="flood-ci">—</span></div>
-      </div>
-      <div class="exp summary">
-        <div class="h"><span>Any hazard</span><span class="ag">Combined</span></div>
-        <div class="v tnum" data-hl="any2">—</div>
-        <div class="track"><span data-hlw="any2" style="width:0%"></span></div>
-        <div class="d">≥ 2 hazards: <span data-hl="multi">—</span> <span data-hl="multi-ci">—</span> · CI <span data-hl="any-ci">—</span></div>
-      </div>
-    </div>
-  </section>
+        <!-- MAP FAMILY -->
+        <div class="col-family">
+          <div class="col-head">
+            <span>I · Research family</span>
+            <span class="req">required</span>
+          </div>
 
-  <section>
-    <div class="sec-eyebrow">Findings · 02</div>
-    <h2 class="sec-title">Three signals from the data</h2>
-    <p class="sec-lede">Per-hazard social vulnerability associations, network exposure, and outage relationships. All <i>p</i>-values evaluated against a Bonferroni-corrected family of <i>m</i>=<span data-hl="m">—</span> tests (cutoff α/<span data-hl="m">—</span> = <span data-hl="cutoff">—</span>).</p>
-    <div class="find-grid">
-
-      <div class="find">
-        <div class="stat tnum">Five hazards, five signals</div>
-        <div class="ttl">SVI × hazard exposure (per-hazard OR)</div>
-        <div class="txt">Disaggregating by hazard reveals heterogeneous direction. Hurricane is the strongest signal but carries a known coastal Southeast / Black Belt structural confound.</div>
-        <div class="or-mini">
-          <span class="lab">Hurricane</span><span class="val" data-hl="or-hurr">—</span><span class="ci" data-hl="or-hurr-ci">—</span>
-          <span class="lab">Wildfire</span><span class="val" data-hl="or-wf">—</span><span class="ci" data-hl="or-wf-ci">—</span>
-          <span class="lab">Flood</span><span class="val" data-hl="or-flood">—</span><span class="ci" data-hl="or-flood-ci">—</span>
-          <span class="lab">Earthquake <span class="ns">(ns)</span></span><span class="val ns" data-hl="or-eq">—</span><span class="ci" data-hl="or-eq-ci">—</span>
-          <span class="lab">Winter storm</span><span class="val inv" data-hl="or-winter">—</span><span class="ci" data-hl="or-winter-ci">—</span>
+          <div class="map-families" role="tablist" aria-label="Analytical map families">
+            <button type="button" class="map-family sel" role="tab" aria-selected="true" data-map-family="hazard">
+              <span class="family-code">01</span><span><b>Hazard</b><small>Hazard surfaces and asset exposure</small></span><span>→</span>
+            </button>
+            <button type="button" class="map-family" role="tab" aria-selected="false" data-map-family="infrastructure">
+              <span class="family-code">02</span><span><b>Infrastructure</b><small>Asset distribution and network vulnerability</small></span><span>→</span>
+            </button>
+            <button type="button" class="map-family" role="tab" aria-selected="false" data-map-family="socioeconomic">
+              <span class="family-code">03</span><span><b>Socioeconomic &amp; outcomes</b><small>Social vulnerability, outages, and analytics</small></span><span>→</span>
+            </button>
+          </div>
         </div>
-        <div class="note">4 / 5 survive Bonferroni m=87 · Winter is inverse</div>
+
+        <!-- VIEW TYPE -->
+        <div class="col-view">
+          <div class="col-head">
+            <span>II · Analytical view</span>
+            <span id="family-count">03 views</span>
+          </div>
+
+          <div class="views-grid" id="views-grid">
+            <label class="view-card sel" data-family="hazard" data-value="hazard" data-target="map_hazard.html">
+              <input type="radio" name="view_type" value="hazard" checked>
+              <div class="plate"><span>View 01</span><span class="sel-mark">selected</span></div><div class="vt">Hazard layers</div><div class="vd">Examine modeled hazard intensity and extent.</div>
+            </label>
+            <label class="view-card" data-family="hazard" data-value="exposure" data-target="map_exposure.html">
+              <input type="radio" name="view_type" value="exposure"><div class="plate"><span>View 02</span><span class="sel-mark">selected</span></div><div class="vt">Asset exposure</div><div class="vd">Identify assets meeting hazard exposure criteria.</div>
+            </label>
+            <label class="view-card" data-family="hazard" data-value="heatmap" data-target="map_heatmap.html">
+              <input type="radio" name="view_type" value="heatmap"><div class="plate"><span>View 03</span><span class="sel-mark">selected</span></div><div class="vt">Infrastructure density</div><div class="vd">Inspect spatial concentration of energy assets.</div>
+            </label>
+            <label class="view-card" hidden data-family="infrastructure" data-value="energy_detail" data-target="map_energy_detail.html">
+              <input type="radio" name="view_type" value="energy_detail"><div class="plate"><span>View 04</span><span class="sel-mark">selected</span></div><div class="vt">Energy asset atlas</div><div class="vd">Inspect infrastructure type, sector, and location.</div>
+            </label>
+            <label class="view-card" hidden data-family="infrastructure" data-value="energy_vulnerability" data-target="map_energy_vulnerability.html">
+              <input type="radio" name="view_type" value="energy_vulnerability"><div class="plate"><span>View 05</span><span class="sel-mark">selected</span></div><div class="vt">Network vulnerability</div><div class="vd">Examine node-level network criticality.</div>
+            </label>
+            <label class="view-card" hidden data-family="socioeconomic" data-value="social_vulnerability" data-target="map_social_vulnerability.html">
+              <input type="radio" name="view_type" value="social_vulnerability"><div class="plate"><span>View 06</span><span class="sel-mark">selected</span></div><div class="vt">Social vulnerability</div><div class="vd">Compare county-level CDC/ATSDR SVI metrics.</div>
+            </label>
+            <label class="view-card" hidden data-family="socioeconomic" data-value="impact" data-target="map_impact.html">
+              <input type="radio" name="view_type" value="impact"><div class="plate"><span>View 07</span><span class="sel-mark">selected</span></div><div class="vt">Power outage outcomes</div><div class="vd">Inspect observed county-level outage records.</div>
+            </label>
+            <label class="view-card" hidden data-family="socioeconomic" data-value="analytics" data-target="map_analytics.html">
+              <input type="radio" name="view_type" value="analytics"><div class="plate"><span>View 08</span><span class="sel-mark">selected</span></div><div class="vt">Analytical results</div><div class="vd">Review aggregate statistical outputs and sensitivity.</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- AREA + SUBMIT -->
+        <div class="col-area">
+          <div class="col-head"><span>III · Geographic scope</span><span class="req">required</span></div>
+
+          <div class="area-opts" id="area-opts">
+            <label class="area-opt sel" data-mode="entire">
+              <input type="radio" name="mode" value="entire" id="mode-entire" checked>
+              <span class="dot"></span>
+              <span>Entire United States</span>
+              <span class="desc">50 states</span>
+            </label>
+            <label class="area-opt" data-mode="select">
+              <input type="radio" name="mode" value="select" id="mode-select">
+              <span class="dot"></span>
+              <span>Specific states</span>
+              <span class="desc">Multi-select</span>
+            </label>
+          </div>
+
+          <div class="state-picker" id="states-container" style="display:none;">
+            <input type="text" id="state-search" placeholder="Search states…" autocomplete="off">
+            <div class="state-list" id="state-list"></div>
+            <div class="state-count">
+              <span id="selected-count">None selected</span>
+              <span><span id="total-count">50</span> available</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBMIT -->
+        <div class="col-config">
+          <div class="col-head">
+            <span>IV · Render</span>
+            <span class="req">ready</span>
+          </div>
+
+          <div class="config-panel">
+            <div class="detail-opts active">
+              <h3 id="selected-title">Hazard layers</h3>
+              <div class="sub" id="selected-sub">Examine modeled hazard intensity and extent.</div>
+
+              <div class="config-note">
+                Additional filters — sector, hazard type, asset types, color scale — are available on each map's side panel after it loads.
+              </div>
+
+              <div class="submit-row">
+                <button type="submit" class="submit-btn">
+                  <span>Render the map</span>
+                  <span class="arrow">→</span>
+                </button>
+                <div class="submit-note" id="submit-note">View 01 · Hazard layers</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
-
-      <div class="find">
-        <div class="stat tnum" data-hl="netv-stat">—</div>
-        <div class="ttl">Network vulnerability × exposure</div>
-        <div class="txt">Of HIGH-vulnerability nodes (top-25%-minus-CRITICAL stratum by betweenness centrality), <b data-hl="netv-pct">—</b> are exposed to ≥1 modeled hazard. Permutation null mean <b data-hl="netv-null">—</b>, <i>z</i>=<span data-hl="netv-z">—</span>, <i>p</i>≈0 — directional signal is significant; effect-size lift <b data-hl="netv-eff">—</b> is small because the 5H baseline is already high.</div>
-        <div class="note">Recomputed 2026-06-04 · supersedes retracted 66.6%</div>
-      </div>
-
-      <div class="find">
-        <div class="stat tnum" data-hl="slm-beta">—</div>
-        <div class="ttl">Multi-hazard × outage (SLM)</div>
-        <div class="txt">Spatial lag model: multi-hazard exposure predicts county outage customer-hours after controlling for spatial autocorrelation. <b>slm_p = <span data-hl="slm-p">—</span></b>, ρ_spatial = <span data-hl="slm-rho">—</span>; Moran's I residual dropped <span data-hl="slm-moran-ols">—</span> → <span data-hl="slm-moran-slm">—</span>. <b>Survives Bonferroni m=<span data-hl="m">—</span>.</b></div>
-        <div class="note">Replaces Spearman ρ=0.456 (did not survive m=87)</div>
-      </div>
-
-    </div>
-  </section>
-
-  <section class="tint">
-    <div class="sec-eyebrow">Provenance · 03</div>
-    <h2 class="sec-title">Data sources</h2>
-    <p class="sec-lede">Every layer is traceable to a U.S. federal agency or peer-reviewed open-data platform. See the <a href="data-sources.html" style="border-bottom:1px solid var(--line)">full citations</a> for DOIs and methodology.</p>
-    <div class="src-grid">
-      <div class="src"><div class="ag">USGS · Earthquake</div><div class="ds"><a href="https://doi.org/10.5066/P9GNPCOD" target="_blank" rel="noopener">NSHM 2023</a></div><div class="mt">475-yr PGA · 50 states · site class BC</div></div>
-      <div class="src"><div class="ag">FEMA + NOAA · Flood</div><div class="ds"><a href="https://www.fema.gov/flood-maps/national-flood-hazard-layer" target="_blank" rel="noopener">NFHL</a> + <a href="https://www.nhc.noaa.gov/nationalsurge/" target="_blank" rel="noopener">SLOSH</a> + HTF + SLR</div><div class="mt">SFHA ∪ SLOSH Cat1 ∪ HTF Minor ∪ SLR 2050</div></div>
-      <div class="src"><div class="ag">USGS · Wildfire</div><div class="ds"><a href="https://www.usgs.gov/fire-danger-forecast/wildland-fire-potential-index-wfpi" target="_blank" rel="noopener">WFPI P95</a></div><div class="mt">2008–2025 daily · 1 km</div></div>
-      <div class="src"><div class="ag">NOAA · Hurricane</div><div class="ds"><a href="https://www.ncei.noaa.gov/products/international-best-track-archive" target="_blank" rel="noopener">IBTrACS v04r01</a></div><div class="mt">1842–2024 · 6-hourly tracks</div></div>
-      <div class="src"><div class="ag">NOAA · Winter storm</div><div class="ds"><a href="https://nsidc.org/data/g02158" target="_blank" rel="noopener">SNODAS SWE P95</a></div><div class="mt">2003–2025 daily · 1 km CONUS</div></div>
-      <div class="src"><div class="ag">CDC/ATSDR · Social</div><div class="ds"><a href="https://www.atsdr.cdc.gov/placeandhealth/svi/" target="_blank" rel="noopener">SVI 2022</a></div><div class="mt"><span data-hl="counties">—</span> SVI-eligible counties · four themes</div></div>
-      <div class="src"><div class="ag">DOE ORNL · Power</div><div class="ds"><a href="https://doi.org/10.13139/OLCF/2500278" target="_blank" rel="noopener">EAGLE-I</a></div><div class="mt">2022 &amp; 2024 · 15-min intervals</div></div>
-      <div class="src"><div class="ag">OpenStreetMap · Assets</div><div class="ds"><a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OSM 2024 extract</a></div><div class="mt"><span data-hl="total-m">—</span> energy assets · ODbL</div></div>
-    </div>
+    </form>
   </section>
 
   <footer class="foot">
     <div>© 2026 ENERGY CRITICAL INFRASTRUCTURE · KENT STATE UNIVERSITY</div>
-    <div class="links"><a href="map.html">Open map</a><a href="data-sources.html">Full citations</a><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a><a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">GitHub</a></div>
+    <div class="links">
+      <a href="index.html">Maps</a>
+      <a href="data-sources.html">Full citations</a>
+      <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
+      <a href="https://github.com/ruoxinx/energy-infrastructure-risk" target="_blank" rel="noopener">GitHub</a>
+    </div>
   </footer>
 
-  <!-- Headline hydration: all claim numbers render from analytics-data.json (single source of truth).
-       Static markup carries "—" placeholders only — no hardcoded statistics (drift-proof).
-       Scientific thresholds (≥75, ≥0.092 g, ≥100 mm, ≥64 kt), the hazard count "5", and bootstrap B=1000
-       are literature-fixed methodology constants and remain as literal text. -->
   <script>
-  (function () {
-    var SUP = {'-':'\u207b','0':'\u2070','1':'\u00b9','2':'\u00b2','3':'\u00b3','4':'\u2074','5':'\u2075','6':'\u2076','7':'\u2077','8':'\u2078','9':'\u2079'};
-    function sup(s){ return String(s).split('').map(function(c){ return SUP[c] || c; }).join(''); }
-    function r1(v){ return (Math.round(v*10)/10).toFixed(1); }
-    function r2(v){ return (Math.round(v*100)/100).toFixed(2); }
-    function r3(v){ return (Math.round(v*1000)/1000).toFixed(3); }
-    function r4(v){ return (Math.round(v*10000)/10000).toFixed(4); }
-    function pct1(v){ return r1(v) + '%'; }
-    function intl(v){ return Number(v).toLocaleString('en-US'); }
-    function mil(v){ return (v/1e6).toFixed(2) + 'M'; }
-    function milNum(v){ return (v/1e6).toFixed(2); }
-    function ci2(a){ return '[' + r2(a[0]) + ', ' + r2(a[1]) + ']'; }
-    function width(v, s){ return parseFloat(r1(r1(v)*s)) + '%'; }
-    function expf(p){ var e = Math.floor(Math.log10(p)); var m = p / Math.pow(10, e); return r1(m) + '\u00d710' + sup(e); }
-
-    function setText(key, val){
-      var els = document.querySelectorAll('[data-hl="' + key + '"]');
-      for (var i = 0; i < els.length; i++) els[i].textContent = val;
-    }
-    function setWidth(key, val){
-      var els = document.querySelectorAll('[data-hlw="' + key + '"]');
-      for (var i = 0; i < els.length; i++) els[i].style.width = val;
-    }
-
-    function hydrate(d){
-      var n = d.national;
-      var orRows = d.hazard_svi_or || [];
-      function OR(h){ for (var i = 0; i < orRows.length; i++) if (orRows[i].hazard === h) return orRows[i]; return null; }
-      var slm = (d.slm_outage_models || [])[0];
-      var nv = d.network_vuln_permutation;
-      var tf = d.test_family_m87;
-
-      var text = {
-        'total-m-num': milNum(n.total_assets),
-        'total-m': mil(n.total_assets),
-        'total': intl(n.total_assets),
-        'nontower': intl(n.total_non_tower),
-        'counties': intl(OR('Hurricane').n_eligible_counties),
-        'any-pct': pct1(n.any_5h_pct_non_tower),
-        'wfpi': pct1(n.wfpi_pct_non_tower), 'wfpi-ci': ci2(n.wfpi_ci_non_tower),
-        'eq': pct1(n.eq_pct_non_tower), 'eq-ci': ci2(n.eq_ci_non_tower),
-        'winter': pct1(n.winter_pct_non_tower), 'winter-ci': ci2(n.winter_ci_non_tower),
-        'hurr': pct1(n.hurr_pct_non_tower), 'hurr-ci': ci2(n.hurr_ci_non_tower),
-        'flood': pct1(n.flood_pct_non_tower), 'flood-ci': ci2(n.flood_ci_non_tower),
-        'any2': pct1(n.any_5h_pct_non_tower), 'any-ci': ci2(n.any_5h_ci_non_tower),
-        'multi': pct1(n.multi_geq2_pct_non_tower), 'multi-ci': ci2(n.multi_geq2_ci_non_tower),
-        'or-hurr': 'OR ' + r2(OR('Hurricane').or_wald), 'or-hurr-ci': ci2(OR('Hurricane').ci),
-        'or-wf': 'OR ' + r2(OR('Wildfire').or_wald), 'or-wf-ci': ci2(OR('Wildfire').ci),
-        'or-flood': 'OR ' + r2(OR('Flood').or_wald), 'or-flood-ci': ci2(OR('Flood').ci),
-        'or-eq': 'OR ' + r2(OR('Earthquake').or_wald), 'or-eq-ci': ci2(OR('Earthquake').ci),
-        'or-winter': 'OR ' + r2(OR('Winter').or_wald), 'or-winter-ci': ci2(OR('Winter').ci),
-        'netv-stat': pct1(nv.high_only_pct), 'netv-pct': r2(nv.high_only_pct) + '%',
-        'netv-null': r2(nv.null_mean_pct) + '%', 'netv-z': r2(nv.high_only_z),
-        'netv-eff': '+' + r2(nv.effect_size_pp_high_only) + ' pp',
-        'slm-beta': '\u03b2 = ' + r3(slm.slm_beta), 'slm-p': expf(slm.slm_p),
-        'slm-rho': r4(slm.rho_spatial), 'slm-moran-ols': r3(slm.moran_i_ols),
-        'slm-moran-slm': r3(slm.moran_i_slm),
-        'm': String(tf.family_size), 'cutoff': expf(tf['bonferroni_cutoff_alpha_0.05'])
-      };
-      for (var k in text) if (text.hasOwnProperty(k)) setText(k, text[k]);
-
-      setWidth('wfpi', width(n.wfpi_pct_non_tower, 2));
-      setWidth('eq', width(n.eq_pct_non_tower, 2));
-      setWidth('winter', width(n.winter_pct_non_tower, 2));
-      setWidth('hurr', width(n.hurr_pct_non_tower, 2));
-      setWidth('flood', width(n.flood_pct_non_tower, 2));
-      setWidth('any2', width(n.any_5h_pct_non_tower, 1.5));
+  (function(){
+    // States from server-side context (Jinja) — works in both Flask and build_static
+    var STATES = [{"display": "Alabama", "folder": "alabama", "value": "alabama"}, {"display": "Alaska", "folder": "alaska", "value": "alaska"}, {"display": "Arizona", "folder": "arizona", "value": "arizona"}, {"display": "Arkansas", "folder": "arkansas", "value": "arkansas"}, {"display": "California", "folder": "california", "value": "california"}, {"display": "Colorado", "folder": "colorado", "value": "colorado"}, {"display": "Connecticut", "folder": "connecticut", "value": "connecticut"}, {"display": "Delaware", "folder": "delaware", "value": "delaware"}, {"display": "Florida", "folder": "florida", "value": "florida"}, {"display": "Georgia", "folder": "georgia", "value": "georgia"}, {"display": "Hawaii", "folder": "hawaii", "value": "hawaii"}, {"display": "Idaho", "folder": "idaho", "value": "idaho"}, {"display": "Illinois", "folder": "illinois", "value": "illinois"}, {"display": "Indiana", "folder": "indiana", "value": "indiana"}, {"display": "Iowa", "folder": "iowa", "value": "iowa"}, {"display": "Kansas", "folder": "kansas", "value": "kansas"}, {"display": "Kentucky", "folder": "kentucky", "value": "kentucky"}, {"display": "Louisiana", "folder": "louisiana", "value": "louisiana"}, {"display": "Maine", "folder": "maine", "value": "maine"}, {"display": "Maryland", "folder": "maryland", "value": "maryland"}, {"display": "Massachusetts", "folder": "massachusetts", "value": "massachusetts"}, {"display": "Michigan", "folder": "michigan", "value": "michigan"}, {"display": "Minnesota", "folder": "minnesota", "value": "minnesota"}, {"display": "Mississippi", "folder": "mississippi", "value": "mississippi"}, {"display": "Missouri", "folder": "missouri", "value": "missouri"}, {"display": "Montana", "folder": "montana", "value": "montana"}, {"display": "Nebraska", "folder": "nebraska", "value": "nebraska"}, {"display": "Nevada", "folder": "nevada", "value": "nevada"}, {"display": "New Hampshire", "folder": "new_hampshire", "value": "new_hampshire"}, {"display": "New Jersey", "folder": "new_jersey", "value": "new_jersey"}, {"display": "New Mexico", "folder": "new_mexico", "value": "new_mexico"}, {"display": "New York", "folder": "new_york", "value": "new_york"}, {"display": "North Carolina", "folder": "north_carolina", "value": "north_carolina"}, {"display": "North Dakota", "folder": "north_dakota", "value": "north_dakota"}, {"display": "Ohio", "folder": "ohio", "value": "ohio"}, {"display": "Oklahoma", "folder": "oklahoma", "value": "oklahoma"}, {"display": "Oregon", "folder": "oregon", "value": "oregon"}, {"display": "Pennsylvania", "folder": "pennsylvania", "value": "pennsylvania"}, {"display": "Rhode Island", "folder": "rhode_island", "value": "rhode_island"}, {"display": "South Carolina", "folder": "south_carolina", "value": "south_carolina"}, {"display": "South Dakota", "folder": "south_dakota", "value": "south_dakota"}, {"display": "Tennessee", "folder": "tennessee", "value": "tennessee"}, {"display": "Texas", "folder": "texas", "value": "texas"}, {"display": "Utah", "folder": "utah", "value": "utah"}, {"display": "Vermont", "folder": "vermont", "value": "vermont"}, {"display": "Virginia", "folder": "virginia", "value": "virginia"}, {"display": "Washington", "folder": "washington", "value": "washington"}, {"display": "West Virginia", "folder": "west_virginia", "value": "west_virginia"}, {"display": "Wisconsin", "folder": "wisconsin", "value": "wisconsin"}, {"display": "Wyoming", "folder": "wyoming", "value": "wyoming"}];
+    // Fallback hardcoded list if context absent
+    if (!STATES || STATES.length === 0) {
+      STATES = [
+        {value:"alabama",display:"Alabama"},{value:"alaska",display:"Alaska"},{value:"arizona",display:"Arizona"},
+        {value:"arkansas",display:"Arkansas"},{value:"california",display:"California"},{value:"colorado",display:"Colorado"},
+        {value:"connecticut",display:"Connecticut"},{value:"delaware",display:"Delaware"},{value:"florida",display:"Florida"},
+        {value:"georgia",display:"Georgia"},{value:"hawaii",display:"Hawaii"},{value:"idaho",display:"Idaho"},
+        {value:"illinois",display:"Illinois"},{value:"indiana",display:"Indiana"},{value:"iowa",display:"Iowa"},
+        {value:"kansas",display:"Kansas"},{value:"kentucky",display:"Kentucky"},{value:"louisiana",display:"Louisiana"},
+        {value:"maine",display:"Maine"},{value:"maryland",display:"Maryland"},{value:"massachusetts",display:"Massachusetts"},
+        {value:"michigan",display:"Michigan"},{value:"minnesota",display:"Minnesota"},{value:"mississippi",display:"Mississippi"},
+        {value:"missouri",display:"Missouri"},{value:"montana",display:"Montana"},{value:"nebraska",display:"Nebraska"},
+        {value:"nevada",display:"Nevada"},{value:"new_hampshire",display:"New Hampshire"},{value:"new_jersey",display:"New Jersey"},
+        {value:"new_mexico",display:"New Mexico"},{value:"new_york",display:"New York"},{value:"north_carolina",display:"North Carolina"},
+        {value:"north_dakota",display:"North Dakota"},{value:"ohio",display:"Ohio"},{value:"oklahoma",display:"Oklahoma"},
+        {value:"oregon",display:"Oregon"},{value:"pennsylvania",display:"Pennsylvania"},{value:"rhode_island",display:"Rhode Island"},
+        {value:"south_carolina",display:"South Carolina"},{value:"south_dakota",display:"South Dakota"},{value:"tennessee",display:"Tennessee"},
+        {value:"texas",display:"Texas"},{value:"utah",display:"Utah"},{value:"vermont",display:"Vermont"},
+        {value:"virginia",display:"Virginia"},{value:"washington",display:"Washington"},{value:"west_virginia",display:"West Virginia"},
+        {value:"wisconsin",display:"Wisconsin"},{value:"wyoming",display:"Wyoming"}
+      ];
     }
 
-    // Same fetch convention as map_analytics_loader.html: bundled first, then CDN.
-    fetch('./data/analytics-data.json')
-      .then(function (r) { if (r.ok) return r.json(); throw new Error('not bundled'); })
-      .catch(function () {
-        var u = window.DATA_BASE_URL ? window.DATA_BASE_URL + '/analytics-data.json' : './data/analytics-data.json';
-        return fetch(u).then(function (r) { return r.json(); });
-      })
-      .then(hydrate)
-      .catch(function () { /* fetch failed — leave "—" placeholders; never show a wrong number */ });
+    var list = document.getElementById('state-list');
+    var totalCount = document.getElementById('total-count');
+    if (totalCount) totalCount.textContent = STATES.length;
+
+    STATES.forEach(function(s){
+      var value = (typeof s === 'string') ? s : s.value;
+      var label = (typeof s === 'string')
+        ? s.split('_').map(function(w){return w.charAt(0).toUpperCase()+w.slice(1);}).join(' ')
+        : (s.display || value);
+      var el = document.createElement('label');
+      el.className = 'state-opt';
+      el.innerHTML = '<input type="checkbox" name="region" value="'+value+'"> <span>'+label+'</span>';
+      list.appendChild(el);
+    });
+
+    var modeEntire = document.getElementById('mode-entire');
+    var modeSelect = document.getElementById('mode-select');
+    var container = document.getElementById('states-container');
+    var areaOpts = document.querySelectorAll('.area-opt');
+    var selectedCount = document.getElementById('selected-count');
+
+    function updateMode(){
+      var isEntire = modeEntire.checked;
+      container.style.display = isEntire ? 'none' : 'block';
+      areaOpts.forEach(function(o){
+        o.classList.toggle('sel', o.dataset.mode === (isEntire ? 'entire' : 'select'));
+      });
+      if(isEntire){
+        document.querySelectorAll('input[name="region"]').forEach(function(cb){cb.checked=false;});
+        updateCount();
+      }
+    }
+    modeEntire.addEventListener('change', updateMode);
+    modeSelect.addEventListener('change', updateMode);
+    areaOpts.forEach(function(opt){
+      opt.addEventListener('click', function(){
+        var r = opt.querySelector('input[type="radio"]');
+        r.checked = true;
+        r.dispatchEvent(new Event('change'));
+      });
+    });
+
+    function updateCount(){
+      var n = document.querySelectorAll('input[name="region"]:checked').length;
+      selectedCount.textContent = n === 0 ? 'None selected' : (n + (n===1?' state selected':' states selected'));
+    }
+    document.addEventListener('change', function(e){
+      if(e.target && e.target.name === 'region') updateCount();
+    });
+
+    var search = document.getElementById('state-search');
+    search.addEventListener('input', function(){
+      var q = this.value.toLowerCase();
+      document.querySelectorAll('.state-opt').forEach(function(o){
+        var t = o.querySelector('span').textContent.toLowerCase();
+        o.style.display = t.indexOf(q) >= 0 ? '' : 'none';
+      });
+    });
+
+    var cards = document.querySelectorAll('.view-card');
+    var familyButtons = document.querySelectorAll('.map-family');
+    var familyCount = document.getElementById('family-count');
+    var selTitle = document.getElementById('selected-title');
+    var selSub = document.getElementById('selected-sub');
+    var submitNote = document.getElementById('submit-note');
+    var form = document.getElementById('main-form');
+
+    function selectFamily(family, preferredCard){
+      var visible = [];
+      familyButtons.forEach(function(button){
+        var active = button.dataset.mapFamily === family;
+        button.classList.toggle('sel', active);
+        button.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      cards.forEach(function(card){
+        var show = card.dataset.family === family;
+        card.hidden = !show;
+        if(show) visible.push(card);
+      });
+      familyCount.textContent = String(visible.length).padStart(2, '0') + ' views';
+      if(preferredCard && preferredCard.dataset.family === family) selectCard(preferredCard);
+      else if(visible.length) selectCard(visible[0]);
+    }
+
+    function selectCard(c){
+      cards.forEach(function(x){x.classList.remove('sel');});
+      c.classList.add('sel');
+      c.querySelector('input[type="radio"]').checked = true;
+      selTitle.textContent = c.querySelector('.vt').textContent;
+      selSub.textContent = c.querySelector('.vd').textContent;
+      submitNote.textContent = c.querySelector('.plate span').textContent + ' · ' + c.querySelector('.vt').textContent;
+      form.action = c.dataset.target;
+    }
+    cards.forEach(function(c){
+      c.addEventListener('click', function(){ selectCard(c); });
+    });
+    familyButtons.forEach(function(button){
+      button.addEventListener('click', function(){ selectFamily(button.dataset.mapFamily); });
+    });
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var picked = document.querySelector('.view-card.sel');
+      var target = picked.dataset.target;
+      var params = new URLSearchParams();
+      params.set('mode', modeEntire.checked ? 'entire' : 'select');
+      params.set('view_type', picked.dataset.value);
+      if(!modeEntire.checked){
+        document.querySelectorAll('input[name="region"]:checked').forEach(function(cb){
+          params.append('region', cb.value);
+        });
+      }
+      window.location.href = target + '?' + params.toString();
+    });
+
+    var urlVt = new URLSearchParams(window.location.search).get('view_type');
+    if(urlVt){
+      var match = document.querySelector('.view-card[data-value="'+urlVt+'"]');
+      if(match) selectFamily(match.dataset.family, match);
+    }
   })();
   </script>
-
 
     <script>
     // Static site: override view toggle to navigate to correct HTML file
