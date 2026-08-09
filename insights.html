@@ -35,15 +35,9 @@
     .assump .a .t{font-size:14.5px;font-weight:600;margin-bottom:5px;letter-spacing:-.01em;}
     .assump .a .d{font-size:13px;color:var(--ink-3);line-height:1.55;}
 
-    .matrix-wrap{overflow-x:auto;}
     .climate-wrap{overflow-x:auto;}
     .climate-note{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px;}
     @media(max-width:900px){.climate-note{grid-template-columns:1fr;}}
-    table.matrix{width:100%;border-collapse:collapse;font-size:11.5px;}
-    table.matrix th,table.matrix td{padding:8px 10px;border:1px solid var(--line-2);white-space:nowrap;}
-    table.matrix th{font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--paper-2);}
-    table.matrix td{font-family:var(--font-mono);font-variant-numeric:tabular-nums;color:var(--ink-2);}
-    table.matrix td.row-h{font-family:var(--font-sans);font-weight:600;color:var(--ink);white-space:normal;}
     .prov{font-size:11px;color:var(--muted);font-family:var(--font-mono);letter-spacing:.03em;margin-top:14px;}
   </style>
 </head>
@@ -70,7 +64,7 @@
     <div>
       <div class="eyebrow">Insights · Statistics &amp; assumptions · v3-PSHA-FEMA</div>
       <h1>What the data shows — and what it assumes</h1>
-      <p class="ins-lede">Headline statistics for five modeled hazards, the social-vulnerability association per hazard, and the decomposition that explains it. The central finding is <b>heterogeneity across hazards</b>, and that <b>geography — not demographic indexing — accounts for most or all of the exposure gap</b>. Every number renders from <code>analytics-data.json</code> (single source of truth); no value is hardcoded. Assumptions and caveats are stated in full, not hidden.</p>
+      <p class="ins-lede">Headline statistics for five modeled hazards, the registered geographic decomposition, and long-period climate diagnostics. The current evidence shows that <b>geography — not demographic indexing — accounts for most or all of the modeled exposure gap</b>. Every number renders from <code>analytics-data.json</code> (single source of truth); no value is hardcoded. Assumptions and caveats are stated in full, not hidden.</p>
     </div>
   </section>
 
@@ -110,28 +104,9 @@
     </div>
   </section>
 
-  <!-- ─────────────────────────────  BLOCK C — Per-hazard SVI association (OR)  ───────────────────────────── -->
-  <section class="tint">
-    <div class="sec-eyebrow">Insight · C</div>
-    <h2 class="sec-title">Per-hazard SVI association (odds ratios)</h2>
-    <p class="sec-lede">Odds of exposure in high-SVI vs low-SVI counties, per hazard. These are <b>associations, not causal effects</b> — Block B shows geography accounts for most or all of them. Evaluated against a Bonferroni family of <i>m</i>=<span data-hl="m">—</span> tests (cutoff α/<span data-hl="m">—</span> = <span data-hl="cutoff">—</span>).</p>
-    <div class="ins-grid2">
-      <div class="chart-box tall"><canvas id="chart-or"></canvas></div>
-      <div>
-        <table class="ins">
-          <thead><tr><th>Hazard</th><th style="text-align:right">OR</th><th style="text-align:right">95% CI</th><th>Status</th></tr></thead>
-          <tbody id="tbl-or"><tr><td colspan="4" style="color:var(--muted)">—</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-    <div class="callout" id="hurr-caveat">
-      <b>Hurricane caveat (Rule 4).</b> <span id="hurr-caveat-text">—</span>
-    </div>
-  </section>
-
-  <!-- ─────────────────────────────  BLOCK D — Climate return  ───────────────────────────── -->
+  <!-- ─────────────────────────────  BLOCK C — Climate return  ───────────────────────────── -->
   <section>
-    <div class="sec-eyebrow">Insight · D</div>
+    <div class="sec-eyebrow">Insight · C</div>
     <h2 class="sec-title">Long-period climate diagnostics at asset locations</h2>
     <p class="sec-lede">Comparison of 1961–1990 with 1991–2020 over the annual CONUS <b>asset-location-weighted</b> mean. The analysis covers <span data-climate="eligible">—</span> eligible non-tower assets; <span data-climate="excluded">—</span> are excluded (<span data-climate="outside">—</span> outside CONUS and <span data-climate="invalid">—</span> invalid land-mask). It is not a CONUS land-area average.</p>
     <div class="climate-wrap">
@@ -149,9 +124,9 @@
     <div class="prov" id="climate-prov">—</div>
   </section>
 
-  <!-- ─────────────────────────────  BLOCK E — Assumptions & caveats  ───────────────────────────── -->
+  <!-- ─────────────────────────────  BLOCK D — Assumptions & caveats  ───────────────────────────── -->
   <section>
-    <div class="sec-eyebrow">Insight · E</div>
+    <div class="sec-eyebrow">Insight · D</div>
     <h2 class="sec-title">Assumptions &amp; caveats — stated in full</h2>
     <p class="sec-lede">These conditions shape every number above. They are reported openly so readers can judge the evidence directly.</p>
     <div class="assump">
@@ -180,27 +155,8 @@
         <div class="t">Probabilistic (PSHA)</div>
         <div class="d">USGS NSHM 2023, 475-yr return-period PGA ≥ 0.092 g (MMI ≥ VI). This is a <b>probabilistic</b> hazard model, not a historical event catalog.</div>
       </div>
-      <div class="a">
-        <div class="k">Multiple testing</div>
-        <div class="t">Bonferroni m=<span data-hl="m">—</span></div>
-        <div class="d">Significance is judged against a family of <span data-hl="m">—</span> tests (cutoff <span data-hl="cutoff">—</span>). Earthquake's SVI association does <b>not</b> survive this correction; Winter's association is <b>inverse</b>.</div>
-      </div>
     </div>
     <div id="rule7-box" style="margin-top:22px;"></div>
-  </section>
-
-  <!-- ─────────────────────────────  BLOCK F — Theme × hazard matrix (advanced)  ───────────────────────────── -->
-  <section class="tint">
-    <div class="sec-eyebrow">Insight · F</div>
-    <h2 class="sec-title">SVI theme × hazard matrix</h2>
-    <p class="sec-lede">Odds ratios disaggregated by each of the four SVI themes. Read alongside Block B: a positive OR here is still an association that geography largely explains. "yes/no" = survives Bonferroni m=45 (local family).</p>
-    <div class="matrix-wrap">
-      <table class="matrix">
-        <thead><tr><th>SVI theme</th><th>Earthquake</th><th>Flood</th><th>Wildfire</th><th>Hurricane</th><th>Winter</th></tr></thead>
-        <tbody id="tbl-matrix"><tr><td colspan="6" style="color:var(--muted)">—</td></tr></tbody>
-      </table>
-    </div>
-    <div class="prov" id="prov-line">—</div>
   </section>
 
   <footer class="foot">
@@ -245,16 +201,10 @@
 
     function hydrate(d){
       var n = d.national;
-      var orRows = d.hazard_svi_or || [];
-      function OR(h){ for (var i=0;i<orRows.length;i++) if (orRows[i].hazard===h) return orRows[i]; return null; }
-      var tf = d.test_family_m87 || {};
-
       // ── Simple scalar placeholders ──
       setText('nontower', intl(n.total_non_tower));
       setText('total', intl(n.total_assets));
       setText('towers', intl(n.total_tower));
-      setText('m', String(tf.family_size || '—'));
-      setText('cutoff', expf(tf['bonferroni_cutoff_alpha_0.05']));
       setText('sfha-ci', ci2(n.flood_sfha_component_ci_non_tower));
 
       // ══════════ BLOCK A — exposure ══════════
@@ -320,57 +270,7 @@
         });
       });
 
-      // ══════════ BLOCK C — OR forest ══════════
-      var orDisplay = ['Hurricane','Wildfire','Flood','Earthquake','Winter'];
-      var oc = orDisplay.map(function(h){return OR(h);}).filter(Boolean);
-      function statusTag(o){
-        if (o.direction==='inverse') return '<span class="tag inv">INVERSE · survives m='+tf.family_size+'</span>';
-        if (o.survives_bonf_m87)     return '<span class="tag ok">survives m='+tf.family_size+'</span>';
-        return '<span class="tag no">does NOT survive m='+tf.family_size+'</span>';
-      }
-      var rowsC = oc.map(function(o){
-        return '<tr><td>'+esc(o.hazard)+'</td><td class="num">'+r2(o.or_wald)+'</td><td class="ci">'+ci2(o.ci)+'</td><td>'+statusTag(o)+'</td></tr>';
-      }).join('');
-      document.getElementById('tbl-or').innerHTML = rowsC;
-
-      // Hurricane caveat (verbatim from data)
-      var hc = OR('Hurricane');
-      document.getElementById('hurr-caveat-text').textContent =
-        (hc && hc.caveat) ? hc.caveat : 'Coastal-SE / Black-Belt structural confound — association, not a causal race claim.';
-
-      safeChart('chart-or', function(ctx){
-        // Floating horizontal bars span the 95% CI (log x); point marker = OR.
-        var labels = oc.map(function(o){return o.hazard;});
-        return new Chart(ctx, {
-          type:'bar',
-          data:{ labels:labels,
-            datasets:[
-              { label:'95% CI', data:oc.map(function(o){return [o.ci[0], o.ci[1]];}),
-                backgroundColor:oc.map(function(o){return o.direction==='inverse'?'#e7dcf0':(o.survives_bonf_m87?'#d7e8de':'#efe4cc');}),
-                borderColor:oc.map(function(o){return o.direction==='inverse'?COL.inv:(o.survives_bonf_m87?COL.ok:COL.warn);}),
-                borderWidth:1, barPercentage:0.5, order:2 },
-              { label:'Odds ratio', type:'line', showLine:false, pointRadius:5, pointStyle:'rectRot',
-                data:oc.map(function(o){return {x:o.or_wald, y:o.hazard};}),
-                pointBackgroundColor:COL.ink, order:1 }
-            ] },
-          options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
-            plugins:{ legend:{display:false},
-              tooltip:{ callbacks:{ label:function(c){ var o=oc[c.dataIndex]; return 'OR '+r2(o.or_wald)+'  CI '+ci2(o.ci); } } },
-              or1line:true },
-            scales:{ x:{ type:'logarithmic', min:0.15, max:7, grid:{color:COL.grid},
-                         ticks:{ callback:function(v){ return [0.25,0.5,1,2,4].indexOf(v)>-1? v : ''; } } },
-                     y:{ grid:{display:false} } } },
-          plugins:[{ id:'or1line', afterDraw:function(chart){
-            var xa=chart.scales.x, ya=chart.scales.y, cx=xa.getPixelForValue(1);
-            var g=chart.ctx; g.save(); g.strokeStyle=COL.muted; g.setLineDash([4,3]); g.lineWidth=1;
-            g.beginPath(); g.moveTo(cx, ya.top); g.lineTo(cx, ya.bottom); g.stroke();
-            g.setLineDash([]); g.fillStyle=COL.muted; g.font='10px var(--font-mono)';
-            g.fillText('OR = 1', cx+4, ya.top+10); g.restore();
-          } }]
-        });
-      });
-
-      // ══════════ BLOCK D — climate return ══════════
+      // ══════════ BLOCK C — climate return ══════════
       var climate = d.climate_return || {};
       var coverage = climate.coverage || {};
       setClimate('eligible', intl(coverage.eligible));
@@ -401,7 +301,7 @@
       document.getElementById('climate-prov').textContent =
         'Source: ' + (climate.source || 'ANALYSIS input manifest') + ' · return SHA-256 ' + (climate.return_sha256 || '—');
 
-      // ══════════ BLOCK E — Rule-7 corrections (retractions, transparency) ══════════
+      // ══════════ BLOCK D — Rule-7 corrections (retractions, transparency) ══════════
       var meta = d.metadata || {};
       var r7 = meta.rule_7_corrections || [];
       if (r7.length){
@@ -410,24 +310,6 @@
         document.getElementById('rule7-box').innerHTML = html;
       }
 
-      // ══════════ BLOCK F — theme × hazard matrix ══════════
-      var mx = d.theme_hazard_matrix || [];
-      var themeLabel = {RPL_THEME1:'Socioeconomic status', RPL_THEME2:'Household characteristics & disability',
-                        RPL_THEME3:'Racial & ethnic minority', RPL_THEME4:'Housing type & transportation'};
-      if (mx.length){
-        var rowsE = mx.map(function(row){
-          var name = themeLabel[row.svi_theme] || row.svi_theme;
-          return '<tr><td class="row-h">'+esc(name)+'</td>'
-            + ['eq','flood','wfpi','hurricane','winter'].map(function(k){ return '<td>'+esc(row[k]||'—')+'</td>'; }).join('')
-            + '</tr>';
-        }).join('');
-        document.getElementById('tbl-matrix').innerHTML = rowsE;
-      }
-
-      // Provenance line
-      document.getElementById('prov-line').textContent =
-        'Source: ' + (meta.source_manifest || 'ANALYSIS manifest') + ' · analytics-data ' + (meta.analytics_data_version || '') +
-        ' · built ' + (meta.build_at || '') + ' · framing: ' + (meta.paper_provenance || '');
     }
 
     function safeChart(canvasId, fn){
