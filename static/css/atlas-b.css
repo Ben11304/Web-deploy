@@ -70,6 +70,7 @@ button{font-family:inherit;cursor:pointer;}
 /* ---------- Section scaffold ---------- */
 section{padding:64px 56px;border-bottom:1px solid var(--line);}
 section.tint{background:var(--paper-2);}
+.map-index #console{padding-top:32px;}
 .sec-eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
 .sec-title{font-size:30px;font-weight:600;letter-spacing:-.025em;line-height:1.12;max-width:28ch;margin-bottom:14px;}
 .sec-lede{font-size:16.5px;color:var(--ink-2);max-width:66ch;line-height:1.6;margin-bottom:40px;}
