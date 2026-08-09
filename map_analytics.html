@@ -626,7 +626,11 @@
 
         var cardsHTML = '<div class="stat-card"><div class="stat-value">' + totalAssets.toLocaleString() + '</div><div class="stat-label">Total Assets</div></div>';
         cardsHTML += '<div class="stat-card"><div class="stat-value">' + stats.any_pct.toFixed(1) + '%</div><div class="stat-label">Any Hazard</div></div>';
-        cardsHTML += '<div class="stat-card"><div class="stat-value">' + stats.multi_pct.toFixed(1) + '%</div><div class="stat-label">Multi-Hazard</div></div>';
+        var selectedCount = (MAP_CONFIG.selectedRegions || []).length;
+        var isNational = selectedCount === 0 || selectedCount === ANALYTICS_DATA.states.length;
+        cardsHTML += isNational
+            ? '<div class="stat-card"><div class="stat-value">Pending</div><div class="stat-label">Multi-Hazard reconciliation</div></div>'
+            : '<div class="stat-card"><div class="stat-value">' + stats.multi_pct.toFixed(1) + '%</div><div class="stat-label">Multi-Hazard (selected states)</div></div>';
         document.getElementById('stat-cards').innerHTML = cardsHTML;
 
         if (charts.hazardBars) charts.hazardBars.destroy();

@@ -78,7 +78,7 @@
   <section class="tint">
     <div class="sec-eyebrow">Insight · A</div>
     <h2 class="sec-title">Key statistics — five-hazard exposure</h2>
-    <p class="sec-lede">Share of <b>non-tower primary</b> assets (n=<span data-hl="nontower">—</span>) meeting each hazard's exposure threshold, plus the combined any-hazard and multi-hazard (≥2 of 5) rates. 95% CIs from asset-level stratified bootstrap (see Block D — these are lower bounds).</p>
+    <p class="sec-lede">Share of <b>non-tower primary</b> assets (n=<span data-hl="nontower">—</span>) meeting each hazard's exposure threshold, plus the combined any-hazard rate. Registered 95% CIs are shown only where applicable; the national multi-hazard estimate is pending reconciliation.</p>
     <div class="ins-grid2">
       <div class="chart-box tall"><canvas id="chart-exposure"></canvas></div>
       <div>
@@ -86,7 +86,7 @@
           <thead><tr><th>Hazard</th><th style="text-align:right">Non-tower</th><th style="text-align:right">95% CI</th><th style="text-align:right">All-assets</th></tr></thead>
           <tbody id="tbl-exposure"><tr><td colspan="4" style="color:var(--muted)">—</td></tr></tbody>
         </table>
-        <p class="disclaimer">All-assets (n=<span data-hl="total">—</span>) shown for sensitivity. Flood = <code>any_flood_exposed</code> (FEMA SFHA ∪ SLOSH Cat 1 ∪ HTF Minor ∪ SLR 2050).</p>
+        <p class="disclaimer">All-assets (n=<span data-hl="total">—</span>) shown for sensitivity. Flood = <code>any_flood_exposed</code> (FEMA SFHA ∪ SLOSH Cat 1 ∪ HTF Minor); SLR 2050 is a separate forward-looking component. The registered <span data-hl="sfha-ci">—</span> interval applies only to the FEMA-SFHA component, not the union.</p>
       </div>
     </div>
   </section>
@@ -255,6 +255,7 @@
       setText('towers', intl(n.total_tower));
       setText('m', String(tf.family_size || '—'));
       setText('cutoff', expf(tf['bonferroni_cutoff_alpha_0.05']));
+      setText('sfha-ci', ci2(n.flood_sfha_component_ci_non_tower));
 
       // ══════════ BLOCK A — exposure ══════════
       var hazA = [
@@ -264,9 +265,10 @@
         {k:'Hurricane', nt:n.hurr_pct_non_tower,   ci:n.hurr_ci_non_tower,   all:n.hurr_pct_all_assets},
         {k:'Flood',     nt:n.flood_pct_non_tower,  ci:n.flood_ci_non_tower,  all:n.flood_pct_all_assets},
         {k:'Any (≥1)',  nt:n.any_5h_pct_non_tower, ci:n.any_5h_ci_non_tower, all:n.any_5h_pct_all_assets},
-        {k:'Multi (≥2)',nt:n.multi_geq2_pct_non_tower, ci:n.multi_geq2_ci_non_tower, all:n.multi_geq2_pct_all_assets}
+        {k:'Multi (≥2)',nt:null, ci:null, all:null, pending:true}
       ];
       var rowsA = hazA.map(function(h){
+        if (h.pending) return '<tr><td>'+esc(h.k)+'</td><td colspan="3"><span class="tag no">Pending reconciliation</span></td></tr>';
         return '<tr><td>'+esc(h.k)+'</td><td class="num">'+pct1(h.nt)+'</td><td class="ci">'+ci2(h.ci)+'</td><td class="num" style="color:var(--muted)">'+pct1(h.all)+'</td></tr>';
       }).join('');
       document.getElementById('tbl-exposure').innerHTML = rowsA;
@@ -275,7 +277,7 @@
         return new Chart(ctx, {
           type:'bar',
           data:{ labels:hazA.map(function(h){return h.k;}),
-                 datasets:[{ label:'% non-tower exposed', data:hazA.map(function(h){return h.nt;}),
+                 datasets:[{ label:'% non-tower exposed', data:hazA.map(function(h){return h.pending?null:h.nt;}),
                    backgroundColor:hazA.map(function(h){return h.k.indexOf('(')>-1?COL.ink:COL.pos;}),
                    borderWidth:0, barPercentage:0.72 }] },
           options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
