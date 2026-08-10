@@ -32,13 +32,7 @@ button{font-family:inherit;cursor:pointer;}
   position:sticky;top:0;background:#fff;z-index:50;
 }
 .brand{display:flex;align-items:center;gap:14px;}
-.brand .mk{
-  width:34px;height:34px;border:1.5px solid var(--ink);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.brand .mk::after{content:"";width:14px;height:14px;background:var(--ink);}
 .brand .nm{font-size:16px;font-weight:600;letter-spacing:-.01em;line-height:1.15;}
-.brand .sub{font-size:11.5px;color:var(--muted);letter-spacing:.04em;}
 .nav{display:flex;gap:30px;font-size:14px;}
 .nav a{color:var(--ink-3);transition:color .12s;padding-bottom:2px;white-space:nowrap;}
 .nav a:hover{color:var(--ink);}
